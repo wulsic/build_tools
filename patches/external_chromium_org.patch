@@ -1,9 +1,9 @@
-From 2823950c4e6df9067698232a0dd6a9199ef11a90 Mon Sep 17 00:00:00 2001
-From: andixlm <andixev@gmail.com>
-Date: Sun, 26 Oct 2014 22:31:08 +0600
-Subject: [PATCH] web browser: Disable HW rendering for S2Plus
+From 99630b517784dd8014628f7e88ec7e2c54e134a5 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 11 Dec 2013 20:47:31 +0700
+Subject: [PATCH] chromium: disable HW rendering for capri
 
-Change-Id: I431625c17e98b2cc1f117b303f9db2eb054861ee
+Change-Id: I16b2c14eb15a3efe4d84d603c132434a5f97530a
 ---
  android_webview/browser/in_process_view_renderer.cc | 5 +++++
  1 file changed, 5 insertions(+)
@@ -27,5 +27,5 @@ index bcfa3b9..0978e09 100644
  }
  
 -- 
-1.9.1
+2.3.7
 

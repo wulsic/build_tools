@@ -1,15 +1,14 @@
-From 557fe33ad01d93ab23e716c1473e6f44cae8cf43 Mon Sep 17 00:00:00 2001
-From: andixlm <andixev@gmail.com>
-Date: Sun, 26 Oct 2014 23:26:00 +0600
-Subject: [PATCH] Workaround CAPRI_HWC issues
+From be1af9b6cc15461eeec9bb1b415cacf47603ac3d Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Tue, 10 Dec 2013 19:38:17 +0700
+Subject: [PATCH 1/5] binder: add compat symbols
 
-Change-Id: I33cefc9305839664bd801eb9b6e47a18227f0fba
+Required for libtvservice_binder.so on I9082
+
+Change-Id: I059e92f19e4c5a911d38faa9c4df549c75c90761
 ---
- libs/binder/Parcel.cpp                                 | 12 ++++++++++++
- services/surfaceflinger/DisplayHardware/HWComposer.cpp |  5 +++++
- services/surfaceflinger/Layer.cpp                      |  3 +++
- services/surfaceflinger/SurfaceFlinger.cpp             |  9 +++++++++
- 4 files changed, 29 insertions(+)
+ libs/binder/Parcel.cpp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
 index db9e0a1..bb6856c 100644
@@ -41,52 +40,24 @@ index db9e0a1..bb6856c 100644
  status_t Parcel::read(FlattenableHelperInterface& val) const
  {
      // size
-diff --git a/services/surfaceflinger/DisplayHardware/HWComposer.cpp b/services/surfaceflinger/DisplayHardware/HWComposer.cpp
-index dd6865d..10271e9 100644
---- a/services/surfaceflinger/DisplayHardware/HWComposer.cpp
-+++ b/services/surfaceflinger/DisplayHardware/HWComposer.cpp
-@@ -1234,13 +1234,18 @@ public:
-         //getLayer()->compositionType = HWC_FRAMEBUFFER;
-     }
-     virtual void setPlaneAlpha(uint8_t alpha) {
-+// CAPRI_HWC does not respect planeAlpha despite being v1.2
-+#ifndef CAPRI_HWC
-         if (hwcHasApiVersion(mHwc, HWC_DEVICE_API_VERSION_1_2)) {
-             getLayer()->planeAlpha = alpha;
-         } else {
-+#endif
-             if (alpha < 0xFF) {
-                 getLayer()->flags |= HWC_SKIP_LAYER;
-             }
-+#ifndef CAPRI_HWC
-         }
-+#endif
-     }
-     virtual void setDefaultState() {
-         hwc_layer_1_t* const l = getLayer();
-diff --git a/services/surfaceflinger/Layer.cpp b/services/surfaceflinger/Layer.cpp
-index 4def60a..04b853b 100644
---- a/services/surfaceflinger/Layer.cpp
-+++ b/services/surfaceflinger/Layer.cpp
-@@ -1260,6 +1260,8 @@ uint32_t Layer::getEffectiveUsage(uint32_t usage) const
- 
- void Layer::updateTransformHint(const sp<const DisplayDevice>& hw) {
-     uint32_t orientation = 0;
-+// CAPRI_HWC has display problem in landscape mode when transform is used
-+#ifndef CAPRI_HWC
-     if (!mFlinger->mDebugDisableTransformHint) {
-         // The transform hint is used to improve performance, but we can
-         // only have a single transform hint, it cannot
-@@ -1270,6 +1272,7 @@ void Layer::updateTransformHint(const sp<const DisplayDevice>& hw) {
-             orientation = 0;
-         }
-     }
-+#endif
-     mSurfaceFlingerConsumer->setTransformHint(orientation);
-     mTransformHint = orientation;
- }
+-- 
+2.3.7
+
+
+From c606882f28b7a35a56e10e6531f77aff1068a172 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Tue, 10 Dec 2013 19:37:23 +0700
+Subject: [PATCH 2/5] SurfaceFlinger: ifdef EVENT_ORIENTATION
+
+Some HWC implementation spam the log on unknown event
+
+Change-Id: I3cdbd51f8badc195a14ff2b979d78c363e525207
+---
+ services/surfaceflinger/SurfaceFlinger.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index e7c4716..ee6745e 100644
+index b681973..c846ae7 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -1162,6 +1162,7 @@ void SurfaceFlinger::setUpHWComposer() {
@@ -121,7 +92,84 @@ index e7c4716..ee6745e 100644
                  }
              }
          }
-@@ -3386,6 +3390,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
+-- 
+2.3.7
+
+
+From 4bf49611b25b519c8962546002c971864f936fa6 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Tue, 10 Dec 2013 19:38:42 +0700
+Subject: [PATCH 3/5] sf: add CAPRI_HWC compatibility
+
+Change-Id: Iaaba61dc661fcb801ea11db58d129a01105648a3
+---
+ services/surfaceflinger/DisplayHardware/HWComposer.cpp | 5 +++++
+ services/surfaceflinger/Layer.cpp                      | 3 +++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/services/surfaceflinger/DisplayHardware/HWComposer.cpp b/services/surfaceflinger/DisplayHardware/HWComposer.cpp
+index dd6865d..10271e9 100644
+--- a/services/surfaceflinger/DisplayHardware/HWComposer.cpp
++++ b/services/surfaceflinger/DisplayHardware/HWComposer.cpp
+@@ -1234,13 +1234,18 @@ public:
+         //getLayer()->compositionType = HWC_FRAMEBUFFER;
+     }
+     virtual void setPlaneAlpha(uint8_t alpha) {
++// CAPRI_HWC does not respect planeAlpha despite being v1.2
++#ifndef CAPRI_HWC
+         if (hwcHasApiVersion(mHwc, HWC_DEVICE_API_VERSION_1_2)) {
+             getLayer()->planeAlpha = alpha;
+         } else {
++#endif
+             if (alpha < 0xFF) {
+                 getLayer()->flags |= HWC_SKIP_LAYER;
+             }
++#ifndef CAPRI_HWC
+         }
++#endif
+     }
+     virtual void setDefaultState() {
+         hwc_layer_1_t* const l = getLayer();
+diff --git a/services/surfaceflinger/Layer.cpp b/services/surfaceflinger/Layer.cpp
+index 8930dff..c0b3019 100644
+--- a/services/surfaceflinger/Layer.cpp
++++ b/services/surfaceflinger/Layer.cpp
+@@ -1260,6 +1260,8 @@ uint32_t Layer::getEffectiveUsage(uint32_t usage) const
+ 
+ void Layer::updateTransformHint(const sp<const DisplayDevice>& hw) {
+     uint32_t orientation = 0;
++// CAPRI_HWC has display problem in landscape mode when transform is used
++#ifndef CAPRI_HWC
+     if (!mFlinger->mDebugDisableTransformHint) {
+         // The transform hint is used to improve performance, but we can
+         // only have a single transform hint, it cannot
+@@ -1270,6 +1272,7 @@ void Layer::updateTransformHint(const sp<const DisplayDevice>& hw) {
+             orientation = 0;
+         }
+     }
++#endif
+     mSurfaceFlingerConsumer->setTransformHint(orientation);
+     mTransformHint = orientation;
+ }
+-- 
+2.3.7
+
+
+From 12989ab59a0b259526b99574fb50c451e6773fdd Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Mon, 16 Dec 2013 15:45:42 +0700
+Subject: [PATCH 4/5] sf: CAPRI_HWC: fix rotation artifact
+
+Change-Id: I1d9cd2a57ece5a55af318f00c7902994a77776fc
+---
+ services/surfaceflinger/SurfaceFlinger.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
+index 22abb2c..05889cf 100644
+--- a/services/surfaceflinger/SurfaceFlinger.cpp
++++ b/services/surfaceflinger/SurfaceFlinger.cpp
+@@ -3396,6 +3396,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
  {
      ATRACE_CALL();
  
@@ -134,5 +182,36 @@ index e7c4716..ee6745e 100644
      const uint32_t hw_w = hw->getWidth();
      const uint32_t hw_h = hw->getHeight();
 -- 
-1.9.1
+2.3.7
+
+
+From 3449ad28396e48572bb120eb413a4c08f87c5b22 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 20 Dec 2014 19:09:27 +0700
+Subject: [PATCH 5/5] sf: CAPRI_HWC: fix for screen recording
+
+Change-Id: I6c7e59400eab86bc5ec0ffebbcc475fa0fa404d2
+---
+ libs/gui/BufferQueue.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/libs/gui/BufferQueue.cpp b/libs/gui/BufferQueue.cpp
+index 146f534..5b1d642 100644
+--- a/libs/gui/BufferQueue.cpp
++++ b/libs/gui/BufferQueue.cpp
+@@ -353,7 +353,12 @@ status_t BufferQueue::dequeueBuffer(int *outBuf, sp<Fence>* outFence, bool async
+                 // make sure the client is not trying to dequeue more buffers
+                 // than allowed.
+                 const int newUndequeuedCount = maxBufferCount - (dequeuedCount+1);
++#ifdef CAPRI_HWC
++                // HACK: for some reason, we need to reduce min undequeue for screen recording
++                const int minUndequeuedCount = getMinUndequeuedBufferCount(false);
++#else
+                 const int minUndequeuedCount = getMinUndequeuedBufferCount(async);
++#endif
+                 if (newUndequeuedCount < minUndequeuedCount) {
+                     ST_LOGE("dequeueBuffer: min undequeued buffer count (%d) "
+                             "exceeded (dequeued=%d undequeudCount=%d)",
+-- 
+2.3.7
 
