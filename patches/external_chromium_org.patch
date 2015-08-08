@@ -1,4 +1,4 @@
-From 99630b517784dd8014628f7e88ec7e2c54e134a5 Mon Sep 17 00:00:00 2001
+From d45c8b902d1f58c3bc3c15903b6852edacf3396e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 11 Dec 2013 20:47:31 +0700
 Subject: [PATCH] chromium: disable HW rendering for capri
@@ -27,5 +27,5 @@ index bcfa3b9..0978e09 100644
  }
  
 -- 
-2.3.7
+2.3.6
 

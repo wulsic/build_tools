@@ -6,14 +6,16 @@ COUNT=0
 CURRENT_DIR="$PWD"
 PD="build_tools/patches"
 PATCHES=(
+'build				build.patch'
 'external/chromium_org		external_chromium_org.patch'
 'frameworks/av			frameworks_av.patch'
 'frameworks/base		frameworks_base.patch'
 'frameworks/native		frameworks_native.patch'
 'frameworks/opt/telephony	frameworks_opt_telephony.patch'
 'hardware/broadcom/libbt	hardware_broadcom_libbt.patch'
-'packages/services/Telephony	packages_services_Telephony.patch'
-'vendor/cm			vendor_cm.patch'
+'hardware/libhardware_legacy	hardware_libhardware_legacy.patch'
+'packages/apps/Dialer		packages_apps_Dialer.patch'
+'system/core			system_core.patch'
 )
 
 while [ "x${PATCHES[COUNT]}" != "x" ]

@@ -1,49 +1,118 @@
-From aafc9e088fa3b7887d0918aed4b9b113347460f6 Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 21 Dec 2014 16:23:31 +0700
-Subject: [PATCH] PowerManagerService: only turn on button light when any
- button is pressed
+From 23caa5498df5b7c94e1a4f0c91d91f36ad72b66a Mon Sep 17 00:00:00 2001
+From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
+Date: Mon, 4 Nov 2013 02:54:13 +0000
+Subject: [PATCH 1/2] wifi: Set the mode at native layer
 
-This more closely emulates stock Samsung behavior
+ * Set normal/AP mode so that the HAL can specify correct module
+   arguments when loading the driver.
 
-Change-Id: I6b15c45b713bcbc290a1026805c46109060f9990
+Change-Id: I6eee2cc53b5f1e70306e252e52c909833f220515
+
+Conflicts:
+	core/jni/android_net_wifi_Wifi.cpp
+	wifi/java/android/net/wifi/WifiNative.java
+	wifi/java/android/net/wifi/WifiStateMachine.java
 ---
- services/java/com/android/server/power/PowerManagerService.java | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ core/jni/android_net_wifi_WifiNative.cpp         | 6 ++++++
+ wifi/java/android/net/wifi/WifiNative.java       | 2 ++
+ wifi/java/android/net/wifi/WifiStateMachine.java | 2 ++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/services/java/com/android/server/power/PowerManagerService.java b/services/java/com/android/server/power/PowerManagerService.java
-index 56a4096..618dfc3 100644
---- a/services/java/com/android/server/power/PowerManagerService.java
-+++ b/services/java/com/android/server/power/PowerManagerService.java
-@@ -247,6 +247,7 @@ public final class PowerManagerService extends IPowerManager.Stub
-     // Timestamp of the last call to user activity.
-     private long mLastUserActivityTime;
-     private long mLastUserActivityTimeNoChangeLights;
-+    private long mLastButtonActivityTime;
+diff --git a/core/jni/android_net_wifi_WifiNative.cpp b/core/jni/android_net_wifi_WifiNative.cpp
+index 6e11192..b869cc0 100644
+--- a/core/jni/android_net_wifi_WifiNative.cpp
++++ b/core/jni/android_net_wifi_WifiNative.cpp
+@@ -82,6 +82,11 @@ static jstring doStringCommand(JNIEnv* env, jstring javaCommand) {
+     return env->NewStringUTF(reply);
+ }
  
-     // A bitfield that summarizes the effect of the user activity timer.
-     // A zero value indicates that the user activity timer has expired.
-@@ -1145,6 +1146,11 @@ public final class PowerManagerService extends IPowerManager.Stub
-                 return true;
-             }
-         } else {
-+            if (eventTime > mLastButtonActivityTime && (event & PowerManager.USER_ACTIVITY_EVENT_BUTTON) != 0) {
-+                mLastButtonActivityTime = eventTime;
-+                mDirty |= DIRTY_USER_ACTIVITY;
-+            }
++static jboolean android_net_wifi_setMode(JNIEnv* env, jobject, jint type)
++{
++    return (jboolean)(::wifi_set_mode(type) == 0);
++}
 +
-             if (eventTime > mLastUserActivityTime) {
-                 mLastUserActivityTime = eventTime;
-                 mDirty |= DIRTY_USER_ACTIVITY;
-@@ -1735,7 +1741,7 @@ public final class PowerManagerService extends IPowerManager.Stub
-                         }
+ static jboolean android_net_wifi_isDriverLoaded(JNIEnv* env, jobject)
+ {
+     return (::is_wifi_driver_loaded() == 1);
+@@ -163,6 +168,7 @@ static JNINativeMethod gWifiMethods[] = {
+     { "doIntCommandNative", "(Ljava/lang/String;)I", (void*)android_net_wifi_doIntCommand },
+     { "doStringCommandNative", "(Ljava/lang/String;)Ljava/lang/String;",
+             (void*) android_net_wifi_doStringCommand },
++    { "setMode", "(I)Z", (void*) android_net_wifi_setMode},
+ };
  
-                         mKeyboardLight.setBrightness(mKeyboardVisible ? keyboardBrightness : 0);
--                        if (mButtonTimeout != 0 && now > mLastUserActivityTime + mButtonTimeout) {
-+                        if (mButtonTimeout != 0 && now > mLastButtonActivityTime + mButtonTimeout) {
-                             mButtonsLight.setBrightness(0);
-                         } else {
-                             mButtonsLight.setBrightness(buttonBrightness);
+ int register_android_net_wifi_WifiNative(JNIEnv* env) {
+diff --git a/wifi/java/android/net/wifi/WifiNative.java b/wifi/java/android/net/wifi/WifiNative.java
+index c2f278a..e7f480d 100644
+--- a/wifi/java/android/net/wifi/WifiNative.java
++++ b/wifi/java/android/net/wifi/WifiNative.java
+@@ -967,4 +967,6 @@ public class WifiNative {
+         // Note: optional feature on the driver. It is ok for this to fail.
+         doBooleanCommand("DRIVER MIRACAST " + mode);
+     }
++
++    public native static boolean setMode(int mode);
+ }
+diff --git a/wifi/java/android/net/wifi/WifiStateMachine.java b/wifi/java/android/net/wifi/WifiStateMachine.java
+index 9ea98b0..3decbd0 100644
+--- a/wifi/java/android/net/wifi/WifiStateMachine.java
++++ b/wifi/java/android/net/wifi/WifiStateMachine.java
+@@ -1239,6 +1239,7 @@ public class WifiStateMachine extends StateMachine {
+      */
+     public void setSupplicantRunning(boolean enable) {
+         if (enable) {
++            WifiNative.setMode(0);
+             sendMessage(CMD_START_SUPPLICANT);
+         } else {
+             sendMessage(CMD_STOP_SUPPLICANT);
+@@ -1250,6 +1251,7 @@ public class WifiStateMachine extends StateMachine {
+      */
+     public void setHostApRunning(WifiConfiguration wifiConfig, boolean enable) {
+         if (enable) {
++            WifiNative.setMode(1);
+             sendMessage(CMD_START_AP, wifiConfig);
+         } else {
+             sendMessage(CMD_STOP_AP);
 -- 
-2.3.7
+2.3.6
+
+
+From 8db75ab4f4715a00424e8a8aac8873a510ada674 Mon Sep 17 00:00:00 2001
+From: UtkarshGupta <utkarsh.eminem@gmail.com>
+Date: Sat, 23 Nov 2013 15:20:32 +0530
+Subject: [PATCH 2/2] base: fix external sdcard mountpoint
+
+It needs to add that line on init.xxxx.rc on rootdir folders.
+
+"chown root root /mnt/media_rw"
+
+Needed for devices that has some troubles mounting storages.
+
+Credits: http://forum.xda-developers.com/showthread.php?t=2537793
+
+Change-Id: I0c9e2ae5439c8d8a762904e2760eb6590ce77a62
+---
+ data/etc/platform.xml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/data/etc/platform.xml b/data/etc/platform.xml
+index 3857ec0..8475204 100644
+--- a/data/etc/platform.xml
++++ b/data/etc/platform.xml
+@@ -60,11 +60,13 @@
+ 
+     <permission name="android.permission.READ_EXTERNAL_STORAGE" >
+         <group gid="sdcard_r" />
++        <group gid="media_rw" />
+     </permission>
+ 
+     <permission name="android.permission.WRITE_EXTERNAL_STORAGE" >
+         <group gid="sdcard_r" />
+         <group gid="sdcard_rw" />
++        <group gid="media_rw" />
+     </permission>
+ 
+     <permission name="android.permission.ACCESS_ALL_EXTERNAL_STORAGE" >
+-- 
+2.3.6
 

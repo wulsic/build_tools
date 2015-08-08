@@ -1,0 +1,662 @@
+From 5db1b5e1512c7235148e9cd4528c405e5e3fa612 Mon Sep 17 00:00:00 2001
+From: Dave Burke <daveburke@google.com>
+Date: Wed, 24 Oct 2012 17:30:31 -0700
+Subject: [PATCH 01/10] Revert "Revert "put back the unused virtuals in
+ Vector<>""
+
+This reverts commit 225c66a48cdc3acef21ee380dc134449749d3cb3
+
+Change-Id: If31a04b81052cbc7dd7bf237c07107c33066d03d
+---
+ include/utils/VectorImpl.h | 20 ++++++++++++++++++++
+ libutils/VectorImpl.cpp    | 19 +++++++++++++++++++
+ 2 files changed, 39 insertions(+)
+
+diff --git a/include/utils/VectorImpl.h b/include/utils/VectorImpl.h
+index 21ad71c..9bc50e6 100644
+--- a/include/utils/VectorImpl.h
++++ b/include/utils/VectorImpl.h
+@@ -105,6 +105,16 @@ protected:
+     virtual void            do_splat(void* dest, const void* item, size_t num) const = 0;
+     virtual void            do_move_forward(void* dest, const void* from, size_t num) const = 0;
+     virtual void            do_move_backward(void* dest, const void* from, size_t num) const = 0;
++
++    // take care of FBC...
++    virtual void            reservedVectorImpl1();
++    virtual void            reservedVectorImpl2();
++    virtual void            reservedVectorImpl3();
++    virtual void            reservedVectorImpl4();
++    virtual void            reservedVectorImpl5();
++    virtual void            reservedVectorImpl6();
++    virtual void            reservedVectorImpl7();
++    virtual void            reservedVectorImpl8();
+     
+ private:
+         void* _grow(size_t where, size_t amount);
+@@ -156,6 +166,16 @@ public:
+ protected:
+     virtual int             do_compare(const void* lhs, const void* rhs) const = 0;
+ 
++    // take care of FBC...
++    virtual void            reservedSortedVectorImpl1();
++    virtual void            reservedSortedVectorImpl2();
++    virtual void            reservedSortedVectorImpl3();
++    virtual void            reservedSortedVectorImpl4();
++    virtual void            reservedSortedVectorImpl5();
++    virtual void            reservedSortedVectorImpl6();
++    virtual void            reservedSortedVectorImpl7();
++    virtual void            reservedSortedVectorImpl8();
++
+ private:
+             ssize_t         _indexOrderOf(const void* item, size_t* order = 0) const;
+ 
+diff --git a/libutils/VectorImpl.cpp b/libutils/VectorImpl.cpp
+index 5a79647..70f49de 100644
+--- a/libutils/VectorImpl.cpp
++++ b/libutils/VectorImpl.cpp
+@@ -504,6 +504,15 @@ void VectorImpl::_do_move_backward(void* dest, const void* from, size_t num) con
+     do_move_backward(dest, from, num);
+ }
+ 
++void VectorImpl::reservedVectorImpl1() { }
++void VectorImpl::reservedVectorImpl2() { }
++void VectorImpl::reservedVectorImpl3() { }
++void VectorImpl::reservedVectorImpl4() { }
++void VectorImpl::reservedVectorImpl5() { }
++void VectorImpl::reservedVectorImpl6() { }
++void VectorImpl::reservedVectorImpl7() { }
++void VectorImpl::reservedVectorImpl8() { }
++
+ /*****************************************************************************/
+ 
+ SortedVectorImpl::SortedVectorImpl(size_t itemSize, uint32_t flags)
+@@ -619,6 +628,16 @@ ssize_t SortedVectorImpl::remove(const void* item)
+     return i;
+ }
+ 
++void SortedVectorImpl::reservedSortedVectorImpl1() { };
++void SortedVectorImpl::reservedSortedVectorImpl2() { };
++void SortedVectorImpl::reservedSortedVectorImpl3() { };
++void SortedVectorImpl::reservedSortedVectorImpl4() { };
++void SortedVectorImpl::reservedSortedVectorImpl5() { };
++void SortedVectorImpl::reservedSortedVectorImpl6() { };
++void SortedVectorImpl::reservedSortedVectorImpl7() { };
++void SortedVectorImpl::reservedSortedVectorImpl8() { };
++
++
+ /*****************************************************************************/
+ 
+ }; // namespace android
+-- 
+2.3.7
+
+
+From 38f26121a20c61d313720d7ba8da398b2dfca1a2 Mon Sep 17 00:00:00 2001
+From: dhacker29 <davidhackerdvm@gmail.com>
+Date: Fri, 15 Nov 2013 22:24:30 -0600
+Subject: [PATCH 02/10] Conditionally Revert "put back the unused virtuals in
+ Vector<>"
+
+These symbols are needed for MR2 camera.tegra and other blobs,
+but they conflict with KK blobs so define it for devices that
+need it by setting COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+
+Change-Id: I59e66074526f013918a29c3afc10e52b9812778c
+---
+ include/utils/VectorImpl.h | 6 +++++-
+ libutils/VectorImpl.cpp    | 5 ++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/include/utils/VectorImpl.h b/include/utils/VectorImpl.h
+index 9bc50e6..cab95be 100644
+--- a/include/utils/VectorImpl.h
++++ b/include/utils/VectorImpl.h
+@@ -106,6 +106,7 @@ protected:
+     virtual void            do_move_forward(void* dest, const void* from, size_t num) const = 0;
+     virtual void            do_move_backward(void* dest, const void* from, size_t num) const = 0;
+ 
++#if NEEDS_VECTORIMPL_SYMBOLS
+     // take care of FBC...
+     virtual void            reservedVectorImpl1();
+     virtual void            reservedVectorImpl2();
+@@ -115,7 +116,8 @@ protected:
+     virtual void            reservedVectorImpl6();
+     virtual void            reservedVectorImpl7();
+     virtual void            reservedVectorImpl8();
+-    
++#endif
++
+ private:
+         void* _grow(size_t where, size_t amount);
+         void  _shrink(size_t where, size_t amount);
+@@ -166,6 +168,7 @@ public:
+ protected:
+     virtual int             do_compare(const void* lhs, const void* rhs) const = 0;
+ 
++#if NEEDS_VECTORIMPL_SYMBOLS
+     // take care of FBC...
+     virtual void            reservedSortedVectorImpl1();
+     virtual void            reservedSortedVectorImpl2();
+@@ -175,6 +178,7 @@ protected:
+     virtual void            reservedSortedVectorImpl6();
+     virtual void            reservedSortedVectorImpl7();
+     virtual void            reservedSortedVectorImpl8();
++#endif
+ 
+ private:
+             ssize_t         _indexOrderOf(const void* item, size_t* order = 0) const;
+diff --git a/libutils/VectorImpl.cpp b/libutils/VectorImpl.cpp
+index 70f49de..275f19a 100644
+--- a/libutils/VectorImpl.cpp
++++ b/libutils/VectorImpl.cpp
+@@ -504,6 +504,7 @@ void VectorImpl::_do_move_backward(void* dest, const void* from, size_t num) con
+     do_move_backward(dest, from, num);
+ }
+ 
++#if NEEDS_VECTORIMPL_SYMBOLS
+ void VectorImpl::reservedVectorImpl1() { }
+ void VectorImpl::reservedVectorImpl2() { }
+ void VectorImpl::reservedVectorImpl3() { }
+@@ -512,6 +513,7 @@ void VectorImpl::reservedVectorImpl5() { }
+ void VectorImpl::reservedVectorImpl6() { }
+ void VectorImpl::reservedVectorImpl7() { }
+ void VectorImpl::reservedVectorImpl8() { }
++#endif
+ 
+ /*****************************************************************************/
+ 
+@@ -628,6 +630,7 @@ ssize_t SortedVectorImpl::remove(const void* item)
+     return i;
+ }
+ 
++#if NEEDS_VECTORIMPL_SYMBOLS
+ void SortedVectorImpl::reservedSortedVectorImpl1() { };
+ void SortedVectorImpl::reservedSortedVectorImpl2() { };
+ void SortedVectorImpl::reservedSortedVectorImpl3() { };
+@@ -636,7 +639,7 @@ void SortedVectorImpl::reservedSortedVectorImpl5() { };
+ void SortedVectorImpl::reservedSortedVectorImpl6() { };
+ void SortedVectorImpl::reservedSortedVectorImpl7() { };
+ void SortedVectorImpl::reservedSortedVectorImpl8() { };
+-
++#endif
+ 
+ /*****************************************************************************/
+ 
+-- 
+2.3.7
+
+
+From 8b69beaa5993a0450cf7cb6b2a68b503e3e0f49d Mon Sep 17 00:00:00 2001
+From: Arne Coucheron <arco68@gmail.com>
+Date: Wed, 3 Dec 2014 06:14:55 +0100
+Subject: [PATCH 03/10] libutils: Properly #ifdef NEEDS_VECTORIMPL_SYMBOLS
+
+ * Compile error might occur otherwise
+
+Change-Id: I982e5f72ea4e84594e415394cceed44f90045526
+(cherry picked from commit 1ff785445828a9a40138d67e1de2a4fbae9680e9)
+---
+ include/utils/VectorImpl.h | 4 ++--
+ libutils/VectorImpl.cpp    | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/utils/VectorImpl.h b/include/utils/VectorImpl.h
+index cab95be..88c3a05 100644
+--- a/include/utils/VectorImpl.h
++++ b/include/utils/VectorImpl.h
+@@ -106,7 +106,7 @@ protected:
+     virtual void            do_move_forward(void* dest, const void* from, size_t num) const = 0;
+     virtual void            do_move_backward(void* dest, const void* from, size_t num) const = 0;
+ 
+-#if NEEDS_VECTORIMPL_SYMBOLS
++#ifdef NEEDS_VECTORIMPL_SYMBOLS
+     // take care of FBC...
+     virtual void            reservedVectorImpl1();
+     virtual void            reservedVectorImpl2();
+@@ -168,7 +168,7 @@ public:
+ protected:
+     virtual int             do_compare(const void* lhs, const void* rhs) const = 0;
+ 
+-#if NEEDS_VECTORIMPL_SYMBOLS
++#ifdef NEEDS_VECTORIMPL_SYMBOLS
+     // take care of FBC...
+     virtual void            reservedSortedVectorImpl1();
+     virtual void            reservedSortedVectorImpl2();
+diff --git a/libutils/VectorImpl.cpp b/libutils/VectorImpl.cpp
+index 275f19a..fe44e61 100644
+--- a/libutils/VectorImpl.cpp
++++ b/libutils/VectorImpl.cpp
+@@ -504,7 +504,7 @@ void VectorImpl::_do_move_backward(void* dest, const void* from, size_t num) con
+     do_move_backward(dest, from, num);
+ }
+ 
+-#if NEEDS_VECTORIMPL_SYMBOLS
++#ifdef NEEDS_VECTORIMPL_SYMBOLS
+ void VectorImpl::reservedVectorImpl1() { }
+ void VectorImpl::reservedVectorImpl2() { }
+ void VectorImpl::reservedVectorImpl3() { }
+@@ -630,7 +630,7 @@ ssize_t SortedVectorImpl::remove(const void* item)
+     return i;
+ }
+ 
+-#if NEEDS_VECTORIMPL_SYMBOLS
++#ifdef NEEDS_VECTORIMPL_SYMBOLS
+ void SortedVectorImpl::reservedSortedVectorImpl1() { };
+ void SortedVectorImpl::reservedSortedVectorImpl2() { };
+ void SortedVectorImpl::reservedSortedVectorImpl3() { };
+-- 
+2.3.7
+
+
+From 6aabc11e45a11a3bef91b5e81ea4c2a98c4e3c2e Mon Sep 17 00:00:00 2001
+From: Prashant Somashekar <prashsomash@gmail.com>
+Date: Sat, 17 Dec 2011 17:26:54 -0500
+Subject: [PATCH 04/10] init: add detection of charging mode
+
+-when BOARD_CHARGING_MODE_BOOTING_LPM is set to a path_to_sysfs_attribute
+ then it and lpm.rc will be read accordingly.
+
+-adapted from techomancer's original change:
+ (add detection of charging mode, remove the code for parsing param.lfs,
+  since it is not needed)
+ http://goo.gl/I19GG
+
+Change-Id: I64c2379225e00afaaf17ee03eab67546781668f8
+---
+ init/Android.mk |  8 ++++++++
+ init/init.c     | 25 ++++++++++++++++++++++++-
+ 2 files changed, 32 insertions(+), 1 deletion(-)
+
+diff --git a/init/Android.mk b/init/Android.mk
+index abfc68a..91836a1 100644
+--- a/init/Android.mk
++++ b/init/Android.mk
+@@ -27,6 +27,14 @@ ifneq (,$(filter userdebug eng,$(TARGET_BUILD_VARIANT)))
+ LOCAL_CFLAGS += -DALLOW_LOCAL_PROP_OVERRIDE=1
+ endif
+ 
++SYSTEM_CORE_INIT_DEFINES := BOARD_CHARGING_MODE_BOOTING_LPM
++
++$(foreach system_core_init_define,$(SYSTEM_CORE_INIT_DEFINES), \
++  $(if $($(system_core_init_define)), \
++    $(eval LOCAL_CFLAGS += -D$(system_core_init_define)=\"$($(system_core_init_define))\") \
++  ) \
++  )
++
+ LOCAL_MODULE:= init
+ 
+ LOCAL_FORCE_STATIC_EXECUTABLE := true
+diff --git a/init/init.c b/init/init.c
+index bd7799e..8922fd5 100644
+--- a/init/init.c
++++ b/init/init.c
+@@ -958,6 +958,25 @@ static void selinux_initialize(void)
+     security_setenforce(is_enforcing);
+ }
+ 
++static int charging_mode_booting(void)
++{
++#ifndef BOARD_CHARGING_MODE_BOOTING_LPM
++	return 0;
++#else
++	int f;
++	char cmb;
++	f = open(BOARD_CHARGING_MODE_BOOTING_LPM, O_RDONLY);
++	if (f < 0)
++		return 0;
++
++	if (1 != read(f, (void *)&cmb,1))
++		return 0;
++
++	close(f);
++	return ('1' == cmb);
++#endif
++}
++
+ int main(int argc, char **argv)
+ {
+     int fd_count = 0;
+@@ -1035,7 +1054,11 @@ int main(int argc, char **argv)
+         property_load_boot_defaults();
+ 
+     INFO("reading config file\n");
+-    init_parse_config_file("/init.rc");
++
++    if (!charging_mode_booting())
++       init_parse_config_file("/init.rc");
++    else
++       init_parse_config_file("/lpm.rc");
+ 
+     action_for_each_trigger("early-init", action_add_queue_tail);
+ 
+-- 
+2.3.7
+
+
+From f144f92b299f7d1f72233192bb2523d468af673e Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Tue, 18 Nov 2014 22:36:32 +0700
+Subject: [PATCH 05/10] charger: allow home button to wake
+
+A squashed commit of the following:
+
+commit 5e63755ae55637d3d77b77da359b4acec4f432dd
+Author: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date:   Sun Feb 3 22:21:32 2013 +0700
+
+    charger: do not suspend when handling home
+
+    When using Google's suspend implementation, home press should also wake
+    the device from suspend
+
+    Change-Id: I51f3e45c5cb418b0b3718e7223a1336876379043
+
+commit ee825465fbc8fe0affdc887767f5c9445ab7539f
+Author: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date:   Sat Jul 21 22:09:37 2012 +0700
+
+    charger: allow home button to wake
+
+    On certain devices (e.g. galaxysmtd), the user expects the physical
+    home button to be able to wake the device as well as the power button.
+
+    Change-Id: If764f36aba3810dfa5233af8baf0a740b04889e0
+
+Change-Id: I362b227e26bc864a2cad471df799bce2d682ecee
+---
+ charger/charger.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/charger/charger.c b/charger/charger.c
+index 66ddeaf..6bacf2c 100644
+--- a/charger/charger.c
++++ b/charger/charger.c
+@@ -850,6 +850,11 @@ static void process_key(struct charger *charger, int code, int64_t now)
+                 kick_animation(charger->batt_anim);
+             }
+         }
++    } else {
++        if (key->pending) {
++            request_suspend(false);
++            kick_animation(charger->batt_anim);
++        }
+     }
+ 
+     key->pending = false;
+@@ -858,6 +863,7 @@ static void process_key(struct charger *charger, int code, int64_t now)
+ static void handle_input_state(struct charger *charger, int64_t now)
+ {
+     process_key(charger, KEY_POWER, now);
++    process_key(charger, KEY_HOME, now);
+ 
+     if (charger->next_key_check != -1 && now > charger->next_key_check)
+         charger->next_key_check = -1;
+-- 
+2.3.7
+
+
+From 949df21536ff19218f5961a68a9514ecca099213 Mon Sep 17 00:00:00 2001
+From: Niranjan Pendharkar <npendhar@codeaurora.org>
+Date: Wed, 16 Nov 2011 12:50:36 -0800
+Subject: [PATCH 06/10] core: Add API to retrieve mtu size
+
+Adding an API to libnetutils to retrieve mtu size of an interface
+Made few utility functions from ifc_utils public
+
+Change-Id: Iddec2dcd9f241b146d7f362e2df0724cf740d1f2
+(cherry picked from commit 108cded7d96cc347f36b5b78c404c5ebccce13d7)
+---
+ include/netutils/ifc.h  |  5 ++++-
+ libnetutils/ifc_utils.c | 19 +++++++++++++++++++
+ 2 files changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/include/netutils/ifc.h b/include/netutils/ifc.h
+index 1f5421d..11a8e1e 100644
+--- a/include/netutils/ifc.h
++++ b/include/netutils/ifc.h
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright 2008, The Android Open Source Project
++ * Copyright (C) 2011, Code Aurora Forum. All rights reserved.
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License"); 
+  * you may not use this file except in compliance with the License. 
+@@ -64,10 +65,12 @@ extern int ifc_remove_route(const char *ifname, const char *dst,
+                             int prefix_length, const char *gw);
+ extern int ifc_get_info(const char *name, in_addr_t *addr, int *prefixLength,
+                         unsigned *flags);
+-
+ extern int ifc_configure(const char *ifname, in_addr_t address,
+                          uint32_t prefixLength, in_addr_t gateway,
+                          in_addr_t dns1, in_addr_t dns2);
++extern int ifc_get_mtu(const char *name, int *mtuSz);
++extern in_addr_t prefixLengthToIpv4Netmask(int prefix_length);
++extern int ipv4NetmaskToPrefixLength(in_addr_t mask);
+ 
+ extern in_addr_t prefixLengthToIpv4Netmask(int prefix_length);
+ 
+diff --git a/libnetutils/ifc_utils.c b/libnetutils/ifc_utils.c
+index eb33d06..6e7ee42 100644
+--- a/libnetutils/ifc_utils.c
++++ b/libnetutils/ifc_utils.c
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright 2008, The Android Open Source Project
++ * Copyright (C) 2011, Code Aurora Forum. All rights reserved.
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License"); 
+  * you may not use this file except in compliance with the License. 
+@@ -964,3 +965,21 @@ int ifc_remove_route(const char *ifname, const char*dst, int prefix_length, cons
+ {
+     return ifc_act_on_route(SIOCDELRT, ifname, dst, prefix_length, gw);
+ }
++
++int ifc_get_mtu(const char *name, int *mtuSz)
++{
++    struct ifreq ifr;
++    ifc_init_ifr(name, &ifr);
++
++    if (mtuSz != NULL) {
++        if(ioctl(ifc_ctl_sock, SIOCGIFMTU, &ifr) < 0) {
++            *mtuSz = 0;
++            return -2;
++        } else {
++            *mtuSz = ifr.ifr_mtu;
++            return 0;
++        }
++    }
++
++    return -1;
++}
+-- 
+2.3.7
+
+
+From 1d6b6eb4e9ada181a32bf2777c1eaeb664974074 Mon Sep 17 00:00:00 2001
+From: Niranjan Pendharkar <npendhar@codeaurora.org>
+Date: Mon, 2 Apr 2012 16:41:59 -0700
+Subject: [PATCH 07/10] Do not add default route during ifc_configure
+
+Avoid duplicate default routes.
+Remove adding of default routes during interface configuration as
+route add/remove operation is managed by ConnectivityService via netd.
+(cherry picked from commit 4a48635c72d91cf8decb7653948fe0c76de46098)
+
+Change-Id: I982b95a44bf91d3850ca7752e307c1b1b6a66ecf
+---
+ libnetutils/ifc_utils.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/libnetutils/ifc_utils.c b/libnetutils/ifc_utils.c
+index 6e7ee42..33b7947 100644
+--- a/libnetutils/ifc_utils.c
++++ b/libnetutils/ifc_utils.c
+@@ -1,17 +1,18 @@
+ /*
++ * Copyright (c) 2011-2013 The Linux Foundation. All rights reserved.
+  * Copyright 2008, The Android Open Source Project
+  * Copyright (C) 2011, Code Aurora Forum. All rights reserved.
+  *
+- * Licensed under the Apache License, Version 2.0 (the "License"); 
+- * you may not use this file except in compliance with the License. 
+- * You may obtain a copy of the License at 
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
+  *
+- *     http://www.apache.org/licenses/LICENSE-2.0 
++ *     http://www.apache.org/licenses/LICENSE-2.0
+  *
+- * Unless required by applicable law or agreed to in writing, software 
+- * distributed under the License is distributed on an "AS IS" BASIS, 
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+- * See the License for the specific language governing permissions and 
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+ 
+@@ -802,11 +803,14 @@ ifc_configure(const char *ifname,
+         ifc_close();
+         return -1;
+     }
++
++#ifndef QCOM_HARDWARE
+     if (ifc_create_default_route(ifname, gateway)) {
+         printerr("failed to set default route %s: %s\n", ipaddr_to_string(gateway), strerror(errno));
+         ifc_close();
+         return -1;
+     }
++#endif
+ 
+     ifc_close();
+ 
+-- 
+2.3.7
+
+
+From da6d3950a360b9c313492b49b20dcd6f8b01081a Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Fri, 12 Apr 2013 11:40:15 +0700
+Subject: [PATCH 08/10] libnetutils: add ifc_set_mtu
+
+Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
+---
+ libnetutils/ifc_utils.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/libnetutils/ifc_utils.c b/libnetutils/ifc_utils.c
+index 33b7947..3767958 100644
+--- a/libnetutils/ifc_utils.c
++++ b/libnetutils/ifc_utils.c
+@@ -987,3 +987,19 @@ int ifc_get_mtu(const char *name, int *mtuSz)
+ 
+     return -1;
+ }
++
++// Required for Broadcom RILD
++int ifc_set_mtu(const char *name, int mtuSz)
++{
++    struct ifreq ifr;
++    int ret;
++    ifc_init_ifr(name, &ifr);
++    ifr.ifr_mtu = mtuSz;
++
++    ret = ioctl(ifc_ctl_sock, SIOCSIFMTU, &ifr);
++    if (ret < 0) {
++        printerr("ifc_set_mtu: SIOCSIFMTU failed: %d\n", ret);
++    }
++
++    return ret;
++}
+-- 
+2.3.7
+
+
+From 4bcfd1306722cbeaab3e705fe4f1d72d62bb788b Mon Sep 17 00:00:00 2001
+From: codeworkx <codeworkx@cyanogenmod.org>
+Date: Sat, 27 Jul 2013 08:18:42 +0200
+Subject: [PATCH 09/10] libutils: refbase: jellybean mr1 compat
+
+Change-Id: Ideee0c3814a17b47f70fd612d27067fe19ae698d
+---
+ include/utils/RefBase.h | 9 +++++++++
+ libutils/RefBase.cpp    | 7 +++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/include/utils/RefBase.h b/include/utils/RefBase.h
+index cbfe13a..92bc5e9 100644
+--- a/include/utils/RefBase.h
++++ b/include/utils/RefBase.h
+@@ -53,6 +53,15 @@ inline bool operator _op_ (const U* o) const {                  \
+ 
+ // ---------------------------------------------------------------------------
+ 
++/* START JB MR1 COMPAT */
++class ReferenceConverterBase {
++public:
++    virtual size_t getReferenceTypeSize() const = 0;
++    virtual void* getReferenceBase(void const*) const = 0;
++    inline virtual ~ReferenceConverterBase() { }
++};
++/* END JB MR1 COMPAT */
++
+ class ReferenceRenamer {
+ protected:
+     // destructor is purposedly not virtual so we avoid code overhead from
+diff --git a/libutils/RefBase.cpp b/libutils/RefBase.cpp
+index f398a82..604951d 100644
+--- a/libutils/RefBase.cpp
++++ b/libutils/RefBase.cpp
+@@ -626,6 +626,13 @@ void RefBase::onLastWeakRef(const void* /*id*/)
+ 
+ // ---------------------------------------------------------------------------
+ 
++/* START JB MR1 COMPAT */
++extern "C" void _ZN7android7RefBase14moveReferencesEPvPKvjRKNS_22ReferenceConverterBaseE(void* dst, void const* src, size_t n,
++        const ReferenceConverterBase& caster)
++{
++}
++/* END JB MR1 COMPAT */
++
+ void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
+ #if DEBUG_REFS
+     for (size_t i=0 ; i<n ; i++) {
+-- 
+2.3.7
+
+
+From d182b1b097a8ffcd2298666dff8f9983ec38a9ca Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sat, 14 Mar 2015 10:48:07 +0700
+Subject: [PATCH 10/10] disable recovery flash
+
+We don't want to flash AOSP's recovery
+
+Change-Id: Icb999b58879f71f39b64b6e85afc5869c2e7d92e
+---
+ rootdir/init.rc | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/rootdir/init.rc b/rootdir/init.rc
+index 1ee9fbf..fa2eb90 100644
+--- a/rootdir/init.rc
++++ b/rootdir/init.rc
+@@ -524,9 +524,9 @@ service installd /system/bin/installd
+     class main
+     socket installd stream 600 system system
+ 
+-service flash_recovery /system/etc/install-recovery.sh
+-    class main
+-    oneshot
++#service flash_recovery /system/etc/install-recovery.sh
++#    class main
++#    oneshot
+ 
+ service racoon /system/bin/racoon
+     class main
+-- 
+2.3.7
+

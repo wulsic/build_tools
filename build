@@ -10,20 +10,20 @@ export USE_CCACHE=1
 # Define functions
 function build_rom {
 	. build/envsetup.sh
-	breakfast $1
-	mka bacon
+	lunch aosp_$1-userdebug
+	make otapackage
 }
 
 function build_boot {
 	. build/envsetup.sh
-	breakfast $1
-	mka bootimage
+	lunch aosp_$1-userdebug
+	make bootimage
 }
 
 function build_recovery {
 	. build/envsetup.sh
-	breakfast $1
-	mka recoveryimage
+	lunch aosp_$1-userdebug
+	make recoveryimage
 }
 
 # Check 1st option
