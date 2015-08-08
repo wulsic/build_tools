@@ -25,3 +25,6 @@ if [[ -n $RO ]]; then
 else
 	repo sync -f
 fi
+
+# Get Terminal Emulator
+./vendor/cm/get-prebuilts
