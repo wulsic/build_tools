@@ -20,6 +20,7 @@ repo forall -c 'git reset --hard ; git clean -fdx'
 
 # Sync sources
 if [[ -n $RO ]]; then
+	repo sync -l
 	exit 0
 else
 	repo sync -f
