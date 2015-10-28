@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Get start time
-start_time=$(date +"%s")
-
 cd ..
 
 export USE_CCACHE=1
@@ -39,6 +36,10 @@ case "$1" in
 	s2plus )
 		BOTH=1
 		DEVICE='i9105 i9105p'
+		FAST=1
+		;;
+	i9152 )
+		DEVICE=$1
 		FAST=1
 		;;
 	"" )
@@ -128,27 +129,13 @@ if [[ !($FAST) ]]; then
 		make clean
 	fi
 
-	echo -n 'Device? (i9105 or i9105p): '
+	echo -n 'Device? (i9105 or i9105p or i9152): '
 	read DEVICE
 	# Check if given proper device DNAME
-	if [[ $DEVICE != i9105 && $DEVICE != i9105p ]]; then
+	if [[ $DEVICE != i9105 && $DEVICE != i9105p && $DEVICE != i9152 ]]; then
 		echo Unknown device DNAME: $DEVICE
 		exit 0
 	fi
 
 	build_rom
 fi
-
-# Calculate elapsed time
-end_time=$(date +"%s")
-tdiff=$(($end_time-$start_time))
-hours=$(($tdiff / 3600 ))
-mins=$((($tdiff % 3600) / 60))
-secs=$(($tdiff % 60))
-
-# Print elapsed time
-tput setaf 2
-echo ""
-printf "Elapsed time: %02g:%02g:%02g" $hours $mins $secs
-echo ""
-tput sgr0
