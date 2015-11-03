@@ -1,4 +1,4 @@
-From e7ba1c591fa4ae5d10a1d8b9d1b5cf664d5078e4 Mon Sep 17 00:00:00 2001
+From 9b493614c87a5b6e58c6bafa5b0c161ddaa927cd Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 20:09:12 +0700
 Subject: [PATCH 1/2] libbt: switch to N_BRCM_HCI line disclipline for userial
@@ -39,10 +39,10 @@ index 3ff518b..a038445 100644
  #endif
  
 -- 
-2.6.1
+2.6.2
 
 
-From cdeb94671ffcec0c92e6d3794ba8ebc7d4ea6cad Mon Sep 17 00:00:00 2001
+From 3cfd962e74465b16ffc46054b4ebbe8dd6cf797f Mon Sep 17 00:00:00 2001
 From: Steve Kondik <shade@chemlab.org>
 Date: Mon, 3 Dec 2012 02:34:56 -0800
 Subject: [PATCH 2/2] libbt: Add support for board-specific configuration
@@ -74,5 +74,5 @@ index 42349ba..a46a11f 100644
  TOOL := $(LOCAL_PATH)/gen-buildcfg.sh
  
 -- 
-2.6.1
+2.6.2
 

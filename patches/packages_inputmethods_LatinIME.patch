@@ -1,4 +1,4 @@
-From a8b92ce63482d05d9e36e05ee56594689f2a653d Mon Sep 17 00:00:00 2001
+From f932738546d25df0b7177cc64b615a1b0d7ccc32 Mon Sep 17 00:00:00 2001
 From: Steve Kondik <shade@chemlab.org>
 Date: Fri, 6 Dec 2013 19:21:08 +0100
 Subject: [PATCH 1/2] LatinIME: Add fallback loader for JNI lib
@@ -45,10 +45,10 @@ index e7fdafa..0e4f582 100644
      }
  
 -- 
-2.6.1
+2.6.2
 
 
-From 51fbce54dd63f0721bdabfc223ddd732a50754e1 Mon Sep 17 00:00:00 2001
+From fdc60aeefb94a3a81ffc090b3fe6bdeacbadaaa3 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <ricardo@cyngn.com>
 Date: Tue, 25 Nov 2014 11:55:27 +0000
 Subject: [PATCH 2/2] Update JNI fallback lib name
@@ -70,5 +70,5 @@ index 0fcf7ee..83ed5eb 100644
 +    public static final String JNI_LIB_NAME2 = "jni_latinimegoogle";
  }
 -- 
-2.6.1
+2.6.2
 

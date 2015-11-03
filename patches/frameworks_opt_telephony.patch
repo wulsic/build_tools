@@ -1,7 +1,7 @@
-From 66935836a3039123cb8811e8003bc6ffea16b420 Mon Sep 17 00:00:00 2001
+From 13407aced1069d985d6ac391136df62682469c69 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Thu, 22 Nov 2012 06:02:18 +0000
-Subject: [PATCH 1/8] Allow a device to include its own RIL subclass
+Subject: [PATCH 1/7] Allow a device to include its own RIL subclass
 
 For cases where a single device needs a subclass, there's no need to
 pollute the common core with it: just stick it in the device's own
@@ -30,24 +30,24 @@ index 449faa0..d312fec 100644
  LOCAL_MODULE := telephony-common
  
 -- 
-2.6.1
+2.6.2
 
 
-From 0f6d1d7a863f40338ec86c389157ba0de7b18508 Mon Sep 17 00:00:00 2001
+From a5965dd9c62f579e4784c0cf64ae3bcbb5b61ddc Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <github@cerqueira.org>
 Date: Thu, 22 Nov 2012 17:47:31 +0100
-Subject: [PATCH 2/8] RIL: Make RIL subclassable
+Subject: [PATCH 2/7] RIL: Make RIL subclassable
 
 Change-Id: I9144ef279ca9c8cb9e657a28342f0f4cb3e7debd
 
 Conflicts:
 	src/java/com/android/internal/telephony/RIL.java
 ---
- src/java/com/android/internal/telephony/RIL.java | 86 ++++++++++++------------
- 1 file changed, 43 insertions(+), 43 deletions(-)
+ src/java/com/android/internal/telephony/RIL.java | 100 +++++++++++------------
+ 1 file changed, 50 insertions(+), 50 deletions(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index d834eef..1334d07 100644
+index d834eef..1281857 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -228,7 +228,7 @@ class RILRequest {
@@ -131,6 +131,15 @@ index d834eef..1334d07 100644
      processSolicited (Parcel p) {
          int serial, error;
          boolean found = false;
+@@ -2690,7 +2690,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+         return rr;
+     }
+ 
+-    private RadioCapability makeStaticRadioCapability() {
++    protected RadioCapability makeStaticRadioCapability() {
+         // default to UNKNOWN so we fail fast.
+         int raf = RadioAccessFamily.RAF_UNKNOWN;
+ 
 @@ -2789,7 +2789,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
          return s;
      }
@@ -158,6 +167,15 @@ index d834eef..1334d07 100644
      responseInts(Parcel p) {
          int numInts;
          int response[];
+@@ -3309,7 +3309,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+         return response;
+     }
+ 
+-    private Object
++    protected Object
+     responseFailCause(Parcel p) {
+         LastCallFailCause failCause = new LastCallFailCause();
+         failCause.causeCode = p.readInt();
 @@ -3319,12 +3319,12 @@ public final class RIL extends BaseCommands implements CommandsInterface {
          return failCause;
      }
@@ -380,7 +398,43 @@ index d834eef..1334d07 100644
      notifyRegistrantsCdmaInfoRec(CdmaInformationRecords infoRec) {
          int response = RIL_UNSOL_CDMA_INFO_REC;
          if (infoRec.record instanceof CdmaInformationRecords.CdmaDisplayInfoRec) {
-@@ -4255,29 +4255,29 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+@@ -3977,7 +3977,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+       return response;
+    }
+ 
+-    private Object
++    protected Object
+     responseRadioCapability(Parcel p) {
+         int version = p.readInt();
+         int session = p.readInt();
+@@ -3997,7 +3997,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+         return rc;
+     }
+ 
+-    private Object responseLceData(Parcel p) {
++    protected Object responseLceData(Parcel p) {
+         final ArrayList<Integer> capacityResponse = new ArrayList<Integer>();
+         final int capacityDownKbps = p.readInt();
+         final int confidenceLevel = p.readByte();
+@@ -4014,7 +4014,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+         return capacityResponse;
+     }
+ 
+-    private Object responseLceStatus(Parcel p) {
++    protected Object responseLceStatus(Parcel p) {
+         final ArrayList<Integer> statusResponse = new ArrayList<Integer>();
+         final int lceStatus = (int)p.readByte();
+         final int actualInterval = p.readInt();
+@@ -4027,7 +4027,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+         return statusResponse;
+     }
+ 
+-    private Object responseActivityData(Parcel p) {
++    protected Object responseActivityData(Parcel p) {
+         final int sleepModeTimeMs = p.readInt();
+         final int idleModeTimeMs = p.readInt();
+         int [] txModeTimeMs = new int[ModemActivityInfo.TX_POWER_LEVELS];
+@@ -4255,33 +4255,33 @@ public final class RIL extends BaseCommands implements CommandsInterface {
          }
      }
  
@@ -416,14 +470,19 @@ index d834eef..1334d07 100644
          riljLogv("[UNSL]< " + responseToString(response) + " " + retToString(response, ret));
      }
  
+-    private Object
++    protected Object
+     responseSsData(Parcel p) {
+         int num;
+         SsData ssData = new SsData();
 -- 
-2.6.1
+2.6.2
 
 
-From 6b3fd23a01d22b24919c4eddf97cfb069c7c9b82 Mon Sep 17 00:00:00 2001
+From 47b25e5c38d4009766c0fc17fac326701ea0a4a0 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 8 Mar 2014 19:35:17 +0700
-Subject: [PATCH 3/8] RIL: mark mInstanceId as protected
+Subject: [PATCH 3/7] RIL: mark mInstanceId as protected
 
 To use in RIL subclasses
 
@@ -433,7 +492,7 @@ Change-Id: I4ab1ea79079e3b03670b1e985f7a574df1f16658
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 1334d07..8451c17 100644
+index 1281857..6ccad2d 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -267,7 +267,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
@@ -446,13 +505,13 @@ index 1334d07..8451c17 100644
      //***** Events
  
 -- 
-2.6.1
+2.6.2
 
 
-From 6bef5f2a511d55690c41865bc1f174f2b5e644cb Mon Sep 17 00:00:00 2001
+From 3aa85b48f77154137d620aa2c462468cce81db4a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH 4/8] telephony: support for RIL that does not send
+Subject: [PATCH 4/7] telephony: support for RIL that does not send
  UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
@@ -465,10 +524,10 @@ Change-Id: Ib7373d32777f6c42ee488972a7aa63ae8e1cd09b
  1 file changed, 19 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
-index 0815d50..033e271 100644
+index e037005..150e2b4 100644
 --- a/src/java/com/android/internal/telephony/PhoneBase.java
 +++ b/src/java/com/android/internal/telephony/PhoneBase.java
-@@ -211,6 +211,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -212,6 +212,7 @@ public abstract class PhoneBase extends Handler implements Phone {
      boolean mDnsCheckDisabled;
      public DcTrackerBase mDcTracker;
      boolean mDoesRilSendMultipleCallRing;
@@ -476,7 +535,7 @@ index 0815d50..033e271 100644
      int mCallRingContinueToken;
      int mCallRingDelay;
      public boolean mIsTheCurrentActivePhone = true;
-@@ -438,6 +439,11 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -439,6 +440,11 @@ public abstract class PhoneBase extends Handler implements Phone {
                  TelephonyProperties.PROPERTY_RIL_SENDS_MULTIPLE_CALL_RING, true);
          Rlog.d(LOG_TAG, "mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
  
@@ -488,7 +547,7 @@ index 0815d50..033e271 100644
          mCallRingDelay = SystemProperties.getInt(
                  TelephonyProperties.PROPERTY_CALL_RING_DELAY, 3000);
          Rlog.d(LOG_TAG, "mCallRingDelay=" + mCallRingDelay);
-@@ -1941,6 +1947,18 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -1999,6 +2005,18 @@ public abstract class PhoneBase extends Handler implements Phone {
      public void notifyNewRingingConnectionP(Connection cn) {
          if (!mIsVoiceCapable)
              return;
@@ -507,7 +566,7 @@ index 0815d50..033e271 100644
          AsyncResult ar = new AsyncResult(null, cn, null);
          mNewRingingConnectionRegistrants.notifyRegistrants(ar);
      }
-@@ -2476,6 +2494,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2550,6 +2568,7 @@ public abstract class PhoneBase extends Handler implements Phone {
          pw.println(" mDnsCheckDisabled=" + mDnsCheckDisabled);
          pw.println(" mDcTracker=" + mDcTracker);
          pw.println(" mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
@@ -516,40 +575,13 @@ index 0815d50..033e271 100644
          pw.println(" mCallRingDelay=" + mCallRingDelay);
          pw.println(" mIsTheCurrentActivePhone=" + mIsTheCurrentActivePhone);
 -- 
-2.6.1
+2.6.2
 
 
-From 1f275d29bb6dc53b3f3adafe9828d7b6ddd1045a Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sat, 15 Nov 2014 17:39:50 +0700
-Subject: [PATCH 5/8] telephony: RIL: i9082: set correct rild names
-
-Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
----
- src/java/com/android/internal/telephony/RIL.java | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 8451c17..274ea36 100644
---- a/src/java/com/android/internal/telephony/RIL.java
-+++ b/src/java/com/android/internal/telephony/RIL.java
-@@ -281,7 +281,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-     static final int RESPONSE_SOLICITED = 0;
-     static final int RESPONSE_UNSOLICITED = 1;
- 
--    static final String[] SOCKET_NAME_RIL = {"rild", "rild2", "rild3"};
-+    static final String[] SOCKET_NAME_RIL = {"rild", "rild1", "rild2"};
- 
-     static final int SOCKET_OPEN_RETRY_MILLIS = 4 * 1000;
- 
--- 
-2.6.1
-
-
-From 18aa59d4c8424451dbfde62059dc2c51311c3978 Mon Sep 17 00:00:00 2001
+From 2ecf1444b884e0f2aaa10760a708d96874ed8d1e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 17 Dec 2014 21:19:34 +0700
-Subject: [PATCH 6/8] Forward port Samsung STK support
+Subject: [PATCH 5/7] Forward port Samsung STK support
  (frameworks/opt/telephony)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -666,7 +698,7 @@ index fd8081b..27b3934 100644
 +
  }
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 274ea36..93971c8 100644
+index 6ccad2d..1bacd9d 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -29,6 +29,7 @@ import android.content.BroadcastReceiver;
@@ -763,7 +795,7 @@ index 0000000..2dbc0d4
 +    }
 +}
 diff --git a/src/java/com/android/internal/telephony/cat/CatService.java b/src/java/com/android/internal/telephony/cat/CatService.java
-index c4f1dfc..8278855 100644
+index b5776a1..fca4a4a 100755
 --- a/src/java/com/android/internal/telephony/cat/CatService.java
 +++ b/src/java/com/android/internal/telephony/cat/CatService.java
 @@ -95,6 +95,10 @@ public class CatService extends Handler implements AppInterface {
@@ -817,7 +849,7 @@ index c4f1dfc..8278855 100644
  
              mCmdIf.unregisterForIccRefresh(this);
              if (mUiccController != null) {
-@@ -428,8 +444,17 @@ public class CatService extends Handler implements AppInterface {
+@@ -433,8 +449,17 @@ public class CatService extends Handler implements AppInterface {
                  break;
              case SEND_DTMF:
              case SEND_SMS:
@@ -835,7 +867,7 @@ index c4f1dfc..8278855 100644
                  if ((((DisplayTextParams)cmdParams).mTextMsg.text != null)
                          && (((DisplayTextParams)cmdParams).mTextMsg.text.equals(STK_DEFAULT))) {
                      message = mContext.getText(com.android.internal.R.string.sending);
-@@ -848,6 +873,76 @@ public class CatService extends Handler implements AppInterface {
+@@ -853,6 +878,76 @@ public class CatService extends Handler implements AppInterface {
                  CatLog.d(this, "CAT Alpha message: msg.obj is null");
              }
              break;
@@ -912,7 +944,7 @@ index c4f1dfc..8278855 100644
          default:
              throw new AssertionError("Unrecognized CAT command: " + msg.what);
          }
-@@ -1112,4 +1207,36 @@ public class CatService extends Handler implements AppInterface {
+@@ -1117,4 +1212,36 @@ public class CatService extends Handler implements AppInterface {
              mCmdIf.reportStkServiceIsRunning(null);
          }
      }
@@ -950,10 +982,10 @@ index c4f1dfc..8278855 100644
 +    }
  }
 diff --git a/src/java/com/android/internal/telephony/cat/CommandParams.java b/src/java/com/android/internal/telephony/cat/CommandParams.java
-index 93520f7..caae12b 100644
+index 7dfedab..57fad97 100644
 --- a/src/java/com/android/internal/telephony/cat/CommandParams.java
 +++ b/src/java/com/android/internal/telephony/cat/CommandParams.java
-@@ -222,3 +222,24 @@ class BIPClientParams extends CommandParams {
+@@ -224,3 +224,24 @@ class BIPClientParams extends CommandParams {
          return false;
      }
  }
@@ -979,7 +1011,7 @@ index 93520f7..caae12b 100644
 +    }
 +}
 diff --git a/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java b/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
-index ad84a82..8047d71 100644
+index 2990da3..87c11a5 100755
 --- a/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 +++ b/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 @@ -16,6 +16,7 @@
@@ -990,7 +1022,7 @@ index ad84a82..8047d71 100644
  import android.graphics.Bitmap;
  import android.os.Handler;
  import android.os.Message;
-@@ -690,7 +691,47 @@ class CommandParamsFactory extends Handler {
+@@ -717,7 +718,47 @@ class CommandParamsFactory extends Handler {
          }
  
          textMsg.responseNeeded = false;
@@ -1038,7 +1070,7 @@ index ad84a82..8047d71 100644
 +        }
  
          if (iconId != null) {
-             mIconLoadState = LOAD_SINGLE_ICON;
+             mloadIcon = true;
 diff --git a/src/java/com/android/internal/telephony/cat/ValueParser.java b/src/java/com/android/internal/telephony/cat/ValueParser.java
 index 91a6fd6..bd39358 100644
 --- a/src/java/com/android/internal/telephony/cat/ValueParser.java
@@ -1148,13 +1180,13 @@ index 91a6fd6..bd39358 100644
 +    }
  }
 -- 
-2.6.1
+2.6.2
 
 
-From 802095ac8265c2537276749c216cf8392df76c7a Mon Sep 17 00:00:00 2001
+From bfd922a56801681bf61dad896e0eaf42645da7ac Mon Sep 17 00:00:00 2001
 From: Mike Kasick <mike@kasick.org>
 Date: Sat, 14 Mar 2015 20:20:39 +0700
-Subject: [PATCH 7/8] RILs: Eliminate repeated overrides of
+Subject: [PATCH 6/7] RILs: Eliminate repeated overrides of
  responseOperatorInfos.
 
 - Add mQANElements field, default to 4 in RIL, use in responseOperatorInfos.
@@ -1173,7 +1205,7 @@ Change-Id: I1254a670d8611f76aad13a6f197c67012c7d4c47
  1 file changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 93971c8..9d63ee8 100644
+index 1bacd9d..80def03 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -270,6 +270,11 @@ public class RIL extends BaseCommands implements CommandsInterface {
@@ -1209,13 +1241,13 @@ index 93971c8..9d63ee8 100644
                  new OperatorInfo(
                      strings[i+0],
 -- 
-2.6.1
+2.6.2
 
 
-From 40e30dd27ed0f14f3324ab1a357ca1c34fd03956 Mon Sep 17 00:00:00 2001
+From 2d4a3637be59e515943bd903f234106d9098260f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 22 Nov 2012 19:01:13 +0100
-Subject: [PATCH 8/8] telephony: Use reflection to create command interface
+Subject: [PATCH 7/7] telephony: Use reflection to create command interface
  (RIL class)
 
 Change-Id: Icdc02eaa74b89dbde4ddfb989cc62481d6423312
@@ -1241,7 +1273,7 @@ Change-Id: Id47d51737a9fb78e6d43a179ba304b1ba03c4219
  1 file changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneFactory.java b/src/java/com/android/internal/telephony/PhoneFactory.java
-index b4c1c94..5d69098 100644
+index 0543151..166a400 100644
 --- a/src/java/com/android/internal/telephony/PhoneFactory.java
 +++ b/src/java/com/android/internal/telephony/PhoneFactory.java
 @@ -47,6 +47,7 @@ import com.android.internal.util.IndentingPrintWriter;
@@ -1284,7 +1316,7 @@ index b4c1c94..5d69098 100644
                  }
                  Rlog.i(LOG_TAG, "Creating SubscriptionController");
                  SubscriptionController.init(context, sCommandsInterfaces);
-@@ -216,6 +231,14 @@ public class PhoneFactory {
+@@ -221,6 +236,14 @@ public class PhoneFactory {
          }
      }
  
@@ -1300,5 +1332,5 @@ index b4c1c94..5d69098 100644
          synchronized (sLockProxyPhones) {
              if (!sMadeDefaults) {
 -- 
-2.6.1
+2.6.2
 
