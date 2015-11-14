@@ -1,4 +1,4 @@
-From ead4750e7201f3437e3a9adbebdbd5f6b6594767 Mon Sep 17 00:00:00 2001
+From 5d2f15b498b7018da590cc10d14811eafd435ad9 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 23 Jan 2015 20:34:16 +0700
 Subject: [PATCH 1/2] Camera: i9082: disable preview after stopping camera
@@ -15,10 +15,10 @@ Change-Id: I231233d28a1f7ac914408a7d02100a9424c2bf1c
  3 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/com/android/camera/CameraActivity.java b/src/com/android/camera/CameraActivity.java
-index f96d634..820ce24 100644
+index c281d7c..cd512c6 100644
 --- a/src/com/android/camera/CameraActivity.java
 +++ b/src/com/android/camera/CameraActivity.java
-@@ -1643,7 +1643,7 @@ public class CameraActivity extends QuickActivity
+@@ -1656,7 +1656,7 @@ public class CameraActivity extends QuickActivity
          mCurrentModule.onPreviewVisibilityChanged(visibility);
      }
  
@@ -40,7 +40,7 @@ index b4b5ee7..52b8858 100644
          }
      }
 diff --git a/src/com/android/camera/VideoModule.java b/src/com/android/camera/VideoModule.java
-index a034a1c..f203c12 100644
+index 7ba630f..9f89fa9 100644
 --- a/src/com/android/camera/VideoModule.java
 +++ b/src/com/android/camera/VideoModule.java
 @@ -1026,6 +1026,7 @@ public class VideoModule extends CameraModule
@@ -52,10 +52,10 @@ index a034a1c..f203c12 100644
          mPreviewing = false;
          mSnapshotInProgress = false;
 -- 
-2.3.5
+2.5.0
 
 
-From 79478cabada02634258b3567b282271fc4e28b92 Mon Sep 17 00:00:00 2001
+From fa09347f1915de20188dcc5fc438a073d102a6ce Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 24 Jan 2015 21:59:20 +0700
 Subject: [PATCH 2/2] Camera: i9082: update preview state after starting
@@ -72,10 +72,10 @@ Change-Id: I036539aa602d738372f421499cf5ac8c646523ed
  3 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/com/android/camera/CameraActivity.java b/src/com/android/camera/CameraActivity.java
-index 820ce24..fcb44bd 100644
+index cd512c6..21b5763 100644
 --- a/src/com/android/camera/CameraActivity.java
 +++ b/src/com/android/camera/CameraActivity.java
-@@ -1632,7 +1632,7 @@ public class CameraActivity extends QuickActivity
+@@ -1645,7 +1645,7 @@ public class CameraActivity extends QuickActivity
       * Call this whenever the mode drawer or filmstrip change the visibility
       * state.
       */
@@ -97,7 +97,7 @@ index 52b8858..8e3f2e6 100644
  
      @Override
 diff --git a/src/com/android/camera/VideoModule.java b/src/com/android/camera/VideoModule.java
-index f203c12..129f39a 100644
+index 9f89fa9..eb618d7 100644
 --- a/src/com/android/camera/VideoModule.java
 +++ b/src/com/android/camera/VideoModule.java
 @@ -981,6 +981,7 @@ public class VideoModule extends CameraModule
@@ -109,4 +109,5 @@ index f203c12..129f39a 100644
              closeCamera();
              throw new RuntimeException("startPreview failed", ex);
 -- 
-2.3.5
+2.5.0
+
