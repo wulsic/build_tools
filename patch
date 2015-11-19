@@ -16,6 +16,7 @@ PATCHES=(
 'hardware/libhardware_legacy	hardware_libhardware_legacy.patch'
 'packages/apps/Camera2		packages_apps_Camera2.patch'
 'packages/apps/Dialer		packages_apps_Dialer.patch'
+'packages/apps/Settings		packages_apps_Settings.patch'
 'packages/inputmethods/LatinIME	packages_inputmethods_LatinIME.patch'
 'system/core			system_core.patch'
 )
