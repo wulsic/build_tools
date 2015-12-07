@@ -1,7 +1,7 @@
-From 2b4d9c4043d2f715c9458d9ceba9f580ec3e3b83 Mon Sep 17 00:00:00 2001
+From 6380174953dfa825fd9974bec32710ecbeefa079 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
-Subject: [PATCH 1/7] libgui: Bring back support for mHeap-based screenshots
+Subject: [PATCH 1/8] libgui: Bring back support for mHeap-based screenshots
 
 Older graphics libraries throw a hissy fit when trying to lock
 buffers for Surface-based screenshots, on at least Tegra2/3 and
@@ -492,10 +492,46 @@ index 2028d67..6f31d8e 100644
 2.6.3
 
 
-From 64dede002088930ac5b7a46d2f333e37b7dddae1 Mon Sep 17 00:00:00 2001
+From 11dcf324812ea5996eb37d03e0956cbfdc680481 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Wed, 26 Nov 2014 20:04:52 +0700
+Subject: [PATCH 2/8] libgui: fix test after compatibility patches
+
+Change-Id: Iae7333f025bb0271f008e4cc0356cf704800f1b7
+---
+ libs/gui/tests/Surface_test.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libs/gui/tests/Surface_test.cpp b/libs/gui/tests/Surface_test.cpp
+index 3f495f8..0311d1f 100644
+--- a/libs/gui/tests/Surface_test.cpp
++++ b/libs/gui/tests/Surface_test.cpp
+@@ -98,7 +98,7 @@ TEST_F(SurfaceTest, ScreenshotsOfProtectedBuffersSucceed) {
+     sp<ISurfaceComposer> sf(ComposerService::getComposerService());
+     sp<IBinder> display(sf->getBuiltInDisplay(ISurfaceComposer::eDisplayIdMain));
+     ASSERT_EQ(NO_ERROR, sf->captureScreen(display, producer, Rect(),
+-            64, 64, 0, 0x7fffffff, false));
++            64, 64, 0, 0x7fffffff, false, ISurfaceComposer::eRotateNone, false));
+ 
+     // Set the PROTECTED usage bit and verify that the screenshot fails.  Note
+     // that we need to dequeue a buffer in order for it to actually get
+@@ -127,7 +127,7 @@ TEST_F(SurfaceTest, ScreenshotsOfProtectedBuffersSucceed) {
+         ASSERT_EQ(NO_ERROR, anw->queueBuffer(anw.get(), buf, -1));
+     }
+     ASSERT_EQ(NO_ERROR, sf->captureScreen(display, producer, Rect(),
+-            64, 64, 0, 0x7fffffff, false));
++            64, 64, 0, 0x7fffffff, false, ISurfaceComposer::eRotateNone, false));
+ }
+ 
+ TEST_F(SurfaceTest, ConcreteTypeIsSurface) {
+-- 
+2.6.3
+
+
+From 22def20f2dc9738c8d786cb6cee5b5426f45a155 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
-Subject: [PATCH 2/7] binder: add compat symbol
+Subject: [PATCH 3/8] binder: add compat symbol
 
 Required for older Samsung libtvout
 
@@ -523,10 +559,10 @@ index ef88181..a6daf23 100644
 2.6.3
 
 
-From 8f7e1525d3274276f74a5429215fd40788894d62 Mon Sep 17 00:00:00 2001
+From c02dd721c92f783ea341019a8e42fe6f8589b13d Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
-Subject: [PATCH 3/7] binder: add compat symbols
+Subject: [PATCH 4/8] binder: add compat symbols
 
 Required for libtvservice_binder.so on I9082
 
@@ -536,7 +572,7 @@ Change-Id: I059e92f19e4c5a911d38faa9c4df549c75c90761
  1 file changed, 12 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 7a4ddc4..9fc52fb 100644
+index ba41f0f..97e3fed 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
 @@ -964,6 +964,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
@@ -569,10 +605,10 @@ index 7a4ddc4..9fc52fb 100644
 2.6.3
 
 
-From 33e80635fa3a105390c3bcbf2ca5a5ac13d2fbff Mon Sep 17 00:00:00 2001
+From 17acf09e9d562295baa0cb044fe4cb7781f5efee Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
-Subject: [PATCH 4/7] sf: CAPRI_HWC: fix rotation artifact
+Subject: [PATCH 5/8] sf: CAPRI_HWC: fix rotation artifact
 
 ---
  services/surfaceflinger/SurfaceFlinger.cpp | 5 +++++
@@ -598,10 +634,10 @@ index 4e122da..064e1d5 100644
 2.6.3
 
 
-From 9b263c642c9af630daf093a049705ee8664d91b1 Mon Sep 17 00:00:00 2001
+From 008e17dfed331b2848ae632b4f58c0f575e161c5 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
-Subject: [PATCH 5/7] SurfaceComposerClient: don't block RGBA_8888 for
+Subject: [PATCH 6/8] SurfaceComposerClient: don't block RGBA_8888 for
  screenshot on CAPRI_HWC
 
 Works here and required for ColorFade animation
@@ -628,10 +664,10 @@ index 0be73d6..038b54b 100644
 2.6.3
 
 
-From 66df41899841433740ab2326f8ff77d075bb9cee Mon Sep 17 00:00:00 2001
+From 7701f685ae98f99d932822deda9f2e94812a47e3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
-Subject: [PATCH 6/7] sf: CAPRI_HWC: fix for screen recording
+Subject: [PATCH 7/8] sf: CAPRI_HWC: fix for screen recording
 
 Change-Id: I6c7e59400eab86bc5ec0ffebbcc475fa0fa404d2
 ---
@@ -659,17 +695,17 @@ index 87e5b4d..9634db7 100644
 2.6.3
 
 
-From 19331e7ee6dde1d58bd3af228d0c3d8f4fec3516 Mon Sep 17 00:00:00 2001
+From 729c26c8ad0ae198567dcf1dfba25e8ce0003666 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
-Subject: [PATCH 7/7] binder: add compat symbol for RIL
+Subject: [PATCH 8/8] binder: add compat symbol for RIL
 
 ---
  libs/binder/Parcel.cpp | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 9fc52fb..3848bef 100644
+index 97e3fed..de2d05f 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
 @@ -823,6 +823,12 @@ status_t Parcel::writeString16(const String16& str)

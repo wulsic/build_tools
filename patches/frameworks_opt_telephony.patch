@@ -1,162 +1,7 @@
-From a18dff247ce2728859155440a5cbde85f0711d2c Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sat, 17 Oct 2015 20:45:13 +0700
-Subject: [PATCH 1/6] RIL: mark some methods as protected
-
-To use in RIL subclasses
-
-Change-Id: Ia05a951197b9c4a92c7cd7f55106648db64f51ea
----
- src/java/com/android/internal/telephony/RIL.java | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 9bd46a9..1e3b83a 100644
---- a/src/java/com/android/internal/telephony/RIL.java
-+++ b/src/java/com/android/internal/telephony/RIL.java
-@@ -2925,7 +2925,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-         return rr;
-     }
- 
--    private RadioCapability makeStaticRadioCapability() {
-+    protected RadioCapability makeStaticRadioCapability() {
-         // default to UNKNOWN so we fail fast.
-         int raf = RadioAccessFamily.RAF_UNKNOWN;
- 
-@@ -3548,7 +3548,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-         return response;
-     }
- 
--    private Object
-+    protected Object
-     responseFailCause(Parcel p) {
-         LastCallFailCause failCause = new LastCallFailCause();
-         failCause.causeCode = p.readInt();
-@@ -4241,7 +4241,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-       return response;
-    }
- 
--    private Object
-+    protected Object
-     responseRadioCapability(Parcel p) {
-         int version = p.readInt();
-         int session = p.readInt();
-@@ -4261,7 +4261,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-         return rc;
-     }
- 
--    private Object responseLceData(Parcel p) {
-+    protected Object responseLceData(Parcel p) {
-         final ArrayList<Integer> capacityResponse = new ArrayList<Integer>();
-         final int capacityDownKbps = p.readInt();
-         final int confidenceLevel = p.readByte();
-@@ -4278,7 +4278,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-         return capacityResponse;
-     }
- 
--    private Object responseLceStatus(Parcel p) {
-+    protected Object responseLceStatus(Parcel p) {
-         final ArrayList<Integer> statusResponse = new ArrayList<Integer>();
-         final int lceStatus = (int)p.readByte();
-         final int actualInterval = p.readInt();
-@@ -4291,7 +4291,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-         return statusResponse;
-     }
- 
--    private Object responseActivityData(Parcel p) {
-+    protected Object responseActivityData(Parcel p) {
-         final int sleepModeTimeMs = p.readInt();
-         final int idleModeTimeMs = p.readInt();
-         int [] txModeTimeMs = new int[ModemActivityInfo.TX_POWER_LEVELS];
-@@ -4545,7 +4545,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
-         riljLogv("[UNSL]< " + responseToString(response) + " " + retToString(response, ret));
-     }
- 
--    private Object
-+    protected Object
-     responseSsData(Parcel p) {
-         int num;
-         SsData ssData = new SsData();
--- 
-2.6.3
-
-
-From 4dfa0adcd4f8ef4401e9a56d362deecbce6dd82e Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 28 Dec 2014 18:53:11 +0700
-Subject: [PATCH 2/6] UiccController: add back registerForOn
-
-It was removed in a77b4218dc29c2cda3eea69e6642821598849898, but this is
-required for many devices.
-
-Change-Id: I5fabd6dd75505aa3f6433437312392805485c4dc
----
- src/java/com/android/internal/telephony/uicc/UiccController.java | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/src/java/com/android/internal/telephony/uicc/UiccController.java b/src/java/com/android/internal/telephony/uicc/UiccController.java
-index f2aeacc..9102185 100644
---- a/src/java/com/android/internal/telephony/uicc/UiccController.java
-+++ b/src/java/com/android/internal/telephony/uicc/UiccController.java
-@@ -127,6 +127,7 @@ public class UiccController extends Handler {
-             mCis[i].registerForIccStatusChanged(this, EVENT_ICC_STATUS_CHANGED, index);
-             mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
-             mCis[i].registerForNotAvailable(this, EVENT_RADIO_UNAVAILABLE, index);
-+            mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
-             mCis[i].registerForIccRefresh(this, EVENT_SIM_REFRESH, index);
-         }
-     }
--- 
-2.6.3
-
-
-From 476381154ec496f27f046760beb93836579f3cdf Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 28 Dec 2014 20:24:29 +0700
-Subject: [PATCH 3/6] UiccController: use registerForAvailable only when
- persist.radio.apm_sim_not_pwdn is enabled
-
-Some QCOM RILs allow the SIM to be loaded in airplane mode, thus
-CAF changed the callback to registerForAvailable, but that does
-not work on other RILs where the SIM information will not be
-loaded successfully.
-
-Change-Id: I9f9124417db2fe983e716a2825fc08d87511f8aa
----
- .../com/android/internal/telephony/uicc/UiccController.java    | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/src/java/com/android/internal/telephony/uicc/UiccController.java b/src/java/com/android/internal/telephony/uicc/UiccController.java
-index 9102185..737ff9e 100644
---- a/src/java/com/android/internal/telephony/uicc/UiccController.java
-+++ b/src/java/com/android/internal/telephony/uicc/UiccController.java
-@@ -124,10 +124,16 @@ public class UiccController extends Handler {
-         mCis = ci;
-         for (int i = 0; i < mCis.length; i++) {
-             Integer index = new Integer(i);
-+            if (SystemProperties.getBoolean("persist.radio.apm_sim_not_pwdn", false)) {
-+                // Reading ICC status in airplane mode is only supported in QCOM
-+                // RILs when this property is set to true
-+                mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
-+            } else {
-+                mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
-+            }
-+
-             mCis[i].registerForIccStatusChanged(this, EVENT_ICC_STATUS_CHANGED, index);
--            mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
-             mCis[i].registerForNotAvailable(this, EVENT_RADIO_UNAVAILABLE, index);
--            mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
-             mCis[i].registerForIccRefresh(this, EVENT_SIM_REFRESH, index);
-         }
-     }
--- 
-2.6.3
-
-
-From 21568d1e84ae15b07536686892ee3c9bb564f2d9 Mon Sep 17 00:00:00 2001
+From 217dd519281a712aae3474b88f794e18c0e617ef Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 17 Dec 2014 21:19:34 +0700
-Subject: [PATCH 4/6] Forward port Samsung STK support
+Subject: [PATCH 1/4] Forward port Samsung STK support
  (frameworks/opt/telephony)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -216,18 +61,20 @@ Date:   Fri Nov 30 19:30:08 2012 +0700
 Change-Id: I476959cfadab0ab14f5ed32adf51adca1e3b26b4
 ---
  .../android/internal/telephony/BaseCommands.java   |  10 ++
- .../internal/telephony/CommandsInterface.java      |   9 ++
+ .../internal/telephony/CommandsInterface.java      |   8 ++
  src/java/com/android/internal/telephony/RIL.java   |  14 +++
  .../internal/telephony/cat/CallControlResult.java  |  44 +++++++
  .../android/internal/telephony/cat/CatService.java | 127 +++++++++++++++++++++
  .../internal/telephony/cat/CommandParams.java      |  20 ++++
  .../telephony/cat/CommandParamsFactory.java        |  43 ++++++-
  .../internal/telephony/cat/ValueParser.java        |  99 ++++++++++++++++
- 8 files changed, 365 insertions(+), 1 deletion(-)
+ 8 files changed, 364 insertions(+), 1 deletion(-)
  create mode 100644 src/java/com/android/internal/telephony/cat/CallControlResult.java
+ mode change 100755 => 100644 src/java/com/android/internal/telephony/cat/CatService.java
+ mode change 100755 => 100644 src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 
 diff --git a/src/java/com/android/internal/telephony/BaseCommands.java b/src/java/com/android/internal/telephony/BaseCommands.java
-index 7ed3206..86449dc 100644
+index b36dca9..c73d26b 100644
 --- a/src/java/com/android/internal/telephony/BaseCommands.java
 +++ b/src/java/com/android/internal/telephony/BaseCommands.java
 @@ -86,6 +86,7 @@ public abstract class BaseCommands implements CommandsInterface {
@@ -255,10 +102,10 @@ index 7ed3206..86449dc 100644
      public void setOnIccSmsFull(Handler h, int what, Object obj) {
          mIccSmsFullRegistrant = new Registrant (h, what, obj);
 diff --git a/src/java/com/android/internal/telephony/CommandsInterface.java b/src/java/com/android/internal/telephony/CommandsInterface.java
-index 68837cb..23f5fe5 100644
+index 596004a..5877afe 100644
 --- a/src/java/com/android/internal/telephony/CommandsInterface.java
 +++ b/src/java/com/android/internal/telephony/CommandsInterface.java
-@@ -2043,4 +2043,13 @@ public interface CommandsInterface {
+@@ -2038,4 +2038,12 @@ public interface CommandsInterface {
       * CM-specific: Ask the RIL about the presence of back-compat flags
       */
      public boolean needsOldRilFeature(String feature);
@@ -270,13 +117,12 @@ index 68837cb..23f5fe5 100644
 +     */
 +    void setOnCatSendSmsResult(Handler h, int what, Object obj);
 +    void unSetOnCatSendSmsResult(Handler h);
-+
  }
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 1e3b83a..1889aa2 100644
+index b1d934e..ad35bfb 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
-@@ -3083,6 +3083,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -3081,6 +3081,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
              case RIL_UNSOL_ON_SS: ret =  responseSsData(p); break;
              case RIL_UNSOL_STK_CC_ALPHA_NOTIFY: ret =  responseString(p); break;
              case RIL_UNSOL_LCEDATA_RECV: ret = responseLceData(p); break;
@@ -284,7 +130,7 @@ index 1e3b83a..1889aa2 100644
  
              default:
                  throw new RuntimeException("Unrecognized unsol response: " + response);
-@@ -3516,6 +3517,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -3514,6 +3515,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
                      mLceInfoRegistrant.notifyRegistrant(new AsyncResult(null, ret, null));
                  }
                  break;
@@ -303,7 +149,7 @@ index 1e3b83a..1889aa2 100644
          }
      }
  
-@@ -4515,6 +4528,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -4513,6 +4526,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
              case RIL_UNSOL_ON_SS: return "UNSOL_ON_SS";
              case RIL_UNSOL_STK_CC_ALPHA_NOTIFY: return "UNSOL_STK_CC_ALPHA_NOTIFY";
              case RIL_UNSOL_LCEDATA_RECV: return "UNSOL_LCE_INFO_RECV";
@@ -362,7 +208,9 @@ index 0000000..2dbc0d4
 +    }
 +}
 diff --git a/src/java/com/android/internal/telephony/cat/CatService.java b/src/java/com/android/internal/telephony/cat/CatService.java
-index e9a5ae2..d374962 100755
+old mode 100755
+new mode 100644
+index e9a5ae2..d374962
 --- a/src/java/com/android/internal/telephony/cat/CatService.java
 +++ b/src/java/com/android/internal/telephony/cat/CatService.java
 @@ -97,6 +97,10 @@ public class CatService extends Handler implements AppInterface {
@@ -577,7 +425,9 @@ index edb3772..b87b042 100644
 +    }
 +}
 diff --git a/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java b/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
-index d2ba2d6..b2d9d9b 100755
+old mode 100755
+new mode 100644
+index d2ba2d6..b2d9d9b
 --- a/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 +++ b/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 @@ -16,6 +16,7 @@
@@ -749,10 +599,49 @@ index c6b16c7..79c2cf5 100644
 2.6.3
 
 
-From 127d2598ad558b72784245c77e1744f8da11324b Mon Sep 17 00:00:00 2001
+From 2b8accd8a84c0cffc2e882c2b4e0b0738fe3147a Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 28 Dec 2014 18:53:11 +0700
+Subject: [PATCH 2/4] UiccController: use registerForAvailable only for
+ persist.radio.apm_sim_not_pwdn
+
+Some QCOM RILs allow the SIM to be loaded in airplane mode, thus
+CAF changed the callback to registerForAvailable, but that does
+not work on other RILs where the SIM information will not be
+loaded successfully.
+
+Change-Id: I9f9124417db2fe983e716a2825fc08d87511f8aa
+---
+ src/java/com/android/internal/telephony/uicc/UiccController.java | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/java/com/android/internal/telephony/uicc/UiccController.java b/src/java/com/android/internal/telephony/uicc/UiccController.java
+index f2aeacc..9b230f8 100644
+--- a/src/java/com/android/internal/telephony/uicc/UiccController.java
++++ b/src/java/com/android/internal/telephony/uicc/UiccController.java
+@@ -125,7 +125,13 @@ public class UiccController extends Handler {
+         for (int i = 0; i < mCis.length; i++) {
+             Integer index = new Integer(i);
+             mCis[i].registerForIccStatusChanged(this, EVENT_ICC_STATUS_CHANGED, index);
+-            mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
++            if (SystemProperties.getBoolean("persist.radio.apm_sim_not_pwdn", false)) {
++                // Reading ICC status in airplane mode is only supported in QCOM
++                // RILs when this property is set to true
++                mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
++            } else {
++                mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
++            }
+             mCis[i].registerForNotAvailable(this, EVENT_RADIO_UNAVAILABLE, index);
+             mCis[i].registerForIccRefresh(this, EVENT_SIM_REFRESH, index);
+         }
+-- 
+2.6.3
+
+
+From eb0ca68db2798ba56b8a726cfa090834e6d92ed7 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH 5/6] telephony: support for RIL that does not send
+Subject: [PATCH 3/4] telephony: support for RIL that does not send
  UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
@@ -819,10 +708,10 @@ index 07c4b5c..55492f0 100644
 2.6.3
 
 
-From 2043d240a1d59592863c8e4234a283d9f02a02c3 Mon Sep 17 00:00:00 2001
+From 2531ab892102c7b8021aec132ce12476991b71d3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 17:39:50 +0700
-Subject: [PATCH 6/6] telephony: RIL: i9082: set correct rild names
+Subject: [PATCH 4/4] telephony: RIL: i9082: set correct rild names
 
 Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
 ---
@@ -830,7 +719,7 @@ Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 1889aa2..939461a 100644
+index ad35bfb..52cb43b 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -303,7 +303,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
