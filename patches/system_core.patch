@@ -1,7 +1,7 @@
-From 883c1c15bf56f5b281b25ec225c2a5ea41de8c3c Mon Sep 17 00:00:00 2001
+From 5ff8e5768b3e86296dc2e7464c0aa34ed309ac88 Mon Sep 17 00:00:00 2001
 From: Dave Burke <daveburke@google.com>
 Date: Wed, 24 Oct 2012 17:30:31 -0700
-Subject: [PATCH 01/11] Revert "Revert "put back the unused virtuals in
+Subject: [PATCH 1/9] Revert "Revert "put back the unused virtuals in
  Vector<>""
 
 This reverts commit 225c66a48cdc3acef21ee380dc134449749d3cb3
@@ -105,13 +105,13 @@ index de65a6c..6d4e601 100644
  
  }; // namespace android
 -- 
-2.6.2
+2.6.3
 
 
-From 7c9ffa0a82f597ef9d9bb0f6ed2a24f271fe8ca1 Mon Sep 17 00:00:00 2001
+From 3ce6c798674ae4e7dee67e1acc9a039f5152536a Mon Sep 17 00:00:00 2001
 From: Arne Coucheron <arco68@gmail.com>
 Date: Wed, 3 Dec 2014 06:14:55 +0100
-Subject: [PATCH 02/11] libutils: Properly #ifdef NEEDS_VECTORIMPL_SYMBOLS
+Subject: [PATCH 2/9] libutils: Properly #ifdef NEEDS_VECTORIMPL_SYMBOLS
 
  * Compile error might occur otherwise
 
@@ -166,13 +166,13 @@ index 6d4e601..ffd552b 100644
  void SortedVectorImpl::reservedSortedVectorImpl2() { };
  void SortedVectorImpl::reservedSortedVectorImpl3() { };
 -- 
-2.6.2
+2.6.3
 
 
-From c88afe7f6a49497a7979bead7207a715f0e83cbb Mon Sep 17 00:00:00 2001
+From 94b332f202515a746fcb0c63ed505f6ccc81d73d Mon Sep 17 00:00:00 2001
 From: codeworkx <codeworkx@cyanogenmod.org>
 Date: Sat, 27 Jul 2013 08:18:42 +0200
-Subject: [PATCH 03/11] libutils: refbase: jellybean mr1 compat
+Subject: [PATCH 3/9] libutils: refbase: jellybean mr1 compat
 
 [mikeioannina]: Update for L
 Can be enabled with global cflag REFBASE_JB_MR1_COMPAT_SYMBOLS
@@ -222,13 +222,13 @@ index 02907ad..b0ca12e 100644
  void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
      for (size_t i=0 ; i<n ; i++) {
 -- 
-2.6.2
+2.6.3
 
 
-From 66c87290b9c47b94ccedbc079d740e83fe834317 Mon Sep 17 00:00:00 2001
+From 17c6575d18588473efd4b57ed08829708eeaa6c9 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 17 Dec 2011 17:26:54 -0500
-Subject: [PATCH 04/11] init: add detection of charging mode
+Subject: [PATCH 4/9] init: add detection of charging mode
 
 Based on Prashant Somashekar's patch which is in turn based on techomancer's
 patch http://goo.gl/I19GG.
@@ -312,13 +312,13 @@ index 93fe944..320d2ba 100644
      } else {
          action_for_each_trigger("late-init", action_add_queue_tail);
 -- 
-2.6.2
+2.6.3
 
 
-From b5230a5f64727050a5a28cbd9b85f402fc8916c1 Mon Sep 17 00:00:00 2001
+From f5d580f65b96a9a9973fc54ebae9c624aa72223c Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 10:48:07 +0700
-Subject: [PATCH 05/11] disable recovery flash
+Subject: [PATCH 5/9] disable recovery flash
 
 We don't want to flash AOSP's recovery
 
@@ -328,10 +328,10 @@ Change-Id: Icb999b58879f71f39b64b6e85afc5869c2e7d92e
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/rootdir/init.rc b/rootdir/init.rc
-index 8ea72e8..e32ed39 100644
+index fa12740..5c277c3 100644
 --- a/rootdir/init.rc
 +++ b/rootdir/init.rc
-@@ -684,9 +684,9 @@ service installd /system/bin/installd
+@@ -693,9 +693,9 @@ service installd /system/bin/installd
      class main
      socket installd stream 600 system system
  
@@ -345,13 +345,13 @@ index 8ea72e8..e32ed39 100644
  service racoon /system/bin/racoon
      class main
 -- 
-2.6.2
+2.6.3
 
 
-From c220921335c5f78d78ca53323f4790450c7f7fd8 Mon Sep 17 00:00:00 2001
+From df0b60a6a092e31b517ab2dfdd7998b49e3e44d3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 12 Apr 2013 11:40:15 +0700
-Subject: [PATCH 06/11] libnetutils: add ifc_set_mtu
+Subject: [PATCH 6/9] libnetutils: add ifc_set_mtu
 
 Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
 ---
@@ -383,13 +383,13 @@ index 7d2a5fb..e2be134 100644
 +    return ret;
 +}
 -- 
-2.6.2
+2.6.3
 
 
-From d42c7363cf736357b4084300c68545b6b1e85cdd Mon Sep 17 00:00:00 2001
+From 441bf671bd76f670fc56380e3ae3409dcaca76dd Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 22:36:32 +0700
-Subject: [PATCH 07/11] charger: allow home button to wake
+Subject: [PATCH 7/9] charger: allow home button to wake
 
 A squashed commit of the following:
 
@@ -445,82 +445,13 @@ index 6800ad2..793a318 100644
      if (charger->next_key_check != -1 && now > charger->next_key_check)
          charger->next_key_check = -1;
 -- 
-2.6.2
+2.6.3
 
 
-From 7aa4087119c895d9cfeeb3cf7db145646a6f5d34 Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sat, 10 Oct 2015 20:45:40 +0700
-Subject: [PATCH 08/11] liblog: fix android_set_abort_message compile error
-
----
- liblog/logd_write_kern.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/liblog/logd_write_kern.c b/liblog/logd_write_kern.c
-index 8742b34..e456c12 100644
---- a/liblog/logd_write_kern.c
-+++ b/liblog/logd_write_kern.c
-@@ -26,7 +26,9 @@
- #include <time.h>
- #include <unistd.h>
- 
-+#if __BIONIC__
- #include <android/set_abort_message.h>
-+#endif
- 
- #include <log/log.h>
- #include <log/logd.h>
-@@ -167,9 +169,11 @@ int __android_log_buf_write(int bufID, int prio, const char *tag, const char *ms
-             tag = tmp_tag;
-     }
- 
-+#if __BIONIC__
-     if (prio == ANDROID_LOG_FATAL) {
-         android_set_abort_message(msg);
-     }
-+#endif
- 
-     vec[0].iov_base   = (unsigned char *) &prio;
-     vec[0].iov_len    = 1;
--- 
-2.6.2
-
-
-From 1bf747a6cf92e96ef449b856ee3f8cb3d4d5e5db Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 11 Oct 2015 10:35:26 +0700
-Subject: [PATCH 09/11] init: fix compile
-
-system/extras/ext4_utils/ext4_crypt_init_extensions.cpp:31: error: undefined reference to 'socket_local_client'
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
----
- init/Android.mk | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/init/Android.mk b/init/Android.mk
-index 0e4b9dc..392b646 100644
---- a/init/Android.mk
-+++ b/init/Android.mk
-@@ -71,9 +71,9 @@ LOCAL_STATIC_LIBRARIES := \
-     libfs_mgr \
-     libsquashfs_utils \
-     liblogwrap \
--    libcutils \
-     libbase \
-     libext4_utils_static \
-+    libcutils \
-     libutils \
-     liblog \
-     libc \
--- 
-2.6.2
-
-
-From 11b80694a5f934fadfcfbe58d737f77c9ca1d3b2 Mon Sep 17 00:00:00 2001
+From aeec811876f80d9866cb2891c62f71cbc8848aea Mon Sep 17 00:00:00 2001
 From: ChampionSwimmer <android@championswimmer.tk>
 Date: Tue, 5 Mar 2013 00:36:05 +0530
-Subject: [PATCH 10/11] mkbootimg: Support 32K 64K and 128K pagesizes
+Subject: [PATCH 8/9] mkbootimg: Support 32K 64K and 128K pagesizes
 
 Signed-off-by: ChampionSwimmer <android@championswimmer.tk>
 Signed-off-by: Michael Bestas <mikeioannina@gmail.com>
@@ -555,13 +486,13 @@ index b6a2801..e587b4d 100644
                      return -1;
                  }
 -- 
-2.6.2
+2.6.3
 
 
-From af93f9f5bc35e1e126add115b20a9bf76d8f60ad Mon Sep 17 00:00:00 2001
+From 2249da0c4771a0b3eb56a949f4b6f09ff2e1a19b Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 21:11:25 +0700
-Subject: [PATCH 11/11] HACK: temporarily change SELinux to permissive
+Subject: [PATCH 9/9] HACK: temporarily change SELinux to permissive
 
 ---
  init/init.cpp | 2 +-
@@ -581,5 +512,5 @@ index 320d2ba..a3fc5fa 100644
      std::function<void(char*,bool)> fn = [&](char* name, bool in_qemu) {
          char *value = strchr(name, '=');
 -- 
-2.6.2
+2.6.3
 

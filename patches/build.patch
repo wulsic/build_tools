@@ -1,4 +1,4 @@
-From 0061324bfc4a32cafb44c97599b030bf4b1c7ee0 Mon Sep 17 00:00:00 2001
+From 2f152487b5189c373f3075a6402c09f8ebf77434 Mon Sep 17 00:00:00 2001
 From: Koushik Dutta <koushd@gmail.com>
 Date: Sat, 26 Jun 2010 22:53:55 -0700
 Subject: [PATCH 01/19] add support for overriding build.prop settings.
@@ -49,10 +49,10 @@ index 5240ae7..a87d0c6 100644
  PRODUCT_PACKAGE_OVERLAYS := \
      $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_PACKAGE_OVERLAYS))
 -- 
-2.6.2
+2.6.3
 
 
-From 8664f423ec47a7295eae70b8d7a869a8698004e6 Mon Sep 17 00:00:00 2001
+From 33397c2e8b71acc7827480122adcdc5fe68762af Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <github@cerqueira.org>
 Date: Wed, 11 Apr 2012 11:21:23 +0100
 Subject: [PATCH 02/19] build: Inline kernel building as a buildtime task
@@ -449,10 +449,10 @@ index 0000000..0130a39
 +ALL_PREBUILT += $(INSTALLED_KERNEL_TARGET)
 +endif
 -- 
-2.6.2
+2.6.3
 
 
-From 2f4f88eabb217c3b5d473a2055b311f2f7721de1 Mon Sep 17 00:00:00 2001
+From 1d8400b33b16f966b7398f2abec7a8de70fdbc0d Mon Sep 17 00:00:00 2001
 From: Chirayu Desai <chirayudesai1@gmail.com>
 Date: Sun, 9 Nov 2014 17:27:51 +0530
 Subject: [PATCH 03/19] Allow specifying kernel toolchain and prefix
@@ -497,10 +497,10 @@ index 0130a39..d61902c 100644
  endif
  
 -- 
-2.6.2
+2.6.3
 
 
-From cd5e61c32d3594f1a6d6507af890fae9282873fb Mon Sep 17 00:00:00 2001
+From bcff6da5de1b938c111d930cf08df8a89669aba5 Mon Sep 17 00:00:00 2001
 From: Alvin Francis <nivlafx@gmail.com>
 Date: Mon, 1 Dec 2014 13:13:40 -0400
 Subject: [PATCH 04/19] Fix libelf path
@@ -527,10 +527,10 @@ index d61902c..cbf7dc2 100644
  
  ifeq ($(TARGET_KERNEL_MODULES),)
 -- 
-2.6.2
+2.6.3
 
 
-From e5a99a23e5d88dfaaafb612686d57fd71f7cc43b Mon Sep 17 00:00:00 2001
+From 52f4068bf92a71380f2b1706d91e17e4ac4fec7b Mon Sep 17 00:00:00 2001
 From: Steve Kondik <steve@cyngn.com>
 Date: Wed, 24 Dec 2014 03:18:54 -0800
 Subject: [PATCH 05/19] core: More flexible kernel configuration
@@ -741,10 +741,10 @@ index cbf7dc2..9f40eec 100644
  endif # FULL_KERNEL_BUILD
  
 -- 
-2.6.2
+2.6.3
 
 
-From fe64b7ebed979cf68c8696c600186fba35f5749a Mon Sep 17 00:00:00 2001
+From a615e061a0743a008dcfa204c77e6b5604b504d0 Mon Sep 17 00:00:00 2001
 From: dhacker29 <dhackerdvm@gmail.com>
 Date: Sun, 18 Jan 2015 19:34:14 -0500
 Subject: [PATCH 06/19] Fix kernel.mk if SELINUX or VARIANT_DEFCONFIG is
@@ -778,10 +778,10 @@ index 9f40eec..a2eb21e 100644
  			echo "Overriding kernel config with '$(KERNEL_CONFIG_OVERRIDE)'"; \
  			echo $(KERNEL_CONFIG_OVERRIDE) >> $(KERNEL_OUT)/.config; \
 -- 
-2.6.2
+2.6.3
 
 
-From f311d7c4b5fb1878591d366ed17e63dab451f66f Mon Sep 17 00:00:00 2001
+From b21cb98c8e5123821cd918c9cdd7b75a7f7a35fa Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <ricardo@cyngn.com>
 Date: Tue, 20 Jan 2015 01:41:19 +0000
 Subject: [PATCH 07/19] build: kernel: Fix stray "@"
@@ -815,10 +815,10 @@ index a2eb21e..2c49271 100644
  	$(hide) if [ ! -z "$(KERNEL_CONFIG_OVERRIDE)" ]; then \
  			echo "Overriding kernel config with '$(KERNEL_CONFIG_OVERRIDE)'"; \
 -- 
-2.6.2
+2.6.3
 
 
-From efb8fef958f8362c4cd978bfc283ffb2d7a89287 Mon Sep 17 00:00:00 2001
+From 34f365d7b9532abad03c1f5fd4702ca8caf4388e Mon Sep 17 00:00:00 2001
 From: Steve Kondik <steve@cyngn.com>
 Date: Mon, 9 Mar 2015 15:07:08 +0000
 Subject: [PATCH 08/19] build: Add support for additional kernel config snippet
@@ -870,10 +870,10 @@ index 2c49271..764532c 100644
  kerneltags: $(KERNEL_OUT) $(KERNEL_CONFIG)
  	$(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) tags
 -- 
-2.6.2
+2.6.3
 
 
-From 431dd74ac0518d232e37c61e7094656dacbc4eea Mon Sep 17 00:00:00 2001
+From 0be17072a4b07c5a9c53bb68f60c5d080c49fae7 Mon Sep 17 00:00:00 2001
 From: Michael Bestas <mikeioannina@gmail.com>
 Date: Mon, 11 May 2015 02:57:35 +0300
 Subject: [PATCH 09/19] kernel: Fix kernelconfig build
@@ -899,10 +899,10 @@ index 764532c..781d153 100644
  endif # FULL_KERNEL_BUILD
  
 -- 
-2.6.2
+2.6.3
 
 
-From e4423efcef42cb72354822f543300d68106b7861 Mon Sep 17 00:00:00 2001
+From a48e4ce0e7d27f781452c2e1cc510ce1074e8839 Mon Sep 17 00:00:00 2001
 From: Alvin Francis <nivlafx@gmail.com>
 Date: Mon, 1 Dec 2014 13:13:40 -0400
 Subject: [PATCH 10/19] Fix libelf path for mm
@@ -931,10 +931,10 @@ index 781d153..1b3ad64 100644
  
  ifeq ($(TARGET_KERNEL_MODULES),)
 -- 
-2.6.2
+2.6.3
 
 
-From 29591a6c2d58e888bdc53bb61efa862332901ba6 Mon Sep 17 00:00:00 2001
+From 42ff50ed26bd782a93e0ced6262438b5f589938d Mon Sep 17 00:00:00 2001
 From: Cristoforo Cataldo <cristoforo.cataldo@gmail.com>
 Date: Sun, 30 Nov 2014 06:12:35 +0100
 Subject: [PATCH 11/19] core: Enable -mcpu=cortex-a9 flag for Cortex-A9 cpu
@@ -973,10 +973,10 @@ index 99f17aa..fb3a6a4 100644
  arch_variant_cflags += \
      -mfloat-abi=softfp \
 -- 
-2.6.2
+2.6.3
 
 
-From 0f5532624ebb55ea170538f251fd7b528cf60dcf Mon Sep 17 00:00:00 2001
+From e898aa543a00f955708058804c53f72c5fbe6266 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <github@cerqueira.org>
 Date: Wed, 16 Nov 2011 23:14:27 +0000
 Subject: [PATCH 12/19] ota: Remove cruft we don't care about
@@ -989,7 +989,7 @@ recovery in otapackages.
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/tools/releasetools/ota_from_target_files.py b/tools/releasetools/ota_from_target_files.py
-index e5a30ad..c121266 100755
+index c5c16b4..d4cec87 100755
 --- a/tools/releasetools/ota_from_target_files.py
 +++ b/tools/releasetools/ota_from_target_files.py
 @@ -533,10 +533,10 @@ def WriteFullOTAPackage(input_zip, output_zip):
@@ -1008,10 +1008,10 @@ index e5a30ad..c121266 100755
    AppendAssertions(script, OPTIONS.info_dict, oem_dict)
    device_specific.FullOTA_Assertions()
 -- 
-2.6.2
+2.6.3
 
 
-From 33cdbf4afc5980c6aba8427a806fcbe7b4224334 Mon Sep 17 00:00:00 2001
+From a224ab37372afb0d8a8761ea3ab707af59c893a6 Mon Sep 17 00:00:00 2001
 From: Chirayu Desai <chirayudesai1@gmail.com>
 Date: Thu, 27 Sep 2012 18:11:25 +0530
 Subject: [PATCH 13/19] envsetup: set OUT_DIR to an absolute path always
@@ -1050,10 +1050,10 @@ index bf04455..5f43cf9 100644
  endif
  endif
 -- 
-2.6.2
+2.6.3
 
 
-From b4ff950af7f648aac2ea47f23f2b6aab50174943 Mon Sep 17 00:00:00 2001
+From 9d8761125bf47abea079f915272e3dddb258e5b6 Mon Sep 17 00:00:00 2001
 From: David Ferguson <ferguson.david@gmail.com>
 Date: Thu, 4 Oct 2012 10:15:58 -0400
 Subject: [PATCH 14/19] build: work around missing readlink -f on Mac
@@ -1077,10 +1077,10 @@ index 5f43cf9..eb19f4f 100644
  else
  OUT_DIR := $(OUT_DIR_COMMON_BASE)/$(notdir $(PWD))
 -- 
-2.6.2
+2.6.3
 
 
-From 912d5432a05099cd3115659aeb66e56668032807 Mon Sep 17 00:00:00 2001
+From 41313fca2de4a4d43df2ecb7b769fa1a87e7a2bc Mon Sep 17 00:00:00 2001
 From: Chirayu Desai <cdesai@cyanogenmod.org>
 Date: Wed, 1 May 2013 15:48:08 +0530
 Subject: [PATCH 15/19] envsetup: use $(CURDIR) for getting current directory
@@ -1104,10 +1104,10 @@ index eb19f4f..08524b3 100644
  else
  OUT_DIR := $(OUT_DIR_COMMON_BASE)/$(notdir $(PWD))
 -- 
-2.6.2
+2.6.3
 
 
-From eb7c396da20cd6dce1709469ea5d667827249395 Mon Sep 17 00:00:00 2001
+From 3a76572357ffbb1752bbd4c646e053fec88468b8 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 12 Apr 2011 10:57:22 +0100
 Subject: [PATCH 16/19] Allow a device to generically define its own headers
@@ -1157,10 +1157,10 @@ index b8003d7..dfc53c7 100644
  
  ifndef LOCAL_SDK_VERSION
 -- 
-2.6.2
+2.6.3
 
 
-From 85274e205a65703a8c82962e2b3bd2b10543ff72 Mon Sep 17 00:00:00 2001
+From 8c3d5d51f5b48794dc5d0362e88e088c911fea27 Mon Sep 17 00:00:00 2001
 From: Brandon McAnsh <brandon.mcansh@gmail.com>
 Date: Sat, 10 Oct 2015 10:20:38 -0400
 Subject: [PATCH 17/19] Set kernel gcc version to 4.8 for ARM targets
@@ -1214,10 +1214,10 @@ index 6ad3a9e..9596dd6 100644
                   export ARM_EABI_TOOLCHAIN="$gccprebuiltdir/$toolchaindir"
                   ANDROID_KERNEL_TOOLCHAIN_PATH="$ARM_EABI_TOOLCHAIN":
 -- 
-2.6.2
+2.6.3
 
 
-From 73e1f4105cead9df4f6fbc6d8ff0ef4706bf7047 Mon Sep 17 00:00:00 2001
+From cf2d7f794dc4a97fcd53aebd33cc730b4da95307 Mon Sep 17 00:00:00 2001
 From: Steve Kondik <shade@chemlab.org>
 Date: Wed, 21 Apr 2010 11:39:48 -0400
 Subject: [PATCH 18/19] Allow override of device asserts, including
@@ -1280,7 +1280,7 @@ index a52e328..c5fc4b6 100644
  
    def AssertSomeBootloader(self, *bootloaders):
 diff --git a/tools/releasetools/ota_from_target_files.py b/tools/releasetools/ota_from_target_files.py
-index c121266..ce19979 100755
+index d4cec87..a813c41 100755
 --- a/tools/releasetools/ota_from_target_files.py
 +++ b/tools/releasetools/ota_from_target_files.py
 @@ -92,6 +92,9 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
@@ -1339,10 +1339,10 @@ index c121266..ce19979 100755
                               ], extra_option_handler=option_handler)
  
 -- 
-2.6.2
+2.6.3
 
 
-From 28b48a438b4f7599d103b2cd61312c9344833a0e Mon Sep 17 00:00:00 2001
+From 5aa3cf06126a5939e47129d5342574c16a723bb1 Mon Sep 17 00:00:00 2001
 From: "Brint E. Kriebel" <bekit@cyngn.com>
 Date: Wed, 22 Jan 2014 15:51:46 -0800
 Subject: [PATCH 19/19] Store the value from TARGET_OTA_ASSERT_DEVICE to a file
@@ -1368,5 +1368,5 @@ index a895cb2..edc89ea 100644
  	$(hide) PATH=$(foreach p,$(INTERNAL_USERIMAGES_BINARY_PATHS),$(p):)$$PATH MKBOOTIMG=$(MKBOOTIMG) \
  	   ./build/tools/releasetools/ota_from_target_files -v \
 -- 
-2.6.2
+2.6.3
 

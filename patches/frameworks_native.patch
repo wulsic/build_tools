@@ -1,4 +1,4 @@
-From 7a2e70a2bcc6de083c700aaa121388d8c55f63f8 Mon Sep 17 00:00:00 2001
+From bb2a0732befa07871bdb22960bb52485ae791e27 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 08:38:33 +0700
 Subject: [PATCH 01/10] Bring back support for glReadPixels screenshot path
@@ -451,10 +451,10 @@ index b3baadd..5d77208 100644
      /* ------------------------------------------------------------------------
       * EGL
 -- 
-2.6.2
+2.6.3
 
 
-From 596458d5261caa8e9cdfebf30072b789bc0b2c46 Mon Sep 17 00:00:00 2001
+From 619f2eaf9fea399606a918f2eab554ad7151d0f1 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 02/10] libgui: Bring back support for mHeap-based screenshots
@@ -945,10 +945,10 @@ index 5d77208..f32bf7d 100644
       * EGL
       */
 -- 
-2.6.2
+2.6.3
 
 
-From 51cbe26ed725df9dddd72201b798100255a519da Mon Sep 17 00:00:00 2001
+From c7b3cb67cf1f879627276c068b0a436a97f7a597 Mon Sep 17 00:00:00 2001
 From: Ethan Chen <intervigil@gmail.com>
 Date: Thu, 15 Oct 2015 13:50:10 -0700
 Subject: [PATCH 03/10] Revert "egl: Remove old tuna BGRA vs RGBA workaround."
@@ -976,7 +976,7 @@ index 18ad300..661b99c 100644
    LOCAL_CFLAGS += -DMAX_EGL_CACHE_ENTRY_SIZE=$(MAX_EGL_CACHE_ENTRY_SIZE)
  endif
 diff --git a/opengl/libs/EGL/eglApi.cpp b/opengl/libs/EGL/eglApi.cpp
-index 8378907..0bc81b1 100644
+index cdec565..4d9eaf5 100644
 --- a/opengl/libs/EGL/eglApi.cpp
 +++ b/opengl/libs/EGL/eglApi.cpp
 @@ -466,6 +466,14 @@ EGLSurface eglCreateWindowSurface(  EGLDisplay dpy, EGLConfig config,
@@ -1003,10 +1003,10 @@ index 8378907..0bc81b1 100644
          // now select a corresponding sRGB format if needed
          if (attrib_list && dp->haveExtension("EGL_KHR_gl_colorspace")) {
 -- 
-2.6.2
+2.6.3
 
 
-From 88738618f2e93109499a554c34264e67a7333fd4 Mon Sep 17 00:00:00 2001
+From a6c6fa84887f17aaff6e73f8fb520de4c70a3a3d Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 2 Nov 2013 23:02:15 -0700
 Subject: [PATCH 04/10] libEGL: allow devices to workaround Google bug 10194508
@@ -1034,10 +1034,10 @@ index 661b99c..e952a38 100644
    LOCAL_CFLAGS += -DMAX_EGL_CACHE_ENTRY_SIZE=$(MAX_EGL_CACHE_ENTRY_SIZE)
  endif
 -- 
-2.6.2
+2.6.3
 
 
-From ad7bc93117eab2be81d8ba9aff4ba9c06e07f7b9 Mon Sep 17 00:00:00 2001
+From 0868da0b4347f9318e14f1bd336f5b5d9f9f5e29 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 05/10] binder: add compat symbol
@@ -1065,10 +1065,10 @@ index ef88181..a6daf23 100644
  {
      return mCallingPid;
 -- 
-2.6.2
+2.6.3
 
 
-From 15e26467e7d1b79e4be1cbad7d1bd74b4ad565af Mon Sep 17 00:00:00 2001
+From de097a1112214f176025edb1cdd57c6b63eb209e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 06/10] binder: add compat symbols
@@ -1081,10 +1081,10 @@ Change-Id: I059e92f19e4c5a911d38faa9c4df549c75c90761
  1 file changed, 12 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 7a4ddc4..9fc52fb 100644
+index 22d7ef3..7709a88 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -964,6 +964,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
+@@ -990,6 +990,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
      return writeDupFileDescriptor(fd);
  }
  
@@ -1097,7 +1097,7 @@ index 7a4ddc4..9fc52fb 100644
  status_t Parcel::write(const FlattenableHelperInterface& val)
  {
      status_t err;
-@@ -1404,6 +1410,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
+@@ -1430,6 +1436,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
      return NO_ERROR;
  }
  
@@ -1111,10 +1111,10 @@ index 7a4ddc4..9fc52fb 100644
  {
      // size
 -- 
-2.6.2
+2.6.3
 
 
-From dc8130a79e86bcb96990e03885d83549d65935f6 Mon Sep 17 00:00:00 2001
+From 48f38c735f195f68a91642b45197a2c59a9d2bcc Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 07/10] sf: CAPRI_HWC: fix rotation artifact
@@ -1140,10 +1140,10 @@ index ad96716..979da10 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 -- 
-2.6.2
+2.6.3
 
 
-From 415070092bc3d4ca9e01ba71618700a0c7f61777 Mon Sep 17 00:00:00 2001
+From e7c2a79d84f20e3d9aba70bd2e5844e6e95cf271 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 08/10] SurfaceComposerClient: don't block RGBA_8888 for
@@ -1170,10 +1170,10 @@ index 0b47f75..545aa0a 100644
      producer->query(NATIVE_WINDOW_FORMAT,&format);
      if (format == PIXEL_FORMAT_RGBA_8888) {
 -- 
-2.6.2
+2.6.3
 
 
-From c151f1a1104721657e0886df25be37d78946c639 Mon Sep 17 00:00:00 2001
+From 2b4bbdd167fa11df0c51c5758dec2ae26cadffeb Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
 Subject: [PATCH 09/10] sf: CAPRI_HWC: fix for screen recording
@@ -1201,10 +1201,10 @@ index 87e5b4d..9634db7 100644
                  BQ_LOGE("%s: min undequeued buffer count (%d) exceeded "
                          "(dequeued=%d undequeued=%d)",
 -- 
-2.6.2
+2.6.3
 
 
-From 674e32e94edd58983f6bf031decbcc16690d89d8 Mon Sep 17 00:00:00 2001
+From 89dcc4a0b3307a497d23e355f745f2f921517b0a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 10/10] binder: add compat symbol for RIL
@@ -1214,10 +1214,10 @@ Subject: [PATCH 10/10] binder: add compat symbol for RIL
  1 file changed, 6 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 9fc52fb..3848bef 100644
+index 7709a88..90c3e12 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -823,6 +823,12 @@ status_t Parcel::writeString16(const String16& str)
+@@ -851,6 +851,12 @@ status_t Parcel::writeString16(const String16& str)
      return writeString16(str.string(), str.size());
  }
  
@@ -1231,5 +1231,5 @@ index 9fc52fb..3848bef 100644
  {
      if (str == NULL) return writeInt32(-1);
 -- 
-2.6.2
+2.6.3
 

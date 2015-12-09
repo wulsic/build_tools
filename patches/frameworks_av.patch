@@ -1,4 +1,4 @@
-From 91ee70ae6e9181be144df7eb3892c95b60965869 Mon Sep 17 00:00:00 2001
+From 046128d48b1ed2c08d6f1098b57b174ebcfe5505 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 24 Apr 2013 11:37:19 +0700
 Subject: [PATCH 1/7] OMXCodec: Re-implement requires-flush-before-shutdown
@@ -27,10 +27,10 @@ index b1dde80..8c1c962 100644
      return quirks;
  }
 -- 
-2.6.2
+2.6.3
 
 
-From 6530c321e68031b6dc847bdbeed4594fff9df4da Mon Sep 17 00:00:00 2001
+From 7d31a6d74d54b39d63f9111f8b228883b004e6c6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
 Subject: [PATCH 2/7] OMXCodec: set default input buffer size
@@ -93,10 +93,10 @@ index 8c1c962..fa2999a 100644
      initOutputFormat(meta);
  
 -- 
-2.6.2
+2.6.3
 
 
-From 7af8912a7450d41bd6c3c4d7e83a388619b52728 Mon Sep 17 00:00:00 2001
+From bf77194473bfb37092542a0a67e7a28e2582263a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
 Subject: [PATCH 3/7] ACodec: skip port index checking on vc4 encoder
@@ -123,10 +123,10 @@ index 79dc0f2..a7f4a03 100644
          ALOGE("unexpected dir: %s(%d) on %s port", asString(def.eDir), def.eDir, niceIndex);
          return BAD_VALUE;
 -- 
-2.6.2
+2.6.3
 
 
-From 790a6aa13940a12b2073b9c38a039a213dfa05a2 Mon Sep 17 00:00:00 2001
+From f7fe78a3422ac2949d9e9d97345f93d813aa39af Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 17:27:20 +0700
 Subject: [PATCH 4/7] ACodec: Don't trust provided width/height when setting
@@ -161,10 +161,10 @@ index a7f4a03..043fc16 100644
  #endif
  
 -- 
-2.6.2
+2.6.3
 
 
-From 4b22135c4f453d5bcffbcc8c1728a4567f518f46 Mon Sep 17 00:00:00 2001
+From 12016439657f89636334042176cde74fa0a2ffc6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 16 Dec 2014 21:12:22 +0700
 Subject: [PATCH 5/7] stagefright: i9082: don't allocate too many extra buffers
@@ -211,10 +211,10 @@ index fa2999a..9ee48b2 100644
              def.nBufferCountMin + minUndequeuedBufs + extraBuffers;
          def.nBufferCountActual = newBufferCount;
 -- 
-2.6.2
+2.6.3
 
 
-From 6f95de00dc51490cb41695e0be62e20e461bc686 Mon Sep 17 00:00:00 2001
+From be3c79236b9e01252236e7fdec1b1b8ff0ac9177 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:59 +0700
 Subject: [PATCH 6/7] stagefright: CAPRI_HWC: fix for screen recording
@@ -268,10 +268,10 @@ index 94a213a..b42f067 100644
  
      uint32_t usageBits;
 -- 
-2.6.2
+2.6.3
 
 
-From 59188c7871948b372d054d8c771f61b4ba9fc80f Mon Sep 17 00:00:00 2001
+From b80f38d5873bf02c375ff6ce496f18eddd967b74 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 21 Dec 2014 15:25:33 +0700
 Subject: [PATCH 7/7] stagefright: CAPRI_HWC: fix for miracast
@@ -348,5 +348,5 @@ index 649cad0..5e1323b 100644
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
 -- 
-2.6.2
+2.6.3
 

@@ -1,4 +1,4 @@
-From 17453b9b2657ea3513c885aa643e269a52e4104a Mon Sep 17 00:00:00 2001
+From 08e45fcf8251b7346840bcecd1cc4427555d58cc Mon Sep 17 00:00:00 2001
 From: Zoran Jovanovic <zoran.jovanovic@sonymobile.com>
 Date: Wed, 4 Nov 2015 14:00:03 +0100
 Subject: [PATCH] Don't show MIDI USB option if not supported
