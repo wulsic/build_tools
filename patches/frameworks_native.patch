@@ -1,4 +1,4 @@
-From 6380174953dfa825fd9974bec32710ecbeefa079 Mon Sep 17 00:00:00 2001
+From 0f5584a82885bb563e53f7f1460321e22e63b28f Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 1/8] libgui: Bring back support for mHeap-based screenshots
@@ -492,7 +492,7 @@ index 2028d67..6f31d8e 100644
 2.6.3
 
 
-From 11dcf324812ea5996eb37d03e0956cbfdc680481 Mon Sep 17 00:00:00 2001
+From 78a2de4ae8aa82bb46e84e99a1ebd071a47903df Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 26 Nov 2014 20:04:52 +0700
 Subject: [PATCH 2/8] libgui: fix test after compatibility patches
@@ -528,7 +528,7 @@ index 3f495f8..0311d1f 100644
 2.6.3
 
 
-From 22def20f2dc9738c8d786cb6cee5b5426f45a155 Mon Sep 17 00:00:00 2001
+From 276619834837efbdef0d36522591b656e8077755 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 3/8] binder: add compat symbol
@@ -559,7 +559,7 @@ index ef88181..a6daf23 100644
 2.6.3
 
 
-From c02dd721c92f783ea341019a8e42fe6f8589b13d Mon Sep 17 00:00:00 2001
+From 1f8a75a3e6fd68a7a93fecc2d596696ca6c4480c Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 4/8] binder: add compat symbols
@@ -572,10 +572,10 @@ Change-Id: I059e92f19e4c5a911d38faa9c4df549c75c90761
  1 file changed, 12 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index ba41f0f..97e3fed 100644
+index 22d7ef3..7709a88 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -964,6 +964,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
+@@ -990,6 +990,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
      return writeDupFileDescriptor(fd);
  }
  
@@ -588,7 +588,7 @@ index ba41f0f..97e3fed 100644
  status_t Parcel::write(const FlattenableHelperInterface& val)
  {
      status_t err;
-@@ -1404,6 +1410,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
+@@ -1430,6 +1436,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
      return NO_ERROR;
  }
  
@@ -605,7 +605,7 @@ index ba41f0f..97e3fed 100644
 2.6.3
 
 
-From 17acf09e9d562295baa0cb044fe4cb7781f5efee Mon Sep 17 00:00:00 2001
+From 4a39ea27956a1a9c37dcc9cd63c8fcd1f8f3d3e4 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 5/8] sf: CAPRI_HWC: fix rotation artifact
@@ -634,7 +634,7 @@ index 4e122da..064e1d5 100644
 2.6.3
 
 
-From 008e17dfed331b2848ae632b4f58c0f575e161c5 Mon Sep 17 00:00:00 2001
+From c2e3e31878824f25187970bb355e8865ea7a10f5 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 6/8] SurfaceComposerClient: don't block RGBA_8888 for
@@ -664,7 +664,7 @@ index 0be73d6..038b54b 100644
 2.6.3
 
 
-From 7701f685ae98f99d932822deda9f2e94812a47e3 Mon Sep 17 00:00:00 2001
+From 3ae5f34043d199dc79576b41506a1069bb536bfe Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
 Subject: [PATCH 7/8] sf: CAPRI_HWC: fix for screen recording
@@ -695,7 +695,7 @@ index 87e5b4d..9634db7 100644
 2.6.3
 
 
-From 729c26c8ad0ae198567dcf1dfba25e8ce0003666 Mon Sep 17 00:00:00 2001
+From a9e061a5f8349a68536a6f427547b6e0463fd9de Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 8/8] binder: add compat symbol for RIL
@@ -705,10 +705,10 @@ Subject: [PATCH 8/8] binder: add compat symbol for RIL
  1 file changed, 6 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 97e3fed..de2d05f 100644
+index 7709a88..90c3e12 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -823,6 +823,12 @@ status_t Parcel::writeString16(const String16& str)
+@@ -851,6 +851,12 @@ status_t Parcel::writeString16(const String16& str)
      return writeString16(str.string(), str.size());
  }
  
