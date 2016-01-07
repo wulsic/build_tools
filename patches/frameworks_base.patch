@@ -1,4 +1,4 @@
-From 88c7f608d05eb9e181415dd8a1c20f20b8767c32 Mon Sep 17 00:00:00 2001
+From f2ea2c49d8425440b5d6de77424ee7c8f3919cbb Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
 Subject: [PATCH 1/6] Camera: HACK: i9082: API hacks
@@ -55,10 +55,10 @@ index 1aee794..e7c5313 100644
                  throw new CameraRuntimeException(CAMERA_DEPRECATED_HAL);
              case INVALID_OPERATION:
 -- 
-2.6.3
+2.6.4
 
 
-From a975fa7a0626b6e65445c4c5e0f6fad3a8dba426 Mon Sep 17 00:00:00 2001
+From 227ce31455a7d458dce9324f529c3fdc021f682d Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Mon, 4 Nov 2013 02:22:43 +0000
 Subject: [PATCH 2/6] Forward port Samsung STK support (frameworks/base)
@@ -110,10 +110,10 @@ index 7088be8..0b99052 100644
 +    int RIL_UNSOL_STK_SEND_SMS_RESULT = 11002; /* Samsung STK */
  }
 -- 
-2.6.3
+2.6.4
 
 
-From e0a7064569dd896dd4a9b7eb16c342928fb21988 Mon Sep 17 00:00:00 2001
+From f0d8e5a2c9bd3c7de1822d9f51182de14c1bbd49 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
 Subject: [PATCH 3/6] frameworks: base: add KEYCODE_HOME to wake keys
@@ -136,10 +136,10 @@ index a9bf92b..b7a42f6 100644
          }
          return false;
 -- 
-2.6.3
+2.6.4
 
 
-From 418cb0528514495185f1818908300e4a3a4e1eb0 Mon Sep 17 00:00:00 2001
+From 10cb45558695dc1449cbc1e387d3f61b630b087b Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Fri, 23 Nov 2012 14:23:16 +0000
 Subject: [PATCH 4/6] Reintroduce button-backlight (and respective inactivity
@@ -248,10 +248,10 @@ index f7a8970..95a7243 100644
                      } else {
                          nextTimeout = mLastUserActivityTime + screenOffTimeout;
 -- 
-2.6.3
+2.6.4
 
 
-From 8aeeedb11251001aac61c212de95f77fc0e9e499 Mon Sep 17 00:00:00 2001
+From 44dfd0e1f2117bf360e4538b1d6e120abf15574b Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 22:53:50 +0700
 Subject: [PATCH 5/6] PowerManagerService: only turn on button light when any
@@ -309,88 +309,35 @@ index 95a7243..54a4325 100644
                          } else {
                              mButtonsLight.setBrightness(mDisplayPowerRequest.screenBrightness);
 -- 
-2.6.3
+2.6.4
 
 
-From d838caccfea85945c584e31d88afbb45eb0d3d16 Mon Sep 17 00:00:00 2001
-From: timduru <timduru@gmail.com>
-Date: Wed, 11 Mar 2015 22:53:50 +0700
-Subject: [PATCH 6/6] Fix AutoRotation
+From d4eec4fe24401e97cbfcb22d73870390a9fe6cdf Mon Sep 17 00:00:00 2001
+From: AndDiSa <anddisa@googlemail.com>
+Date: Fri, 27 Mar 2015 22:53:50 +0700
+Subject: [PATCH 6/6] base: correct sensor handling
 
-event.timestamp can be skewed after sleep as it doesn't include sleep time on some platforms
+Older sensors are not setting event.timestamp correctly. Use
+SystemClock.elapsedRealtimeNanos() to set timestamp.
 
-lastTouch is initialised with RTC timestamp
-and as such must be compared with RTC and not with event.timestamp
+Change-Id: I2adfb9974d14afd4a5feef790cf847470c55aa5d
 ---
- .../server/policy/WindowOrientationListener.java     | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ .../core/java/com/android/server/policy/WindowOrientationListener.java  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/services/core/java/com/android/server/policy/WindowOrientationListener.java b/services/core/java/com/android/server/policy/WindowOrientationListener.java
-index 9916223..802ca64 100644
+index 9916223..e9a4bc6 100644
 --- a/services/core/java/com/android/server/policy/WindowOrientationListener.java
 +++ b/services/core/java/com/android/server/policy/WindowOrientationListener.java
-@@ -241,6 +241,8 @@ public abstract class WindowOrientationListener {
-     }
- 
-     abstract class OrientationJudge implements SensorEventListener {
-+        protected long mTouchEndedTimestampNanos = Long.MIN_VALUE;
-+
-         // Number of nanoseconds per millisecond.
-         protected static final long NANOS_PER_MS = 1000000;
- 
-@@ -299,6 +301,11 @@ public abstract class WindowOrientationListener {
- 
-         @Override
-         public abstract void onSensorChanged(SensorEvent event);
-+
-+       public boolean touchEnded() {
-+            final long now = SystemClock.elapsedRealtimeNanos(); // must compare with RTC and not with event.timestamp, event.timestamp can be skewed after sleep as it doesn't include sleep time on some platforms
-+            return (now > mTouchEndedTimestampNanos + PROPOSAL_MIN_TIME_SINCE_TOUCH_END_NANOS);
-+        }
-     }
- 
-     /**
-@@ -501,7 +508,6 @@ public abstract class WindowOrientationListener {
-         private boolean mAccelerating;
- 
-         // Timestamp when the last touch to the touch screen ended
--        private long mTouchEndedTimestampNanos = Long.MIN_VALUE;
-         private boolean mTouched;
- 
-         // Whether we are locked into an overhead usage mode.
-@@ -888,8 +894,7 @@ public abstract class WindowOrientationListener {
-             }
- 
-             // The last touch must have ended sufficiently long ago.
--            if (mTouched || now < mTouchEndedTimestampNanos
--                    + PROPOSAL_MIN_TIME_SINCE_TOUCH_END_NANOS) {
-+            if (mTouched || !touchEnded()) {
-                 return false;
-             }
- 
-@@ -969,7 +974,6 @@ public abstract class WindowOrientationListener {
- 
-     final class OrientationSensorJudge extends OrientationJudge {
-         private boolean mTouching;
--        private long mTouchEndedTimestampNanos = Long.MIN_VALUE;
-         private int mProposedRotation = -1;
-         private int mDesiredRotation = -1;
-         private boolean mRotationEvaluationScheduled;
-@@ -1045,13 +1049,7 @@ public abstract class WindowOrientationListener {
-         }
- 
-         private boolean isDesiredRotationAcceptableLocked(long now) {
--            if (mTouching) {
--                return false;
--            }
--            if (now < mTouchEndedTimestampNanos + PROPOSAL_MIN_TIME_SINCE_TOUCH_END_NANOS) {
--                return false;
--            }
--            return true;
-+            return (!mTouching && touchEnded());
-         }
- 
-         private void scheduleRotationEvaluationIfNecessaryLocked(long now) {
+@@ -598,7 +598,7 @@ public abstract class WindowOrientationListener {
+                 // Reset the orientation listener state if the samples are too far apart in time
+                 // or when we see values of (0, 0, 0) which indicates that we polled the
+                 // accelerometer too soon after turning it on and we don't have any data yet.
+-                final long now = event.timestamp;
++                final long now = SystemClock.elapsedRealtimeNanos();
+                 final long then = mLastFilteredTimestampNanos;
+                 final float timeDeltaMS = (now - then) * 0.000001f;
+                 final boolean skipSample;
 -- 
-2.6.3
+2.6.4
 

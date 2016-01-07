@@ -1,7 +1,7 @@
-From 5ff8e5768b3e86296dc2e7464c0aa34ed309ac88 Mon Sep 17 00:00:00 2001
+From dd1f7992748ba68b222a092f6826c1a7e03e9ab4 Mon Sep 17 00:00:00 2001
 From: Dave Burke <daveburke@google.com>
 Date: Wed, 24 Oct 2012 17:30:31 -0700
-Subject: [PATCH 1/9] Revert "Revert "put back the unused virtuals in
+Subject: [PATCH 1/8] Revert "Revert "put back the unused virtuals in
  Vector<>""
 
 This reverts commit 225c66a48cdc3acef21ee380dc134449749d3cb3
@@ -105,13 +105,13 @@ index de65a6c..6d4e601 100644
  
  }; // namespace android
 -- 
-2.6.3
+2.6.4
 
 
-From 3ce6c798674ae4e7dee67e1acc9a039f5152536a Mon Sep 17 00:00:00 2001
+From d77441ff747fa063114bbb2e2df400da446ec83c Mon Sep 17 00:00:00 2001
 From: Arne Coucheron <arco68@gmail.com>
 Date: Wed, 3 Dec 2014 06:14:55 +0100
-Subject: [PATCH 2/9] libutils: Properly #ifdef NEEDS_VECTORIMPL_SYMBOLS
+Subject: [PATCH 2/8] libutils: Properly #ifdef NEEDS_VECTORIMPL_SYMBOLS
 
  * Compile error might occur otherwise
 
@@ -166,13 +166,13 @@ index 6d4e601..ffd552b 100644
  void SortedVectorImpl::reservedSortedVectorImpl2() { };
  void SortedVectorImpl::reservedSortedVectorImpl3() { };
 -- 
-2.6.3
+2.6.4
 
 
-From 94b332f202515a746fcb0c63ed505f6ccc81d73d Mon Sep 17 00:00:00 2001
+From 593aa2c160684aa649bd9aabf4b2d2378201d89e Mon Sep 17 00:00:00 2001
 From: codeworkx <codeworkx@cyanogenmod.org>
 Date: Sat, 27 Jul 2013 08:18:42 +0200
-Subject: [PATCH 3/9] libutils: refbase: jellybean mr1 compat
+Subject: [PATCH 3/8] libutils: refbase: jellybean mr1 compat
 
 [mikeioannina]: Update for L
 Can be enabled with global cflag REFBASE_JB_MR1_COMPAT_SYMBOLS
@@ -222,13 +222,13 @@ index 02907ad..b0ca12e 100644
  void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
      for (size_t i=0 ; i<n ; i++) {
 -- 
-2.6.3
+2.6.4
 
 
-From 17c6575d18588473efd4b57ed08829708eeaa6c9 Mon Sep 17 00:00:00 2001
+From 9d38dc4e8ef7cbe4c71ea1e7c2af7bde34e5f832 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 17 Dec 2011 17:26:54 -0500
-Subject: [PATCH 4/9] init: add detection of charging mode
+Subject: [PATCH 4/8] init: add detection of charging mode
 
 Based on Prashant Somashekar's patch which is in turn based on techomancer's
 patch http://goo.gl/I19GG.
@@ -312,13 +312,13 @@ index 93fe944..320d2ba 100644
      } else {
          action_for_each_trigger("late-init", action_add_queue_tail);
 -- 
-2.6.3
+2.6.4
 
 
-From f5d580f65b96a9a9973fc54ebae9c624aa72223c Mon Sep 17 00:00:00 2001
+From b2ba54bd61d921d03046697e805dd6b37fa8b03f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 10:48:07 +0700
-Subject: [PATCH 5/9] disable recovery flash
+Subject: [PATCH 5/8] disable recovery flash
 
 We don't want to flash AOSP's recovery
 
@@ -328,10 +328,10 @@ Change-Id: Icb999b58879f71f39b64b6e85afc5869c2e7d92e
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/rootdir/init.rc b/rootdir/init.rc
-index fa12740..5c277c3 100644
+index 317207c..8ab432d 100644
 --- a/rootdir/init.rc
 +++ b/rootdir/init.rc
-@@ -693,9 +693,9 @@ service installd /system/bin/installd
+@@ -688,9 +688,9 @@ service installd /system/bin/installd
      class main
      socket installd stream 600 system system
  
@@ -345,13 +345,13 @@ index fa12740..5c277c3 100644
  service racoon /system/bin/racoon
      class main
 -- 
-2.6.3
+2.6.4
 
 
-From df0b60a6a092e31b517ab2dfdd7998b49e3e44d3 Mon Sep 17 00:00:00 2001
+From 82c53f8147c7782d5fd2f7459274c73c2df49773 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 12 Apr 2013 11:40:15 +0700
-Subject: [PATCH 6/9] libnetutils: add ifc_set_mtu
+Subject: [PATCH 6/8] libnetutils: add ifc_set_mtu
 
 Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
 ---
@@ -383,13 +383,13 @@ index 7d2a5fb..e2be134 100644
 +    return ret;
 +}
 -- 
-2.6.3
+2.6.4
 
 
-From 441bf671bd76f670fc56380e3ae3409dcaca76dd Mon Sep 17 00:00:00 2001
+From ef374a8c666c425b3a735889e20822453427f12a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 22:36:32 +0700
-Subject: [PATCH 7/9] charger: allow home button to wake
+Subject: [PATCH 7/8] charger: allow home button to wake
 
 A squashed commit of the following:
 
@@ -445,13 +445,13 @@ index 6800ad2..793a318 100644
      if (charger->next_key_check != -1 && now > charger->next_key_check)
          charger->next_key_check = -1;
 -- 
-2.6.3
+2.6.4
 
 
-From aeec811876f80d9866cb2891c62f71cbc8848aea Mon Sep 17 00:00:00 2001
+From 0b058908922fc979d003219f4165470588bcd4f4 Mon Sep 17 00:00:00 2001
 From: ChampionSwimmer <android@championswimmer.tk>
 Date: Tue, 5 Mar 2013 00:36:05 +0530
-Subject: [PATCH 8/9] mkbootimg: Support 32K 64K and 128K pagesizes
+Subject: [PATCH 8/8] mkbootimg: Support 32K 64K and 128K pagesizes
 
 Signed-off-by: ChampionSwimmer <android@championswimmer.tk>
 Signed-off-by: Michael Bestas <mikeioannina@gmail.com>
@@ -486,31 +486,5 @@ index b6a2801..e587b4d 100644
                      return -1;
                  }
 -- 
-2.6.3
-
-
-From 2249da0c4771a0b3eb56a949f4b6f09ff2e1a19b Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 11 Oct 2015 21:11:25 +0700
-Subject: [PATCH 9/9] HACK: temporarily change SELinux to permissive
-
----
- init/init.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/init/init.cpp b/init/init.cpp
-index 320d2ba..a3fc5fa 100644
---- a/init/init.cpp
-+++ b/init/init.cpp
-@@ -877,7 +877,7 @@ static void selinux_init_all_handles(void)
- enum selinux_enforcing_status { SELINUX_DISABLED, SELINUX_PERMISSIVE, SELINUX_ENFORCING };
- 
- static selinux_enforcing_status selinux_status_from_cmdline() {
--    selinux_enforcing_status status = SELINUX_ENFORCING;
-+    selinux_enforcing_status status = SELINUX_PERMISSIVE;
- 
-     std::function<void(char*,bool)> fn = [&](char* name, bool in_qemu) {
-         char *value = strchr(name, '=');
--- 
-2.6.3
+2.6.4
 
