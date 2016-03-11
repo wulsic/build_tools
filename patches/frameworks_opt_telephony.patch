@@ -1,7 +1,7 @@
-From 7f9d741b2f7498bc5721041c2e5a0c23b33165c9 Mon Sep 17 00:00:00 2001
+From 773261727b3f44a07c6551e78d1ec65ef23a4943 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Thu, 22 Nov 2012 06:02:18 +0000
-Subject: [PATCH 1/7] Allow a device to include its own RIL subclass
+Subject: [PATCH 1/8] Allow a device to include its own RIL subclass
 
 For cases where a single device needs a subclass, there's no need to
 pollute the common core with it: just stick it in the device's own
@@ -30,13 +30,13 @@ index 449faa0..d312fec 100644
  LOCAL_MODULE := telephony-common
  
 -- 
-2.6.3
+2.7.3
 
 
-From db20835257fb5c7f7d134793dd29030ff61513ba Mon Sep 17 00:00:00 2001
+From 87b77a3013e6d56b93a9d80a7b9d69c3558605d3 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <github@cerqueira.org>
 Date: Thu, 22 Nov 2012 17:47:31 +0100
-Subject: [PATCH 2/7] RIL: Make RIL subclassable
+Subject: [PATCH 2/8] RIL: Make RIL subclassable
 
 Change-Id: I9144ef279ca9c8cb9e657a28342f0f4cb3e7debd
 
@@ -476,13 +476,13 @@ index 4ada1aa..8a85566 100644
          int num;
          SsData ssData = new SsData();
 -- 
-2.6.3
+2.7.3
 
 
-From 7f5dfb225bff9ee7b70244b9d3c59e645491a519 Mon Sep 17 00:00:00 2001
+From 51467442c895f485ea9a702124cb7791bf8e6846 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 8 Mar 2014 19:35:17 +0700
-Subject: [PATCH 3/7] RIL: mark mInstanceId as protected
+Subject: [PATCH 3/8] RIL: mark mInstanceId as protected
 
 To use in RIL subclasses
 
@@ -505,13 +505,13 @@ index 8a85566..493d9c5 100644
      //***** Events
  
 -- 
-2.6.3
+2.7.3
 
 
-From 796cd606999c67b173505b8ba5ece49716dab0ac Mon Sep 17 00:00:00 2001
+From 5517b25bd6bcaa63628ae52dc2286ae6cf160811 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH 4/7] telephony: support for RIL that does not send
+Subject: [PATCH 4/8] telephony: support for RIL that does not send
  UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
@@ -524,10 +524,10 @@ Change-Id: Ib7373d32777f6c42ee488972a7aa63ae8e1cd09b
  1 file changed, 19 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
-index ed532d4..15df452 100644
+index 930d45e..fc6522e 100644
 --- a/src/java/com/android/internal/telephony/PhoneBase.java
 +++ b/src/java/com/android/internal/telephony/PhoneBase.java
-@@ -217,6 +217,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -220,6 +220,7 @@ public abstract class PhoneBase extends Handler implements Phone {
      boolean mDnsCheckDisabled;
      public DcTrackerBase mDcTracker;
      boolean mDoesRilSendMultipleCallRing;
@@ -535,7 +535,7 @@ index ed532d4..15df452 100644
      int mCallRingContinueToken;
      int mCallRingDelay;
      public boolean mIsTheCurrentActivePhone = true;
-@@ -444,6 +445,11 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -449,6 +450,11 @@ public abstract class PhoneBase extends Handler implements Phone {
                  TelephonyProperties.PROPERTY_RIL_SENDS_MULTIPLE_CALL_RING, true);
          Rlog.d(LOG_TAG, "mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
  
@@ -547,7 +547,7 @@ index ed532d4..15df452 100644
          mCallRingDelay = SystemProperties.getInt(
                  TelephonyProperties.PROPERTY_CALL_RING_DELAY, 3000);
          Rlog.d(LOG_TAG, "mCallRingDelay=" + mCallRingDelay);
-@@ -2027,6 +2033,18 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2056,6 +2062,18 @@ public abstract class PhoneBase extends Handler implements Phone {
      public void notifyNewRingingConnectionP(Connection cn) {
          if (!mIsVoiceCapable)
              return;
@@ -566,7 +566,7 @@ index ed532d4..15df452 100644
          AsyncResult ar = new AsyncResult(null, cn, null);
          mNewRingingConnectionRegistrants.notifyRegistrants(ar);
      }
-@@ -2588,6 +2606,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2632,6 +2650,7 @@ public abstract class PhoneBase extends Handler implements Phone {
          pw.println(" mDnsCheckDisabled=" + mDnsCheckDisabled);
          pw.println(" mDcTracker=" + mDcTracker);
          pw.println(" mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
@@ -575,13 +575,13 @@ index ed532d4..15df452 100644
          pw.println(" mCallRingDelay=" + mCallRingDelay);
          pw.println(" mIsTheCurrentActivePhone=" + mIsTheCurrentActivePhone);
 -- 
-2.6.3
+2.7.3
 
 
-From c3fc53f86cb7c3c9b425747d06d6176aa2eee5fb Mon Sep 17 00:00:00 2001
+From 657872108e205284fea52f21fcc6fab925c1e0bc Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 17 Dec 2014 21:19:34 +0700
-Subject: [PATCH 5/7] Forward port Samsung STK support
+Subject: [PATCH 5/8] Forward port Samsung STK support
  (frameworks/opt/telephony)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -641,14 +641,14 @@ Date:   Fri Nov 30 19:30:08 2012 +0700
 Change-Id: I476959cfadab0ab14f5ed32adf51adca1e3b26b4
 ---
  .../android/internal/telephony/BaseCommands.java   |  10 ++
- .../internal/telephony/CommandsInterface.java      |   9 ++
+ .../internal/telephony/CommandsInterface.java      |  12 ++
  src/java/com/android/internal/telephony/RIL.java   |  15 +++
  .../internal/telephony/cat/CallControlResult.java  |  44 +++++++
- .../android/internal/telephony/cat/CatService.java | 127 +++++++++++++++++++++
+ .../android/internal/telephony/cat/CatService.java | 133 +++++++++++++++++++++
  .../internal/telephony/cat/CommandParams.java      |  21 ++++
- .../telephony/cat/CommandParamsFactory.java        |  43 ++++++-
- .../internal/telephony/cat/ValueParser.java        |  99 ++++++++++++++++
- 8 files changed, 367 insertions(+), 1 deletion(-)
+ .../telephony/cat/CommandParamsFactory.java        |  42 ++++++-
+ .../internal/telephony/cat/ValueParser.java        | 101 ++++++++++++++++
+ 8 files changed, 377 insertions(+), 1 deletion(-)
  create mode 100644 src/java/com/android/internal/telephony/cat/CallControlResult.java
 
 diff --git a/src/java/com/android/internal/telephony/BaseCommands.java b/src/java/com/android/internal/telephony/BaseCommands.java
@@ -680,10 +680,10 @@ index 472004a..116a1e9 100644
      public void setOnIccSmsFull(Handler h, int what, Object obj) {
          mIccSmsFullRegistrant = new Registrant (h, what, obj);
 diff --git a/src/java/com/android/internal/telephony/CommandsInterface.java b/src/java/com/android/internal/telephony/CommandsInterface.java
-index fd8081b..27b3934 100644
+index fd8081b..99fdb8d 100644
 --- a/src/java/com/android/internal/telephony/CommandsInterface.java
 +++ b/src/java/com/android/internal/telephony/CommandsInterface.java
-@@ -2018,4 +2018,13 @@ public interface CommandsInterface {
+@@ -2018,4 +2018,16 @@ public interface CommandsInterface {
       * @param result Callback message contains the modem activity information
       */
      public void getModemActivityInfo(Message result);
@@ -694,8 +694,11 @@ index fd8081b..27b3934 100644
 +     * sms send result from modem(RIL) to catService
 +     */
 +    void setOnCatSendSmsResult(Handler h, int what, Object obj);
-+    void unSetOnCatSendSmsResult(Handler h);
 +
++    /**
++     * @hide
++     */
++    void unSetOnCatSendSmsResult(Handler h);
  }
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
 index 493d9c5..75b2594 100644
@@ -795,7 +798,7 @@ index 0000000..2dbc0d4
 +    }
 +}
 diff --git a/src/java/com/android/internal/telephony/cat/CatService.java b/src/java/com/android/internal/telephony/cat/CatService.java
-index b5776a1..fca4a4a 100755
+index b5776a1..864d814 100755
 --- a/src/java/com/android/internal/telephony/cat/CatService.java
 +++ b/src/java/com/android/internal/telephony/cat/CatService.java
 @@ -95,6 +95,10 @@ public class CatService extends Handler implements AppInterface {
@@ -867,7 +870,7 @@ index b5776a1..fca4a4a 100755
                  if ((((DisplayTextParams)cmdParams).mTextMsg.text != null)
                          && (((DisplayTextParams)cmdParams).mTextMsg.text.equals(STK_DEFAULT))) {
                      message = mContext.getText(com.android.internal.R.string.sending);
-@@ -853,6 +878,76 @@ public class CatService extends Handler implements AppInterface {
+@@ -853,6 +878,82 @@ public class CatService extends Handler implements AppInterface {
                  CatLog.d(this, "CAT Alpha message: msg.obj is null");
              }
              break;
@@ -875,13 +878,13 @@ index b5776a1..fca4a4a 100755
 +            if (mTimeoutDest == WAITING_SMS_RESULT) {
 +                CatLog.d(this, "SMS SEND TIMEOUT");
 +                if (CallControlResult.fromInt(mCallControlResultCode) ==
-+                        CallControlResult.CALL_CONTROL_NOT_ALLOWED)
++                        CallControlResult.CALL_CONTROL_NOT_ALLOWED) {
 +                    sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                            ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
-+                else
++                } else {
 +                    sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                            ResultCode.TERMINAL_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
-+                break;
++                }
 +            }
 +            break;
 +        case MSG_ID_SEND_SMS_RESULT: // Samsung STK SEND_SMS
@@ -893,50 +896,56 @@ index b5776a1..fca4a4a 100755
 +                cancelTimeOut();
 +                CatLog.d(this, "The Msg ID data:" + msg.what);
 +                ar = (AsyncResult) msg.obj;
-+                if (ar == null || ar.result == null || mCurrntCmd == null || mCurrntCmd.mCmdDet == null)
++                if (ar == null || ar.result == null || mCurrntCmd == null || mCurrntCmd.mCmdDet == null) {
 +                    break;
++                }
 +                sendResult = (int[]) ar.result;
-+                if (sendResult.length == 0)
++                if (sendResult.length == 0) {
 +                    break;
++                }
 +                switch (sendResult[0]) {
 +                    default:
 +                        CatLog.d(this, "SMS SEND GENERIC FAIL");
 +                        if (CallControlResult.fromInt(mCallControlResultCode) ==
-+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
++                                CallControlResult.CALL_CONTROL_NOT_ALLOWED) {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
-+                        else
++                        } else {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.TERMINAL_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
++                        }
 +                        break;
 +                    case SMS_SEND_OK: // '\0'
 +                        CatLog.d(this, "SMS SEND OK");
 +                        if (CallControlResult.fromInt(mCallControlResultCode) ==
-+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
++                                CallControlResult.CALL_CONTROL_NOT_ALLOWED) {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
-+                        else
++                        } else {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet, ResultCode.OK, false, 0, null);
++                        }
 +                        break;
 +                    case SMS_SEND_FAIL:
 +                        CatLog.d(this, "SMS SEND FAIL - MEMORY NOT AVAILABLE");
 +                        if (CallControlResult.fromInt(mCallControlResultCode) ==
-+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
++                                CallControlResult.CALL_CONTROL_NOT_ALLOWED) {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
-+                        else
++                        } else {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.TERMINAL_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
++                        }
 +                        break;
 +                    case SMS_SEND_RETRY:
 +                        CatLog.d(this, "SMS SEND FAIL RETRY");
 +                        if (CallControlResult.fromInt(mCallControlResultCode) ==
-+                                CallControlResult.CALL_CONTROL_NOT_ALLOWED)
++                                CallControlResult.CALL_CONTROL_NOT_ALLOWED) {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.USIM_CALL_CONTROL_PERMANENT, true, 1, null);
-+                        else
++                        } else {
 +                            sendTerminalResponse(mCurrntCmd.mCmdDet,
 +                                    ResultCode.NETWORK_CRNTLY_UNABLE_TO_PROCESS, false, 0, null);
++                        }
 +                        break;
 +                    }
 +            }
@@ -944,7 +953,7 @@ index b5776a1..fca4a4a 100755
          default:
              throw new AssertionError("Unrecognized CAT command: " + msg.what);
          }
-@@ -1117,4 +1212,36 @@ public class CatService extends Handler implements AppInterface {
+@@ -1117,4 +1218,36 @@ public class CatService extends Handler implements AppInterface {
              mCmdIf.reportStkServiceIsRunning(null);
          }
      }
@@ -1011,7 +1020,7 @@ index 7dfedab..57fad97 100644
 +    }
 +}
 diff --git a/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java b/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
-index 2990da3..87c11a5 100755
+index 2990da3..b56ffe7 100755
 --- a/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 +++ b/src/java/com/android/internal/telephony/cat/CommandParamsFactory.java
 @@ -16,6 +16,7 @@
@@ -1022,60 +1031,59 @@ index 2990da3..87c11a5 100755
  import android.graphics.Bitmap;
  import android.os.Handler;
  import android.os.Message;
-@@ -717,7 +718,47 @@ class CommandParamsFactory extends Handler {
+@@ -717,7 +718,46 @@ class CommandParamsFactory extends Handler {
          }
  
          textMsg.responseNeeded = false;
 -        mCmdParams = new DisplayTextParams(cmdDet, textMsg);
 +        // Samsung STK
-+        AppInterface.CommandType cmdType = AppInterface.CommandType.fromInt(cmdDet.typeOfCommand);
-+        boolean isSamsungStk = Resources.getSystem().getBoolean(com.android.internal.R.bool.config_samsung_stk);
-+        if (cmdType == AppInterface.CommandType.SEND_SMS && isSamsungStk) {
-+            String smscAddress = null;
-+            String pdu = null;
++        if (Resources.getSystem().getBoolean(com.android.internal.R.bool.config_samsung_stk)) {
++            AppInterface.CommandType cmdType = AppInterface.CommandType.fromInt(cmdDet.typeOfCommand);
++            if (cmdType == AppInterface.CommandType.SEND_SMS) {
++                String smscAddress = null;
++                String pdu = null;
 +
-+            ctlv = searchForTag(ComprehensionTlvTag.ADDRESS, ctlvs);
-+            if (ctlv != null) {
-+                smscAddress = ValueParser.retrieveSMSCaddress(ctlv);
-+                CatLog.d(this, "The smsc address is " + smscAddress);
-+            }
-+            else {
-+                CatLog.d(this, "The smsc address is null");
-+            }
++                ctlv = searchForTag(ComprehensionTlvTag.ADDRESS, ctlvs);
++                if (ctlv != null) {
++                    smscAddress = ValueParser.retrieveSMSCaddress(ctlv);
++                    CatLog.d(this, "The smsc address is " + smscAddress);
++                } else {
++                    CatLog.d(this, "The smsc address is null");
++                }
 +
-+            ctlv = searchForTag(ComprehensionTlvTag.SMS_TPDU, ctlvs);
-+            if (ctlv != null) {
-+                pdu = ValueParser.retrieveSMSTPDU(ctlv);
-+                CatLog.d(this, "The SMS tpdu is " + pdu);
++                ctlv = searchForTag(ComprehensionTlvTag.SMS_TPDU, ctlvs);
++                if (ctlv != null) {
++                    pdu = ValueParser.retrieveSMSTPDU(ctlv);
++                    CatLog.d(this, "The SMS tpdu is " + pdu);
++                } else {
++                    CatLog.d(this, "The SMS tpdu is null");
++                }
++                mCmdParams = new SendSMSParams(cmdDet, textMsg, smscAddress, pdu);
++            } else if (cmdType == AppInterface.CommandType.SEND_USSD) {
++                String ussdString = null;
++
++                ctlv = searchForTag(ComprehensionTlvTag.USSD_STRING, ctlvs);
++                if (ctlv != null) {
++                    ussdString = ValueParser.retrieveUSSDString(ctlv);
++                    CatLog.d(this, "The ussd string is " + ussdString);
++                } else {
++                    CatLog.d(this, "The ussd string is null");
++                }
++                mCmdParams = new SendUSSDParams(cmdDet, textMsg, ussdString);
++            } else {
++                mCmdParams = new DisplayTextParams(cmdDet, textMsg);
 +            }
-+            else {
-+                CatLog.d(this, "The SMS tpdu is null");
-+            }
-+            mCmdParams = new SendSMSParams(cmdDet, textMsg, smscAddress, pdu);
-+        }
-+        else if (cmdType == AppInterface.CommandType.SEND_USSD && isSamsungStk) {
-+            String ussdString = null;
-+            ctlv = searchForTag(ComprehensionTlvTag.USSD_STRING, ctlvs);
-+            if (ctlv != null) {
-+                ussdString = ValueParser.retrieveUSSDString(ctlv);
-+                CatLog.d(this, "The ussd string is " + ussdString);
-+            }
-+            else {
-+                CatLog.d(this, "The ussd string is null");
-+            }
-+            mCmdParams = new SendUSSDParams(cmdDet, textMsg, ussdString);
-+        }
-+        else {
++        } else {
 +            mCmdParams = new DisplayTextParams(cmdDet, textMsg);
 +        }
  
          if (iconId != null) {
              mloadIcon = true;
 diff --git a/src/java/com/android/internal/telephony/cat/ValueParser.java b/src/java/com/android/internal/telephony/cat/ValueParser.java
-index 91a6fd6..bd39358 100644
+index 91a6fd6..d753659 100644
 --- a/src/java/com/android/internal/telephony/cat/ValueParser.java
 +++ b/src/java/com/android/internal/telephony/cat/ValueParser.java
-@@ -354,4 +354,103 @@ abstract class ValueParser {
+@@ -354,4 +354,105 @@ abstract class ValueParser {
              throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD);
          }
      }
@@ -1097,15 +1105,15 @@ index 91a6fd6..bd39358 100644
 +        for (int k = 0; k <= length; k++) {
 +            try {
 +                outputValue[k] = rawValue[k + (valueIndex - 1)];
-+            }
-+            catch (IndexOutOfBoundsException indexoutofboundsexception) {
++            } catch (IndexOutOfBoundsException indexoutofboundsexception) {
 +                throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD);
 +            }
 +        }
-+        if (length != 0)
++        if (length != 0) {
 +            return IccUtils.bytesToHexString(outputValue);
-+        else
++        } else {
 +            throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD);
++        }
 +    }
 +
 +    /**
@@ -1123,28 +1131,30 @@ index 91a6fd6..bd39358 100644
 +        byte[] outputValue;
 +        int k;
 +        String result;
-+        if (rawValue[valueIndex + 2] % 2 == 0)
++        if (rawValue[valueIndex + 2] % 2 == 0) {
 +            k = rawValue[valueIndex + 2] / 2;
-+        else
++        } else {
 +            k = (1 + rawValue[valueIndex + 2]) / 2;
++        }
 +
-+        if (pduLength == k + 6)
++        if (pduLength == k + 6) {
 +            outputValue = new byte[pduLength + 1];
-+        else
++        } else {
 +            outputValue = new byte[pduLength];
++        }
 +
 +        for (int l = 0; l < pduLength; l++) {
 +            try {
 +                outputValue[l] = rawValue[valueIndex + l];
-+            }
-+            catch (IndexOutOfBoundsException ex) {
++            } catch (IndexOutOfBoundsException ex) {
 +                throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD);
 +            }
 +        }
-+        if (pduLength != 0)
++        if (pduLength != 0) {
 +            result = IccUtils.bytesToHexString(outputValue);
-+        else
++        } else {
 +            throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD);
++        }
 +
 +        return result;
 +    }
@@ -1180,13 +1190,13 @@ index 91a6fd6..bd39358 100644
 +    }
  }
 -- 
-2.6.3
+2.7.3
 
 
-From bdcd8e0c1ded5cc88bdd6f3ebd0f136b29884216 Mon Sep 17 00:00:00 2001
+From 20c366a9062ee4d0a6d6cf3c9ed3e8ec8cc944f6 Mon Sep 17 00:00:00 2001
 From: Mike Kasick <mike@kasick.org>
 Date: Sat, 14 Mar 2015 20:20:39 +0700
-Subject: [PATCH 6/7] RILs: Eliminate repeated overrides of
+Subject: [PATCH 6/8] RILs: Eliminate repeated overrides of
  responseOperatorInfos.
 
 - Add mQANElements field, default to 4 in RIL, use in responseOperatorInfos.
@@ -1241,13 +1251,13 @@ index 75b2594..5ffb534 100644
                  new OperatorInfo(
                      strings[i+0],
 -- 
-2.6.3
+2.7.3
 
 
-From 7034ff6fb850bda4f7c0fb665e71e14c13786441 Mon Sep 17 00:00:00 2001
+From 6fc85228e87f5a630eb72ea89132902ecc7ab3f0 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 22 Nov 2012 19:01:13 +0100
-Subject: [PATCH 7/7] telephony: Use reflection to create command interface
+Subject: [PATCH 7/8] telephony: Use reflection to create command interface
  (RIL class)
 
 Change-Id: Icdc02eaa74b89dbde4ddfb989cc62481d6423312
@@ -1332,5 +1342,43 @@ index 0543151..166a400 100644
          synchronized (sLockProxyPhones) {
              if (!sMadeDefaults) {
 -- 
-2.6.3
+2.7.3
+
+
+From 22fbd6762032c85e7a9a2be343018be3848c9074 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 28 Dec 2014 18:53:11 +0700
+Subject: [PATCH 8/8] UiccController: use registerForAvailable only for
+ persist.radio.apm_sim_not_pwdn
+
+Some QCOM RILs allow the SIM to be loaded in airplane mode, thus
+CAF changed the callback to registerForAvailable, but that does
+not work on other RILs where the SIM information will not be
+loaded successfully.
+
+Change from CM patch: use && instead of ||
+
+Change-Id: I9f9124417db2fe983e716a2825fc08d87511f8aa
+---
+ src/java/com/android/internal/telephony/uicc/UiccController.java | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/java/com/android/internal/telephony/uicc/UiccController.java b/src/java/com/android/internal/telephony/uicc/UiccController.java
+index 4f3b58b..a8df6fb 100644
+--- a/src/java/com/android/internal/telephony/uicc/UiccController.java
++++ b/src/java/com/android/internal/telephony/uicc/UiccController.java
+@@ -122,7 +122,10 @@ public class UiccController extends Handler {
+             Integer index = new Integer(i);
+             mCis[i].registerForIccStatusChanged(this, EVENT_ICC_STATUS_CHANGED, index);
+             // TODO remove this once modem correctly notifies the unsols
+-            if (DECRYPT_STATE.equals(SystemProperties.get("vold.decrypt"))) {
++            if (DECRYPT_STATE.equals(SystemProperties.get("vold.decrypt")) &&
++                    SystemProperties.getBoolean("persist.radio.apm_sim_not_pwdn", false)) {
++                // Reading ICC status in airplane mode is only supported in QCOM
++                // RILs when this property is set to true
+                 mCis[i].registerForAvailable(this, EVENT_ICC_STATUS_CHANGED, index);
+             } else {
+                 mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
+-- 
+2.7.3
 

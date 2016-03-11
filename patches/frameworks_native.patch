@@ -1,4 +1,4 @@
-From bb2a0732befa07871bdb22960bb52485ae791e27 Mon Sep 17 00:00:00 2001
+From 8d7db257d90f6e76ef3e6f998db38444782e5ae1 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 08:38:33 +0700
 Subject: [PATCH 01/10] Bring back support for glReadPixels screenshot path
@@ -451,10 +451,10 @@ index b3baadd..5d77208 100644
      /* ------------------------------------------------------------------------
       * EGL
 -- 
-2.6.3
+2.7.3
 
 
-From 619f2eaf9fea399606a918f2eab554ad7151d0f1 Mon Sep 17 00:00:00 2001
+From 0a0d9ba1311d83a0dfa14160048ff58cb098c3bd Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 02/10] libgui: Bring back support for mHeap-based screenshots
@@ -688,7 +688,7 @@ index fe82e3b..0b47f75 100644
  
  void const* ScreenshotClient::getPixels() const {
 diff --git a/services/surfaceflinger/Android.mk b/services/surfaceflinger/Android.mk
-index 1eb2361..446fd38 100644
+index 1901ef9..f4c5e8b 100644
 --- a/services/surfaceflinger/Android.mk
 +++ b/services/surfaceflinger/Android.mk
 @@ -63,6 +63,10 @@ ifeq ($(TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK),true)
@@ -945,10 +945,10 @@ index 5d77208..f32bf7d 100644
       * EGL
       */
 -- 
-2.6.3
+2.7.3
 
 
-From c7b3cb67cf1f879627276c068b0a436a97f7a597 Mon Sep 17 00:00:00 2001
+From 2b0f3d4c82ba2aa604ec257fcf69bf52e36d973d Mon Sep 17 00:00:00 2001
 From: Ethan Chen <intervigil@gmail.com>
 Date: Thu, 15 Oct 2015 13:50:10 -0700
 Subject: [PATCH 03/10] Revert "egl: Remove old tuna BGRA vs RGBA workaround."
@@ -1003,10 +1003,10 @@ index cdec565..4d9eaf5 100644
          // now select a corresponding sRGB format if needed
          if (attrib_list && dp->haveExtension("EGL_KHR_gl_colorspace")) {
 -- 
-2.6.3
+2.7.3
 
 
-From a6c6fa84887f17aaff6e73f8fb520de4c70a3a3d Mon Sep 17 00:00:00 2001
+From e609572c46da00b55923d1b2d5f9deef877c9fa3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 2 Nov 2013 23:02:15 -0700
 Subject: [PATCH 04/10] libEGL: allow devices to workaround Google bug 10194508
@@ -1034,10 +1034,10 @@ index 661b99c..e952a38 100644
    LOCAL_CFLAGS += -DMAX_EGL_CACHE_ENTRY_SIZE=$(MAX_EGL_CACHE_ENTRY_SIZE)
  endif
 -- 
-2.6.3
+2.7.3
 
 
-From 0868da0b4347f9318e14f1bd336f5b5d9f9f5e29 Mon Sep 17 00:00:00 2001
+From 713d9ccd6c4a4513083a15d6d85da6094ccadacc Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 05/10] binder: add compat symbol
@@ -1065,10 +1065,10 @@ index ef88181..a6daf23 100644
  {
      return mCallingPid;
 -- 
-2.6.3
+2.7.3
 
 
-From de097a1112214f176025edb1cdd57c6b63eb209e Mon Sep 17 00:00:00 2001
+From 6f9dbb84c5bcaf805c9db23f7246c42957cd6169 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 06/10] binder: add compat symbols
@@ -1111,10 +1111,10 @@ index 22d7ef3..7709a88 100644
  {
      // size
 -- 
-2.6.3
+2.7.3
 
 
-From 48f38c735f195f68a91642b45197a2c59a9d2bcc Mon Sep 17 00:00:00 2001
+From 887e9f76bf049c39efd032d1eb0648801b86b451 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 07/10] sf: CAPRI_HWC: fix rotation artifact
@@ -1140,10 +1140,10 @@ index ad96716..979da10 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 -- 
-2.6.3
+2.7.3
 
 
-From e7c2a79d84f20e3d9aba70bd2e5844e6e95cf271 Mon Sep 17 00:00:00 2001
+From 87dc7743eba30a4ce2946fa03d310ae007b2307b Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 08/10] SurfaceComposerClient: don't block RGBA_8888 for
@@ -1170,10 +1170,10 @@ index 0b47f75..545aa0a 100644
      producer->query(NATIVE_WINDOW_FORMAT,&format);
      if (format == PIXEL_FORMAT_RGBA_8888) {
 -- 
-2.6.3
+2.7.3
 
 
-From 2b4bbdd167fa11df0c51c5758dec2ae26cadffeb Mon Sep 17 00:00:00 2001
+From 0f821bf02534b8491f501dda8355951360528565 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
 Subject: [PATCH 09/10] sf: CAPRI_HWC: fix for screen recording
@@ -1201,10 +1201,10 @@ index 87e5b4d..9634db7 100644
                  BQ_LOGE("%s: min undequeued buffer count (%d) exceeded "
                          "(dequeued=%d undequeued=%d)",
 -- 
-2.6.3
+2.7.3
 
 
-From 89dcc4a0b3307a497d23e355f745f2f921517b0a Mon Sep 17 00:00:00 2001
+From f4f997b05dfe2c51ae3fc84258384b51dec13a86 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 10/10] binder: add compat symbol for RIL
@@ -1231,5 +1231,5 @@ index 7709a88..90c3e12 100644
  {
      if (str == NULL) return writeInt32(-1);
 -- 
-2.6.3
+2.7.3
 

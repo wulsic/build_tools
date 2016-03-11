@@ -1,4 +1,4 @@
-From bbe8bc2be4525711492404f0707e98b896866700 Mon Sep 17 00:00:00 2001
+From 2700f72db729e03221581c8964200c0c6c855d18 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 24 Apr 2013 11:37:19 +0700
 Subject: [PATCH 01/10] OMXCodec: Re-implement requires-flush-before-shutdown
@@ -27,10 +27,10 @@ index b1dde80..8c1c962 100644
      return quirks;
  }
 -- 
-2.7.0
+2.7.3
 
 
-From ff06b71e68c7432ba2ff58f32ed6a7256f38b449 Mon Sep 17 00:00:00 2001
+From efa73add7b3edd58d544a233fcdf15c4500e3aff Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
 Subject: [PATCH 02/10] OMXCodec: set default input buffer size
@@ -93,10 +93,10 @@ index 8c1c962..fa2999a 100644
      initOutputFormat(meta);
  
 -- 
-2.7.0
+2.7.3
 
 
-From 6639dbcd4e677c94a4eee4b0cfd39f11b3c64abc Mon Sep 17 00:00:00 2001
+From 1c690a0b86647c9194c90497b29547e1f1da73ef Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
 Subject: [PATCH 03/10] ACodec: skip port index checking on vc4 encoder
@@ -123,10 +123,10 @@ index 79dc0f2..a7f4a03 100644
          ALOGE("unexpected dir: %s(%d) on %s port", asString(def.eDir), def.eDir, niceIndex);
          return BAD_VALUE;
 -- 
-2.7.0
+2.7.3
 
 
-From 1df68738c62e3f2ba68b076af75e2a53989b47ad Mon Sep 17 00:00:00 2001
+From 64c14128c8a74a461009d29ddc555e08c25be543 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 17:27:20 +0700
 Subject: [PATCH 04/10] ACodec: Don't trust provided width/height when setting
@@ -161,10 +161,10 @@ index a7f4a03..043fc16 100644
  #endif
  
 -- 
-2.7.0
+2.7.3
 
 
-From da4d5bb901d60ae4633b91b9039a8e50256468ff Mon Sep 17 00:00:00 2001
+From d82b0c4a96fdef47a6d52a0c7bb965d583df8013 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 28 Nov 2014 21:07:59 +0700
 Subject: [PATCH 05/10] AudioFlinger: i9082: HACK: disable stereo record
@@ -196,10 +196,10 @@ index fab1ef5..959afa7 100644
                                          &inStream, flags, address.string(), source);
      ALOGV("openInput_l() openInputStream returned input %p, SamplingRate %d"
 -- 
-2.7.0
+2.7.3
 
 
-From 0d3d94d0f363aa930c31c211c72df94a3c926b89 Mon Sep 17 00:00:00 2001
+From 6fa63febb1724780bea2de3e585643ad21af923e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 10 Dec 2014 17:38:10 +0700
 Subject: [PATCH 06/10] AudioFlinger: i9082: HACK: force audio to 48 KHz
@@ -229,10 +229,10 @@ index 959afa7..65d79ff 100644
  
      status_t status = inHwHal->open_input_stream(inHwHal, *input, devices, &halconfig,
 -- 
-2.7.0
+2.7.3
 
 
-From 89f8515262d6d63ff9761a00f1421fdaff824df0 Mon Sep 17 00:00:00 2001
+From d2f7998a26eda40337b809aa12e08ffc640b79c2 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 16 Dec 2014 21:12:22 +0700
 Subject: [PATCH 07/10] stagefright: i9082: don't allocate too many extra
@@ -280,10 +280,10 @@ index fa2999a..9ee48b2 100644
              def.nBufferCountMin + minUndequeuedBufs + extraBuffers;
          def.nBufferCountActual = newBufferCount;
 -- 
-2.7.0
+2.7.3
 
 
-From aa81f655218e0faf92c58c75eacf3270a5e4de38 Mon Sep 17 00:00:00 2001
+From c8aaba40d609cdfd225cab6588d023c442433468 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:59 +0700
 Subject: [PATCH 08/10] stagefright: CAPRI_HWC: fix for screen recording
@@ -337,10 +337,10 @@ index 94a213a..b42f067 100644
  
      uint32_t usageBits;
 -- 
-2.7.0
+2.7.3
 
 
-From ba3d4761e106d081de2cd6309c8b86208a32c91e Mon Sep 17 00:00:00 2001
+From 2f3f6ed7f520c7bef7afcdb6eb7195409663349e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 21 Dec 2014 15:25:33 +0700
 Subject: [PATCH 09/10] stagefright: CAPRI_HWC: fix for miracast
@@ -417,10 +417,10 @@ index 649cad0..5e1323b 100644
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
 -- 
-2.7.0
+2.7.3
 
 
-From 58266a1621c9691511a509de902c9071344792d2 Mon Sep 17 00:00:00 2001
+From 6c1f1e3cddd923c86d41c6bdaad563d5c1baf0e6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 24 Jan 2016 12:38:26 +0700
 Subject: [PATCH 10/10] AudioFlinger: i9082: fix getMicMute
@@ -450,5 +450,5 @@ index 65d79ff..44aaaff 100644
              mute = mute && state;
          }
 -- 
-2.7.0
+2.7.3
 

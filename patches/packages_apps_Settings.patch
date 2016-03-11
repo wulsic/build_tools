@@ -1,4 +1,4 @@
-From 08e45fcf8251b7346840bcecd1cc4427555d58cc Mon Sep 17 00:00:00 2001
+From d983bfd7cbf777ffd88ab546da82427da7d2a584 Mon Sep 17 00:00:00 2001
 From: Zoran Jovanovic <zoran.jovanovic@sonymobile.com>
 Date: Wed, 4 Nov 2015 14:00:03 +0100
 Subject: [PATCH] Don't show MIDI USB option if not supported
@@ -54,5 +54,5 @@ index 210e0a0..340eba5 100644
              int power = modeToPower(mode);
              if ((mode & MODE_DATA_MASK) != 0) {
 -- 
-2.6.3
+2.7.3
 
