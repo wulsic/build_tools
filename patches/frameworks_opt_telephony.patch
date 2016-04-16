@@ -1,7 +1,7 @@
-From f6060d46e33fd4ff34464f9957192b5de0bcc789 Mon Sep 17 00:00:00 2001
+From 455c135f8e16535bb51ad6284a22383b77110035 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 17 Dec 2014 21:19:34 +0700
-Subject: [PATCH 1/4] RIL: Add Samsung STK support
+Subject: [PATCH 1/3] RIL: Add Samsung STK support
 
 Change-Id: I476959cfadab0ab14f5ed32adf51adca1e3b26b4
 ---
@@ -9,7 +9,7 @@ Change-Id: I476959cfadab0ab14f5ed32adf51adca1e3b26b4
  1 file changed, 14 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 59d0e00..d8a5177 100644
+index 6a38927..f7c05e9 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -3082,6 +3082,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
@@ -20,7 +20,7 @@ index 59d0e00..d8a5177 100644
  
              default:
                  throw new RuntimeException("Unrecognized unsol response: " + response);
-@@ -3515,6 +3516,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -3518,6 +3519,18 @@ public class RIL extends BaseCommands implements CommandsInterface {
                      mLceInfoRegistrant.notifyRegistrant(new AsyncResult(null, ret, null));
                  }
                  break;
@@ -39,7 +39,7 @@ index 59d0e00..d8a5177 100644
          }
      }
  
-@@ -4514,6 +4527,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -4517,6 +4530,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
              case RIL_UNSOL_ON_SS: return "UNSOL_ON_SS";
              case RIL_UNSOL_STK_CC_ALPHA_NOTIFY: return "UNSOL_STK_CC_ALPHA_NOTIFY";
              case RIL_UNSOL_LCEDATA_RECV: return "UNSOL_LCE_INFO_RECV";
@@ -48,13 +48,13 @@ index 59d0e00..d8a5177 100644
          }
      }
 -- 
-2.7.3
+2.8.1
 
 
-From 61afd183a44957175db58f427c4483d30e825f27 Mon Sep 17 00:00:00 2001
+From 6b7bfc48e94e2908ae82d50708376e0764cf9bcb Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
-Subject: [PATCH 2/4] telephony: support for RIL that does not send
+Subject: [PATCH 2/3] telephony: support for RIL that does not send
  UNSOL_CALL_RING
 
 Samsung Broadcom RIL does not send UNSOL_CALL_RING at all, so it
@@ -67,10 +67,10 @@ Change-Id: Ib7373d32777f6c42ee488972a7aa63ae8e1cd09b
  1 file changed, 19 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
-index d7e13f7..5455746 100644
+index 537e6a3..46dcdcc 100644
 --- a/src/java/com/android/internal/telephony/PhoneBase.java
 +++ b/src/java/com/android/internal/telephony/PhoneBase.java
-@@ -232,6 +232,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -235,6 +235,7 @@ public abstract class PhoneBase extends Handler implements Phone {
      boolean mDnsCheckDisabled;
      public DcTrackerBase mDcTracker;
      boolean mDoesRilSendMultipleCallRing;
@@ -78,7 +78,7 @@ index d7e13f7..5455746 100644
      int mCallRingContinueToken;
      int mCallRingDelay;
      public boolean mIsTheCurrentActivePhone = true;
-@@ -463,6 +464,11 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -468,6 +469,11 @@ public abstract class PhoneBase extends Handler implements Phone {
                  TelephonyProperties.PROPERTY_RIL_SENDS_MULTIPLE_CALL_RING, true);
          Rlog.d(LOG_TAG, "mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
  
@@ -90,7 +90,7 @@ index d7e13f7..5455746 100644
          mCallRingDelay = SystemProperties.getInt(
                  TelephonyProperties.PROPERTY_CALL_RING_DELAY, 3000);
          Rlog.d(LOG_TAG, "mCallRingDelay=" + mCallRingDelay);
-@@ -2172,6 +2178,18 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2177,6 +2183,18 @@ public abstract class PhoneBase extends Handler implements Phone {
      public void notifyNewRingingConnectionP(Connection cn) {
          if (!mIsVoiceCapable)
              return;
@@ -109,7 +109,7 @@ index d7e13f7..5455746 100644
          AsyncResult ar = new AsyncResult(null, cn, null);
          mNewRingingConnectionRegistrants.notifyRegistrants(ar);
      }
-@@ -2767,6 +2785,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2787,6 +2805,7 @@ public abstract class PhoneBase extends Handler implements Phone {
          pw.println(" mDnsCheckDisabled=" + mDnsCheckDisabled);
          pw.println(" mDcTracker=" + mDcTracker);
          pw.println(" mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
@@ -118,13 +118,13 @@ index d7e13f7..5455746 100644
          pw.println(" mCallRingDelay=" + mCallRingDelay);
          pw.println(" mIsTheCurrentActivePhone=" + mIsTheCurrentActivePhone);
 -- 
-2.7.3
+2.8.1
 
 
-From 6b371033bb9c80f44dad659b8367e34736b7fe85 Mon Sep 17 00:00:00 2001
+From 06dcbf57d6ec8bebb7140a3e8ed01837cf766546 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 17:39:50 +0700
-Subject: [PATCH 3/4] telephony: RIL: i9082: set correct rild names
+Subject: [PATCH 3/3] telephony: RIL: i9082: set correct rild names
 
 Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
 ---
@@ -132,7 +132,7 @@ Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index d8a5177..b1c922b 100644
+index f7c05e9..80ca803 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
 @@ -303,7 +303,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
@@ -145,32 +145,5 @@ index d8a5177..b1c922b 100644
      static final int SOCKET_OPEN_RETRY_MILLIS = 4 * 1000;
  
 -- 
-2.7.3
-
-
-From 5ed560437cdafbb91dfe40735e6bb8cd3bfba079 Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sun, 21 Feb 2016 15:28:12 +0700
-Subject: [PATCH 4/4] telephony: i9082: fix sim detection when encrypted
-
-Change-Id: Ie8886afff88b3929dca263b04817a081c3da1d34
----
- src/java/com/android/internal/telephony/uicc/UiccController.java | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/java/com/android/internal/telephony/uicc/UiccController.java b/src/java/com/android/internal/telephony/uicc/UiccController.java
-index ead7813..a7c5d4d 100644
---- a/src/java/com/android/internal/telephony/uicc/UiccController.java
-+++ b/src/java/com/android/internal/telephony/uicc/UiccController.java
-@@ -126,7 +126,7 @@ public class UiccController extends Handler {
-             Integer index = new Integer(i);
-             mCis[i].registerForIccStatusChanged(this, EVENT_ICC_STATUS_CHANGED, index);
-             // TODO remove this once modem correctly notifies the unsols
--            if (DECRYPT_STATE.equals(SystemProperties.get("vold.decrypt")) ||
-+            if (DECRYPT_STATE.equals(SystemProperties.get("vold.decrypt")) &&
-                     SystemProperties.getBoolean("persist.radio.apm_sim_not_pwdn", false)) {
-                 // Reading ICC status in airplane mode is only supported in QCOM
-                 // RILs when this property is set to true
--- 
-2.7.3
+2.8.1
 

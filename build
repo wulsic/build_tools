@@ -42,6 +42,10 @@ case "$1" in
 		DEVICE=$1
 		FAST=1
 		;;
+	i9082 )
+		DEVICE=$1
+		FAST=1
+		;;
 	"" )
 		;;
 	* )
@@ -129,10 +133,10 @@ if [[ !($FAST) ]]; then
 		make clean
 	fi
 
-	echo -n 'Device? (i9105 or i9105p or i9152): '
+	echo -n 'Device? (i9105 or i9105p or i9152 or i9082): '
 	read DEVICE
 	# Check if given proper device DNAME
-	if [[ $DEVICE != i9105 && $DEVICE != i9105p && $DEVICE != i9152 ]]; then
+	if [[ $DEVICE != i9105 && $DEVICE != i9105p && $DEVICE != i9152 && $DEVICE != i9082 ]]; then
 		echo Unknown device DNAME: $DEVICE
 		exit 0
 	fi

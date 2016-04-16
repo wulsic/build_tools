@@ -1,4 +1,4 @@
-Scripts and patches to build ROMs for Samsung Galaxy S2 Plus and Samsung Galaxy Mega 5.8
+Scripts and patches to build ROMs for Samsung Galaxy S2 Plus, Samsung Galaxy Mega 5.8 and Samsung Galaxy Grand Duos
 ==================================
 
 How to get:
@@ -11,7 +11,7 @@ resync - reset all changes in ROM sources, sync and get prebuilts. Use "-o" to r
 
 patch - patch ROM sources.
 
-build - build ROM. It asks for cleaning of out directory (make clean) and device (i9105 or i9105p or i9152), then build for chosen device. Also it handles 1st option ("i9105" or "i9105p" or "s2plus" or "i9152"). To build with cleaning use "-c" as a 2nd option. To build boot image (or recovery image) for device defined in 1st option w/o whole ROM building use 2nd option "-b" ("-r" for recovery).
+build - build ROM. It asks for cleaning of out directory (make clean) and device (i9105 or i9105p or i9152 or i9082), then build for chosen device. Also it handles 1st option ("i9105" or "i9105p" or "s2plus" or "i9152" or "i9082"). To build with cleaning use "-c" as a 2nd option. To build boot image (or recovery image) for device defined in 1st option w/o whole ROM building use 2nd option "-b" ("-r" for recovery).
 
 Credits:
 -------------
