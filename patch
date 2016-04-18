@@ -12,7 +12,6 @@ PATCHES=(
 'frameworks/native		frameworks_native.patch'
 'frameworks/opt/telephony	frameworks_opt_telephony.patch'
 'hardware/broadcom/libbt	hardware_broadcom_libbt.patch'
-'packages/inputmethods/LatinIME packages_inputmethods_LatinIME.patch'
 'packages/services/Telephony	packages_services_Telephony.patch'
 'system/core			system_core.patch'
 )
