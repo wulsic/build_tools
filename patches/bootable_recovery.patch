@@ -1,0 +1,31 @@
+From f2d32f48230ce888c0572db560ad28738b056c98 Mon Sep 17 00:00:00 2001
+From: ghsr <ghsr92@yandex.ru>
+Date: Mon, 25 Jan 2016 16:11:07 +0600
+Subject: [PATCH] Show system ro page only for oem build
+
+Change-Id: I4790249cd20b05843f4c04a9b91f9d664310bf5e
+---
+ data.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/data.cpp b/data.cpp
+index 1ea7b84..efd9ff5 100644
+--- a/data.cpp
++++ b/data.cpp
+@@ -808,8 +808,13 @@ void DataManager::SetDefaultValues()
+ 	mConst.SetValue("tw_has_mtp", "0");
+ 	mConst.SetValue("tw_mtp_enabled", "0");
+ #endif
++#ifdef TW_OEM_BUILD
+ 	mPersist.SetValue("tw_mount_system_ro", "2");
+ 	mPersist.SetValue("tw_never_show_system_ro_page", "0");
++#else
++	mPersist.SetValue("tw_mount_system_ro", "0");
++	mPersist.SetValue("tw_never_show_system_ro_page", "1");
++#endif
+ 	mPersist.SetValue("tw_language", EXPAND(TW_DEFAULT_LANGUAGE));
+ 	LOGINFO("LANG: %s\n", EXPAND(TW_DEFAULT_LANGUAGE));
+ 
+-- 
+2.8.1
+
