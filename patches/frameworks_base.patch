@@ -1,4 +1,4 @@
-From adfbe021e745bdb7909974f0a4862aae8a8c5653 Mon Sep 17 00:00:00 2001
+From 52fc85cebf1a3a17ec46906fbd26c91e93f09700 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
 Subject: [PATCH 1/5] Camera: HACK: i9082: API hacks
@@ -55,10 +55,10 @@ index 1aee794..e7c5313 100644
                  throw new CameraRuntimeException(CAMERA_DEPRECATED_HAL);
              case INVALID_OPERATION:
 -- 
-2.8.1
+2.8.2
 
 
-From 1a9246b6c6bc9871b3e3a2957faae1a245663376 Mon Sep 17 00:00:00 2001
+From 92a144051886780d18ac591cb18582cb6c005713 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Mon, 4 Nov 2013 02:22:43 +0000
 Subject: [PATCH 2/5] Forward port Samsung STK support (frameworks/base)
@@ -73,10 +73,10 @@ Change-Id: I08d169bc466df290fca838b09f6b0fbea2ac82a8
  3 files changed, 6 insertions(+)
 
 diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
-index f76dfb2..ca8358c 100644
+index 6c96f84..1b576c8 100644
 --- a/core/res/res/values/config.xml
 +++ b/core/res/res/values/config.xml
-@@ -2345,6 +2345,9 @@
+@@ -2310,6 +2310,9 @@
      <string-array name="config_cell_retries_per_error_code">
      </string-array>
  
@@ -87,12 +87,12 @@ index f76dfb2..ca8358c 100644
      <integer name="config_mdc_initial_max_retry">1</integer>
  
 diff --git a/core/res/res/values/symbols.xml b/core/res/res/values/symbols.xml
-index e709500..9e21a33 100644
+index 1bfb06c..63c8f86 100644
 --- a/core/res/res/values/symbols.xml
 +++ b/core/res/res/values/symbols.xml
-@@ -2208,6 +2208,8 @@
+@@ -2200,6 +2200,8 @@
+   <java-symbol type="bool" name="config_defaultWindowFeatureOptionsPanel" />
    <java-symbol type="bool" name="config_defaultWindowFeatureContextMenu" />
-   <java-symbol type="bool" name="config_overrideRemoteViewsActivityTransition" />
  
 +  <java-symbol type="bool" name="config_samsung_stk" />
 +
@@ -110,10 +110,10 @@ index 7088be8..0b99052 100644
 +    int RIL_UNSOL_STK_SEND_SMS_RESULT = 11002; /* Samsung STK */
  }
 -- 
-2.8.1
+2.8.2
 
 
-From 18d88115143ba0de0b71eb177e9ef89e05c49e1d Mon Sep 17 00:00:00 2001
+From 319ab09e8dd287763de3f6e96eede4e6b9b2b1fe Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
 Subject: [PATCH 3/5] frameworks: base: add KEYCODE_HOME to wake keys
@@ -124,22 +124,22 @@ Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
  1 file changed, 1 insertion(+)
 
 diff --git a/core/java/android/view/KeyEvent.java b/core/java/android/view/KeyEvent.java
-index 19d5c73..1543af8 100644
+index a9bf92b..b7a42f6 100644
 --- a/core/java/android/view/KeyEvent.java
 +++ b/core/java/android/view/KeyEvent.java
-@@ -1849,6 +1849,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
-             case KeyEvent.KEYCODE_STEM_1:
-             case KeyEvent.KEYCODE_STEM_2:
-             case KeyEvent.KEYCODE_STEM_3:
+@@ -1830,6 +1830,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
+             case KeyEvent.KEYCODE_MENU:
+             case KeyEvent.KEYCODE_WAKEUP:
+             case KeyEvent.KEYCODE_PAIRING:
 +            case KeyEvent.KEYCODE_HOME:
                  return true;
          }
          return false;
 -- 
-2.8.1
+2.8.2
 
 
-From 431a2851649d71d5863fc1f6a7ffef7336269ad7 Mon Sep 17 00:00:00 2001
+From bc7c40633a5cd7e31877d8518dca8ad822f92484 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Fri, 23 Nov 2012 14:23:16 +0000
 Subject: [PATCH 4/5] Reintroduce button-backlight (and respective inactivity
@@ -206,7 +206,7 @@ index 7b49530..19ff682 100644
  
          // Apply manual brightness.
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index 1f45896..d4d409b 100644
+index f7a8970..95a7243 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
 @@ -159,6 +159,8 @@ public final class PowerManagerService extends SystemService
@@ -226,7 +226,7 @@ index 1f45896..d4d409b 100644
  
      private final Object mLock = new Object();
  
-@@ -548,6 +551,7 @@ public final class PowerManagerService extends SystemService
+@@ -540,6 +543,7 @@ public final class PowerManagerService extends SystemService
  
              mLightsManager = getLocalService(LightsManager.class);
              mAttentionLight = mLightsManager.getLight(LightsManager.LIGHT_ID_ATTENTION);
@@ -234,7 +234,7 @@ index 1f45896..d4d409b 100644
  
              // Initialize display power management.
              mDisplayManagerInternal.initPowerManagement(
-@@ -1561,6 +1565,12 @@ public final class PowerManagerService extends SystemService
+@@ -1531,6 +1535,12 @@ public final class PowerManagerService extends SystemService
                      nextTimeout = mLastUserActivityTime
                              + screenOffTimeout - screenDimDuration;
                      if (now < nextTimeout) {
@@ -248,10 +248,10 @@ index 1f45896..d4d409b 100644
                      } else {
                          nextTimeout = mLastUserActivityTime + screenOffTimeout;
 -- 
-2.8.1
+2.8.2
 
 
-From ef28dd5aafb9b1628401338dfb02222eaa928f4a Mon Sep 17 00:00:00 2001
+From 4e698d2ccc38e67c4b2b710e93124b3dd72c5141 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 22:53:50 +0700
 Subject: [PATCH 5/5] PowerManagerService: only turn on button light when any
@@ -267,7 +267,7 @@ Change-Id: I6b15c45b713bcbc290a1026805c46109060f9990
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index d4d409b..79d54fe 100644
+index 95a7243..54a4325 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
 @@ -159,7 +159,7 @@ public final class PowerManagerService extends SystemService
@@ -287,7 +287,7 @@ index d4d409b..79d54fe 100644
  
      // Timestamp of last interactive power hint.
      private long mLastInteractivePowerHintTime;
-@@ -1059,6 +1060,11 @@ public final class PowerManagerService extends SystemService
+@@ -1046,6 +1047,11 @@ public final class PowerManagerService extends SystemService
                      return true;
                  }
              } else {
@@ -299,7 +299,7 @@ index d4d409b..79d54fe 100644
                  if (eventTime > mLastUserActivityTime) {
                      mLastUserActivityTime = eventTime;
                      mDirty |= DIRTY_USER_ACTIVITY;
-@@ -1565,7 +1571,7 @@ public final class PowerManagerService extends SystemService
+@@ -1535,7 +1541,7 @@ public final class PowerManagerService extends SystemService
                      nextTimeout = mLastUserActivityTime
                              + screenOffTimeout - screenDimDuration;
                      if (now < nextTimeout) {
@@ -309,5 +309,5 @@ index d4d409b..79d54fe 100644
                          } else {
                              mButtonsLight.setBrightness(mDisplayPowerRequest.screenBrightness);
 -- 
-2.8.1
+2.8.2
 
