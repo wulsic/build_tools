@@ -1,4 +1,4 @@
-From 685c9114867ad0552b81f8360872cb6d961dac74 Mon Sep 17 00:00:00 2001
+From 24f3b2ace4e66b30f07e878c0246a0e210f2a5af Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Thu, 22 Nov 2012 06:02:18 +0000
 Subject: [PATCH 1/8] Allow a device to include its own RIL subclass
@@ -30,10 +30,10 @@ index 449faa0..d312fec 100644
  LOCAL_MODULE := telephony-common
  
 -- 
-2.8.1
+2.8.2
 
 
-From b9815a7e45ce32604a9abd519be74e969338b62e Mon Sep 17 00:00:00 2001
+From 5afd504c38634204862d09db91d958eb84a7969f Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <github@cerqueira.org>
 Date: Thu, 22 Nov 2012 17:47:31 +0100
 Subject: [PATCH 2/8] RIL: Make RIL subclassable
@@ -476,10 +476,10 @@ index 4ada1aa..8a85566 100644
          int num;
          SsData ssData = new SsData();
 -- 
-2.8.1
+2.8.2
 
 
-From 0cdc4fe086cd38382c3d1e7f46aa44d5110f4c99 Mon Sep 17 00:00:00 2001
+From 0807576ce9a4f35fdccad05672df4d3f9b6accab Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 8 Mar 2014 19:35:17 +0700
 Subject: [PATCH 3/8] RIL: mark mInstanceId as protected
@@ -505,10 +505,10 @@ index 8a85566..493d9c5 100644
      //***** Events
  
 -- 
-2.8.1
+2.8.2
 
 
-From 1548378506a4ff55e8e0808b860250a6dda7893d Mon Sep 17 00:00:00 2001
+From 8dea728568fb7335a40599fc779d83660eea4270 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
 Subject: [PATCH 4/8] telephony: support for RIL that does not send
@@ -575,10 +575,10 @@ index 930d45e..fc6522e 100644
          pw.println(" mCallRingDelay=" + mCallRingDelay);
          pw.println(" mIsTheCurrentActivePhone=" + mIsTheCurrentActivePhone);
 -- 
-2.8.1
+2.8.2
 
 
-From ba2d403d5908fc0c64335019f2976c8aaf795dd5 Mon Sep 17 00:00:00 2001
+From 686122b7ebef126b810f9f417c60826800f69822 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 17 Dec 2014 21:19:34 +0700
 Subject: [PATCH 5/8] Forward port Samsung STK support
@@ -1142,10 +1142,10 @@ index 91a6fd6..d753659 100644
 +    }
  }
 -- 
-2.8.1
+2.8.2
 
 
-From d56458225e9df9d1008aeec209b81501d8eaa537 Mon Sep 17 00:00:00 2001
+From 78b3595eab28169ccb672497d00b884c854fe487 Mon Sep 17 00:00:00 2001
 From: Mike Kasick <mike@kasick.org>
 Date: Sat, 14 Mar 2015 20:20:39 +0700
 Subject: [PATCH 6/8] RILs: Eliminate repeated overrides of
@@ -1203,10 +1203,10 @@ index 493d9c5..bca1b9c 100644
                  new OperatorInfo(
                      strings[i+0],
 -- 
-2.8.1
+2.8.2
 
 
-From bcd58358f811a4abdf694daa7833c3e07c532778 Mon Sep 17 00:00:00 2001
+From aec78d250e0a0d2c987589410f7d80b502844662 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 22 Nov 2012 19:01:13 +0100
 Subject: [PATCH 7/8] telephony: Use reflection to create command interface
@@ -1235,7 +1235,7 @@ Change-Id: Id47d51737a9fb78e6d43a179ba304b1ba03c4219
  1 file changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneFactory.java b/src/java/com/android/internal/telephony/PhoneFactory.java
-index 0543151..166a400 100644
+index f4c4341..62fea01 100644
 --- a/src/java/com/android/internal/telephony/PhoneFactory.java
 +++ b/src/java/com/android/internal/telephony/PhoneFactory.java
 @@ -47,6 +47,7 @@ import com.android.internal.util.IndentingPrintWriter;
@@ -1294,10 +1294,10 @@ index 0543151..166a400 100644
          synchronized (sLockProxyPhones) {
              if (!sMadeDefaults) {
 -- 
-2.8.1
+2.8.2
 
 
-From 67c3daeae395b612073eb0f17ed70c08d07c13cf Mon Sep 17 00:00:00 2001
+From 6f57277ee0fe4d37be5e6286a7c2d09219ce2579 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 28 Dec 2014 18:53:11 +0700
 Subject: [PATCH 8/8] UiccController: use registerForAvailable only for
@@ -1332,5 +1332,5 @@ index 4f3b58b..a8df6fb 100644
              } else {
                  mCis[i].registerForOn(this, EVENT_ICC_STATUS_CHANGED, index);
 -- 
-2.8.1
+2.8.2
 

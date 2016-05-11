@@ -1,4 +1,4 @@
-From 8d7db257d90f6e76ef3e6f998db38444782e5ae1 Mon Sep 17 00:00:00 2001
+From da8848d0472d96d61791cfea25555279170cd1f8 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 08:38:33 +0700
 Subject: [PATCH 01/10] Bring back support for glReadPixels screenshot path
@@ -451,10 +451,10 @@ index b3baadd..5d77208 100644
      /* ------------------------------------------------------------------------
       * EGL
 -- 
-2.7.3
+2.8.2
 
 
-From 0a0d9ba1311d83a0dfa14160048ff58cb098c3bd Mon Sep 17 00:00:00 2001
+From 9f51e4c7fe29ffffd6934a3f6508e4fcd34259b3 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 02/10] libgui: Bring back support for mHeap-based screenshots
@@ -473,13 +473,13 @@ Change-Id: I7db955e2cdd120018e349c14290e975788e70ed3
 ---
  include/gui/ISurfaceComposer.h             |  15 +++
  include/gui/SurfaceComposerClient.h        |   6 ++
- libs/gui/Android.mk                        |   4 +
+ libs/gui/Android.mk                        |   3 +
  libs/gui/ISurfaceComposer.cpp              |  52 ++++++++++
  libs/gui/SurfaceComposerClient.cpp         |  26 +++++
  services/surfaceflinger/Android.mk         |   4 +
  services/surfaceflinger/SurfaceFlinger.cpp | 159 ++++++++++++++++++++++++++++-
  services/surfaceflinger/SurfaceFlinger.h   |  16 +++
- 8 files changed, 279 insertions(+), 3 deletions(-)
+ 8 files changed, 278 insertions(+), 3 deletions(-)
 
 diff --git a/include/gui/ISurfaceComposer.h b/include/gui/ISurfaceComposer.h
 index 39b6ce1..db18762 100644
@@ -539,20 +539,19 @@ index 37d953e..06e50c6 100644
      mutable sp<IGraphicBufferProducer> mProducer;
      CpuConsumer::LockedBuffer mBuffer;
 diff --git a/libs/gui/Android.mk b/libs/gui/Android.mk
-index 8a965dd..e439d84 100644
+index abc18db..63d45c0 100644
 --- a/libs/gui/Android.mk
 +++ b/libs/gui/Android.mk
-@@ -82,6 +82,10 @@ LOCAL_SHARED_LIBRARIES := \
+@@ -81,6 +81,9 @@ LOCAL_SHARED_LIBRARIES := \
+ 	libutils \
  	liblog
- 
  
 +ifeq ($(BOARD_USE_MHEAP_SCREENSHOT),true)
 +    LOCAL_CFLAGS += -DUSE_MHEAP_SCREENSHOT
 +endif
-+
+ 
  LOCAL_MODULE := libgui
  
- ifeq ($(TARGET_BOARD_PLATFORM), tegra)
 diff --git a/libs/gui/ISurfaceComposer.cpp b/libs/gui/ISurfaceComposer.cpp
 index 0ad6339..7db2e7f 100644
 --- a/libs/gui/ISurfaceComposer.cpp
@@ -688,7 +687,7 @@ index fe82e3b..0b47f75 100644
  
  void const* ScreenshotClient::getPixels() const {
 diff --git a/services/surfaceflinger/Android.mk b/services/surfaceflinger/Android.mk
-index 1901ef9..f4c5e8b 100644
+index 17ca10e..5b389e2 100644
 --- a/services/surfaceflinger/Android.mk
 +++ b/services/surfaceflinger/Android.mk
 @@ -63,6 +63,10 @@ ifeq ($(TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK),true)
@@ -945,10 +944,10 @@ index 5d77208..f32bf7d 100644
       * EGL
       */
 -- 
-2.7.3
+2.8.2
 
 
-From 2b0f3d4c82ba2aa604ec257fcf69bf52e36d973d Mon Sep 17 00:00:00 2001
+From b751da42c183293230e6d44ad1c0f210729caf0c Mon Sep 17 00:00:00 2001
 From: Ethan Chen <intervigil@gmail.com>
 Date: Thu, 15 Oct 2015 13:50:10 -0700
 Subject: [PATCH 03/10] Revert "egl: Remove old tuna BGRA vs RGBA workaround."
@@ -962,7 +961,7 @@ Change-Id: Ifb41720ed020489892a667914ea3bd3f1ac6504e
  2 files changed, 12 insertions(+)
 
 diff --git a/opengl/libs/Android.mk b/opengl/libs/Android.mk
-index 18ad300..661b99c 100644
+index 4cbca63..2e11f26 100644
 --- a/opengl/libs/Android.mk
 +++ b/opengl/libs/Android.mk
 @@ -47,6 +47,9 @@ LOCAL_CFLAGS += -DEGL_TRACE=1
@@ -1003,10 +1002,10 @@ index cdec565..4d9eaf5 100644
          // now select a corresponding sRGB format if needed
          if (attrib_list && dp->haveExtension("EGL_KHR_gl_colorspace")) {
 -- 
-2.7.3
+2.8.2
 
 
-From e609572c46da00b55923d1b2d5f9deef877c9fa3 Mon Sep 17 00:00:00 2001
+From 4bfa7829e4c7eac14dfff5140d536eb6840e1156 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 2 Nov 2013 23:02:15 -0700
 Subject: [PATCH 04/10] libEGL: allow devices to workaround Google bug 10194508
@@ -1020,7 +1019,7 @@ Change-Id: Ifc5d097c1a0b68275d23c2d191976ac96631b695
  1 file changed, 3 insertions(+)
 
 diff --git a/opengl/libs/Android.mk b/opengl/libs/Android.mk
-index 661b99c..e952a38 100644
+index 2e11f26..eaac47d 100644
 --- a/opengl/libs/Android.mk
 +++ b/opengl/libs/Android.mk
 @@ -50,6 +50,9 @@ endif
@@ -1034,10 +1033,10 @@ index 661b99c..e952a38 100644
    LOCAL_CFLAGS += -DMAX_EGL_CACHE_ENTRY_SIZE=$(MAX_EGL_CACHE_ENTRY_SIZE)
  endif
 -- 
-2.7.3
+2.8.2
 
 
-From 713d9ccd6c4a4513083a15d6d85da6094ccadacc Mon Sep 17 00:00:00 2001
+From 48369d49bbb8752237e2f521c7a6445ba010ea4b Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 05/10] binder: add compat symbol
@@ -1050,10 +1049,10 @@ Change-Id: Ib18d2513570382432d49f302ab041230650372f2
  1 file changed, 4 insertions(+)
 
 diff --git a/libs/binder/IPCThreadState.cpp b/libs/binder/IPCThreadState.cpp
-index ef88181..a6daf23 100644
+index 6d4071e..c2c0ae5 100644
 --- a/libs/binder/IPCThreadState.cpp
 +++ b/libs/binder/IPCThreadState.cpp
-@@ -343,6 +343,10 @@ status_t IPCThreadState::clearLastError()
+@@ -350,6 +350,10 @@ status_t IPCThreadState::clearLastError()
      return err;
  }
  
@@ -1065,10 +1064,10 @@ index ef88181..a6daf23 100644
  {
      return mCallingPid;
 -- 
-2.7.3
+2.8.2
 
 
-From 6f9dbb84c5bcaf805c9db23f7246c42957cd6169 Mon Sep 17 00:00:00 2001
+From 30e5f08d2894313c32e7c47922713dfd9c2898d4 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 06/10] binder: add compat symbols
@@ -1081,10 +1080,10 @@ Change-Id: I059e92f19e4c5a911d38faa9c4df549c75c90761
  1 file changed, 12 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 22d7ef3..7709a88 100644
+index 1ecc5ce..fd49f1e 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -990,6 +990,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
+@@ -1260,6 +1260,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
      return writeDupFileDescriptor(fd);
  }
  
@@ -1097,7 +1096,7 @@ index 22d7ef3..7709a88 100644
  status_t Parcel::write(const FlattenableHelperInterface& val)
  {
      status_t err;
-@@ -1430,6 +1436,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
+@@ -2046,6 +2052,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
      return NO_ERROR;
  }
  
@@ -1111,10 +1110,10 @@ index 22d7ef3..7709a88 100644
  {
      // size
 -- 
-2.7.3
+2.8.2
 
 
-From 887e9f76bf049c39efd032d1eb0648801b86b451 Mon Sep 17 00:00:00 2001
+From d0f61e53d403380c047a7d063e8585c32043fbc1 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 07/10] sf: CAPRI_HWC: fix rotation artifact
@@ -1140,10 +1139,10 @@ index ad96716..979da10 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 -- 
-2.7.3
+2.8.2
 
 
-From 87dc7743eba30a4ce2946fa03d310ae007b2307b Mon Sep 17 00:00:00 2001
+From a463b1b67d34f720988273550f7c77416396f99a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 08/10] SurfaceComposerClient: don't block RGBA_8888 for
@@ -1170,10 +1169,10 @@ index 0b47f75..545aa0a 100644
      producer->query(NATIVE_WINDOW_FORMAT,&format);
      if (format == PIXEL_FORMAT_RGBA_8888) {
 -- 
-2.7.3
+2.8.2
 
 
-From 0f821bf02534b8491f501dda8355951360528565 Mon Sep 17 00:00:00 2001
+From da65cb6dcf33ae5f1cb7f40c7ab48c4c3baacbf3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
 Subject: [PATCH 09/10] sf: CAPRI_HWC: fix for screen recording
@@ -1184,7 +1183,7 @@ Change-Id: I6c7e59400eab86bc5ec0ffebbcc475fa0fa404d2
  1 file changed, 5 insertions(+)
 
 diff --git a/libs/gui/BufferQueueProducer.cpp b/libs/gui/BufferQueueProducer.cpp
-index 87e5b4d..9634db7 100644
+index a941e2d..3eed4e8 100644
 --- a/libs/gui/BufferQueueProducer.cpp
 +++ b/libs/gui/BufferQueueProducer.cpp
 @@ -193,7 +193,12 @@ status_t BufferQueueProducer::waitForFreeSlotThenRelock(const char* caller,
@@ -1201,10 +1200,10 @@ index 87e5b4d..9634db7 100644
                  BQ_LOGE("%s: min undequeued buffer count (%d) exceeded "
                          "(dequeued=%d undequeued=%d)",
 -- 
-2.7.3
+2.8.2
 
 
-From f4f997b05dfe2c51ae3fc84258384b51dec13a86 Mon Sep 17 00:00:00 2001
+From 5287934b714eb2cb3b4f88ef6b768764c3363217 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 10/10] binder: add compat symbol for RIL
@@ -1214,10 +1213,10 @@ Subject: [PATCH 10/10] binder: add compat symbol for RIL
  1 file changed, 6 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 7709a88..90c3e12 100644
+index fd49f1e..0530e28 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -851,6 +851,12 @@ status_t Parcel::writeString16(const String16& str)
+@@ -1075,6 +1075,12 @@ status_t Parcel::writeString16(const String16& str)
      return writeString16(str.string(), str.size());
  }
  
@@ -1231,5 +1230,5 @@ index 7709a88..90c3e12 100644
  {
      if (str == NULL) return writeInt32(-1);
 -- 
-2.7.3
+2.8.2
 
