@@ -1,4 +1,4 @@
-From f01eaf2d931e176133a3f8bafc45045b8adf9706 Mon Sep 17 00:00:00 2001
+From fbb61ec7bba026fa98bccbbc42b5bf06d4cd97fb Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 31 May 2014 12:34:56 +0700
 Subject: [PATCH 1/2] telephony: support for RIL that does not send
@@ -14,10 +14,10 @@ Change-Id: Ib7373d32777f6c42ee488972a7aa63ae8e1cd09b
  1 file changed, 19 insertions(+)
 
 diff --git a/src/java/com/android/internal/telephony/PhoneBase.java b/src/java/com/android/internal/telephony/PhoneBase.java
-index 537e6a3..46dcdcc 100644
+index f3bdbc4..8e7c3c2 100644
 --- a/src/java/com/android/internal/telephony/PhoneBase.java
 +++ b/src/java/com/android/internal/telephony/PhoneBase.java
-@@ -235,6 +235,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -224,6 +224,7 @@ public abstract class PhoneBase extends Handler implements Phone {
      boolean mDnsCheckDisabled;
      public DcTrackerBase mDcTracker;
      boolean mDoesRilSendMultipleCallRing;
@@ -25,7 +25,7 @@ index 537e6a3..46dcdcc 100644
      int mCallRingContinueToken;
      int mCallRingDelay;
      public boolean mIsTheCurrentActivePhone = true;
-@@ -468,6 +469,11 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -457,6 +458,11 @@ public abstract class PhoneBase extends Handler implements Phone {
                  TelephonyProperties.PROPERTY_RIL_SENDS_MULTIPLE_CALL_RING, true);
          Rlog.d(LOG_TAG, "mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
  
@@ -37,7 +37,7 @@ index 537e6a3..46dcdcc 100644
          mCallRingDelay = SystemProperties.getInt(
                  TelephonyProperties.PROPERTY_CALL_RING_DELAY, 3000);
          Rlog.d(LOG_TAG, "mCallRingDelay=" + mCallRingDelay);
-@@ -2177,6 +2183,18 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2065,6 +2071,18 @@ public abstract class PhoneBase extends Handler implements Phone {
      public void notifyNewRingingConnectionP(Connection cn) {
          if (!mIsVoiceCapable)
              return;
@@ -56,7 +56,7 @@ index 537e6a3..46dcdcc 100644
          AsyncResult ar = new AsyncResult(null, cn, null);
          mNewRingingConnectionRegistrants.notifyRegistrants(ar);
      }
-@@ -2787,6 +2805,7 @@ public abstract class PhoneBase extends Handler implements Phone {
+@@ -2641,6 +2659,7 @@ public abstract class PhoneBase extends Handler implements Phone {
          pw.println(" mDnsCheckDisabled=" + mDnsCheckDisabled);
          pw.println(" mDcTracker=" + mDcTracker);
          pw.println(" mDoesRilSendMultipleCallRing=" + mDoesRilSendMultipleCallRing);
@@ -65,10 +65,10 @@ index 537e6a3..46dcdcc 100644
          pw.println(" mCallRingDelay=" + mCallRingDelay);
          pw.println(" mIsTheCurrentActivePhone=" + mIsTheCurrentActivePhone);
 -- 
-2.8.1
+2.8.3
 
 
-From 42fae2fb9dcbb7cbd33aa3b7a8ae542b6a1b632a Mon Sep 17 00:00:00 2001
+From 5b3281f54bd6d201a6681e13b418bc45ecbbc774 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 17:39:50 +0700
 Subject: [PATCH 2/2] telephony: RIL: i9082: set correct rild names
@@ -79,10 +79,10 @@ Change-Id: Idf8e98ae2f36f30b84be04b7b062ca4b52cebd8a
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 6a38927..85bc8b7 100644
+index 9ca2a4c..550be32 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
-@@ -303,7 +303,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -300,7 +300,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
      static final int RESPONSE_SOLICITED = 0;
      static final int RESPONSE_UNSOLICITED = 1;
  
@@ -92,5 +92,5 @@ index 6a38927..85bc8b7 100644
      static final int SOCKET_OPEN_RETRY_MILLIS = 4 * 1000;
  
 -- 
-2.8.1
+2.8.3
 

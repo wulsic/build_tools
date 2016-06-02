@@ -1,7 +1,47 @@
-From 56aeb7b888f4df2ad4a3b87425f9c1402d64da2f Mon Sep 17 00:00:00 2001
+From d991a8b751cd98501d7d75148c2a2ae6100fc2d8 Mon Sep 17 00:00:00 2001
+From: Cristoforo Cataldo <cristoforo.cataldo@gmail.com>
+Date: Sun, 30 Nov 2014 06:12:35 +0100
+Subject: [PATCH 1/2] core: Enable -mcpu=cortex-a9 flag for Cortex-A9 cpu
+ variant
+
+Change-Id: I9294a518bcdc21ccbae72eadd9f3c1a12982d028
+
+Conflicts:
+	core/combo/arch/arm/armv7-a-neon.mk
+---
+ core/combo/arch/arm/armv7-a-neon.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/core/combo/arch/arm/armv7-a-neon.mk b/core/combo/arch/arm/armv7-a-neon.mk
+index baa3af5..47d4645 100644
+--- a/core/combo/arch/arm/armv7-a-neon.mk
++++ b/core/combo/arch/arm/armv7-a-neon.mk
+@@ -20,6 +20,9 @@ ifneq (,$(filter cortex-a15 krait denver,$(TARGET_$(combo_2nd_arch_prefix)CPU_VA
+ 	arch_variant_ldflags := \
+ 		-Wl,--no-fix-cortex-a8
+ else
++ifeq ($(strip $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT)),cortex-a9)
++	arch_variant_cflags := -mcpu=cortex-a9
++else
+ ifeq ($(strip $(TARGET_$(combo_2nd_arch_prefix)CPU_VARIANT)),cortex-a8)
+ 	arch_variant_cflags := -mcpu=cortex-a8
+ 	arch_variant_ldflags := \
+@@ -49,6 +52,7 @@ endif
+ endif
+ endif
+ endif
++endif
+ 
+ arch_variant_cflags += \
+     -mfloat-abi=softfp \
+-- 
+2.8.3
+
+
+From 26f6a743c4686e6f609d0792c939b1a41c552a16 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 16 Dec 2014 19:19:52 +0700
-Subject: [PATCH] build: minigzip dependency for kernel
+Subject: [PATCH 2/2] build: minigzip dependency for kernel
 
 i9082 uses minigzip
 
@@ -11,18 +51,18 @@ Change-Id: I8c07a76eec568bce641b158d01ef8cd88b9997d4
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/tasks/kernel.mk b/core/tasks/kernel.mk
-index fab7722..f806a46 100644
+index aa64f91..121ed3f 100644
 --- a/core/tasks/kernel.mk
 +++ b/core/tasks/kernel.mk
-@@ -282,7 +282,7 @@ $(KERNEL_CONFIG): $(KERNEL_OUT_STAMP) $(KERNEL_DEFCONFIG_SRC) $(KERNEL_ADDITIONA
- 			$(KERNEL_SRC)/scripts/kconfig/merge_config.sh -m -O $(KERNEL_OUT) $(KERNEL_OUT)/.config $(KERNEL_SRC)/arch/$(KERNEL_ARCH)/configs/$(KERNEL_ADDITIONAL_CONFIG); \
- 			$(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) KCONFIG_ALLCONFIG=$(KERNEL_OUT)/.config alldefconfig; fi
+@@ -218,7 +218,7 @@ $(KERNEL_CONFIG): $(KERNEL_OUT)
+ 			cat $(KERNEL_SRC)/arch/$(KERNEL_ARCH)/configs/$(KERNEL_ADDITIONAL_CONFIG) >> $(KERNEL_OUT)/.config; \
+ 			$(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) oldconfig; fi
  
--TARGET_KERNEL_BINARIES: $(KERNEL_OUT_STAMP) $(KERNEL_CONFIG) $(KERNEL_HEADERS_INSTALL_STAMP)
-+TARGET_KERNEL_BINARIES: $(KERNEL_OUT_STAMP) $(KERNEL_CONFIG) $(KERNEL_HEADERS_INSTALL_STAMP) $(MINIGZIP)
- 	@echo -e ${CL_GRN}"Building Kernel"${CL_RST}
+-TARGET_KERNEL_BINARIES: $(KERNEL_OUT) $(KERNEL_CONFIG) $(KERNEL_HEADERS_INSTALL)
++TARGET_KERNEL_BINARIES: $(KERNEL_OUT) $(KERNEL_CONFIG) $(KERNEL_HEADERS_INSTALL) $(MINIGZIP)
  	$(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(TARGET_PREBUILT_INT_KERNEL_TYPE)
- 	$(hide) if grep -q 'CONFIG_OF=y' $(KERNEL_CONFIG) ; \
+ 	-$(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) dtbs
+ 	-$(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) modules
 -- 
-2.8.1
+2.8.3
 
