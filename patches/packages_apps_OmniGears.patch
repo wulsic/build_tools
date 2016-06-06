@@ -1,0 +1,103 @@
+From 555d7476bb86d875a593e2ccffcaf29f26e1c34c Mon Sep 17 00:00:00 2001
+From: ghsr <ghsr92@yandex.ru>
+Date: Mon, 6 Jun 2016 17:48:09 +0600
+Subject: [PATCH] OmniGear: remove custom button brightness settings
+
+Change-Id: I1e15e13ac1567b2124c32d3ea4397c7dbce98033
+---
+ res/xml/button_brightness_settings.xml             | 14 -----------
+ .../omnigears/ButtonBrightnessSettings.java        | 27 ----------------------
+ 2 files changed, 41 deletions(-)
+
+diff --git a/res/xml/button_brightness_settings.xml b/res/xml/button_brightness_settings.xml
+index 561ed0d..2a51f47 100644
+--- a/res/xml/button_brightness_settings.xml
++++ b/res/xml/button_brightness_settings.xml
+@@ -22,20 +22,6 @@
+                 android:key="button_backlight_enable"
+                 android:title="@string/button_backlight_enable_title"
+                 android:persistent="false"/>
+-        <CheckBoxPreference
+-                android:key="button_link_brightness"
+-                android:title="@string/button_link_brightness"
+-                android:summary="@string/button_link_brightness_summary"
+-                android:persistent="false"
+-                android:dependency="button_backlight_enable"
+-                android:disableDependentsState="true" />
+-        <com.android.settings.preference.SeekBarPreference
+-                android:key="button_manual_brightness_new"
+-                android:title="@string/button_manual_brightness"
+-                android:max="255"
+-                settings:min="0"
+-                android:persistent="false"
+-                android:dependency="button_link_brightness" />
+         <com.android.settings.preference.SeekBarPreference
+                 android:key="button_timeout"
+                 android:title="@string/button_timeout_title"
+diff --git a/src/org/omnirom/omnigears/ButtonBrightnessSettings.java b/src/org/omnirom/omnigears/ButtonBrightnessSettings.java
+index 3d91713..229b475 100644
+--- a/src/org/omnirom/omnigears/ButtonBrightnessSettings.java
++++ b/src/org/omnirom/omnigears/ButtonBrightnessSettings.java
+@@ -63,15 +63,11 @@ public class ButtonBrightnessSettings extends SettingsPreferenceFragment impleme
+     private static final String TAG = "ButtonBrightnessSettings";
+ 
+     private static final String KEY_BUTTON_BACKLIGHT_ENABLE = "button_backlight_enable";
+-    private static final String KEY_BUTTON_LINK_BRIGHTNESS = "button_link_brightness";
+-    private static final String KEY_BUTTON_MANUAL_BRIGHTNESS_NEW = "button_manual_brightness_new";
+     private static final String KEY_BUTTON_TIMEOUT = "button_timeout";
+ 
+     private SwitchPreference mButtonBacklightEnable;
+-    private CheckBoxPreference mLinkButtonBrightness;
+     private IPowerManager mPowerService;
+     private SeekBarPreference mButtonTimoutBar;
+-    private SeekBarPreference mManualButtonBrightnessNew;
+ 
+     @Override
+     protected int getMetricsCategory() {
+@@ -89,20 +85,6 @@ public class ButtonBrightnessSettings extends SettingsPreferenceFragment impleme
+         mButtonBacklightEnable.setChecked(Settings.System.getInt(resolver,
+                 Settings.System.CUSTOM_BUTTON_DISABLE_BRIGHTNESS, 0) == 0);
+ 
+-        mLinkButtonBrightness = (CheckBoxPreference) findPreference(KEY_BUTTON_LINK_BRIGHTNESS);
+-        mLinkButtonBrightness.setChecked(Settings.System.getInt(resolver,
+-                Settings.System.CUSTOM_BUTTON_USE_SCREEN_BRIGHTNESS, 0) != 0);
+-
+-        mManualButtonBrightnessNew = (SeekBarPreference) findPreference(KEY_BUTTON_MANUAL_BRIGHTNESS_NEW);
+-        final int customButtonBrightness = getResources().getInteger(
+-                com.android.internal.R.integer.config_button_brightness_default);
+-        final int currentBrightness = Settings.System.getInt(resolver,
+-                Settings.System.CUSTOM_BUTTON_BRIGHTNESS, customButtonBrightness);
+-        PowerManager pm = (PowerManager)getActivity().getSystemService(Context.POWER_SERVICE);
+-        mManualButtonBrightnessNew.setMaxValue(pm.getMaximumScreenBrightnessSetting());
+-        mManualButtonBrightnessNew.setValue(currentBrightness);
+-        mManualButtonBrightnessNew.setOnPreferenceChangeListener(this);
+-
+         mButtonTimoutBar = (SeekBarPreference) findPreference(KEY_BUTTON_TIMEOUT);
+         int currentTimeout = Settings.System.getInt(resolver,
+                         Settings.System.BUTTON_BACKLIGHT_TIMEOUT, 0);
+@@ -119,11 +101,6 @@ public class ButtonBrightnessSettings extends SettingsPreferenceFragment impleme
+             Settings.System.putInt(getContentResolver(),
+                     Settings.System.CUSTOM_BUTTON_DISABLE_BRIGHTNESS, checked ? 0 : 1);
+             return true;
+-        } else if (preference == mLinkButtonBrightness) {
+-            boolean checked = ((CheckBoxPreference)preference).isChecked();
+-            Settings.System.putInt(getContentResolver(),
+-                    Settings.System.CUSTOM_BUTTON_USE_SCREEN_BRIGHTNESS, checked ? 1 : 0);
+-            return true;
+         }
+         return super.onPreferenceTreeClick(preferenceScreen, preference);
+     }
+@@ -136,10 +113,6 @@ public class ButtonBrightnessSettings extends SettingsPreferenceFragment impleme
+             int buttonTimeout = (Integer) objValue;
+             Settings.System.putInt(getContentResolver(),
+                     Settings.System.BUTTON_BACKLIGHT_TIMEOUT, buttonTimeout);
+-        } else if (preference == mManualButtonBrightnessNew) {
+-            int buttonBrightness = (Integer) objValue;
+-            Settings.System.putInt(getContentResolver(),
+-                    Settings.System.CUSTOM_BUTTON_BRIGHTNESS, buttonBrightness);
+         } else {
+             return false;
+         }
+-- 
+2.8.3
+
