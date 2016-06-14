@@ -1,4 +1,4 @@
-From 2700f72db729e03221581c8964200c0c6c855d18 Mon Sep 17 00:00:00 2001
+From 2188e24b37c5c372120da540b7902c4ac0b683be Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 24 Apr 2013 11:37:19 +0700
 Subject: [PATCH 01/10] OMXCodec: Re-implement requires-flush-before-shutdown
@@ -13,7 +13,7 @@ Change-Id: I1beac06af8118dcf0c248b631bc8e6dbbab2c1d5
  1 file changed, 3 insertions(+)
 
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index b1dde80..8c1c962 100644
+index 4618e21..47c74da 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
 @@ -264,6 +264,9 @@ uint32_t OMXCodec::getComponentQuirks(
@@ -27,10 +27,10 @@ index b1dde80..8c1c962 100644
      return quirks;
  }
 -- 
-2.7.3
+2.9.0
 
 
-From efa73add7b3edd58d544a233fcdf15c4500e3aff Mon Sep 17 00:00:00 2001
+From 93f8ae04c5f5231739c10c83e982df6ace97d8fd Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
 Subject: [PATCH 02/10] OMXCodec: set default input buffer size
@@ -47,12 +47,12 @@ Change-Id: I74372f3d821e41feb38b9bc0cca4ef56aa019493
  2 files changed, 24 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 8d9bd21..79dc0f2 100644
+index 6399b79..5178c2a 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -2166,6 +2166,18 @@ status_t ACodec::configureCodec(
-     if (rateFloat > 0) {
-         err = setOperatingRate(rateFloat, video);
+@@ -1671,6 +1671,18 @@ status_t ACodec::configureCodec(
+                     "using-sw-read-often", !!(usageBits & GRALLOC_USAGE_SW_READ_OFTEN));
+         }
      }
 +// Capri's OMX fail to set a reasonable default size from width and height
 +#ifdef CAPRI_HWC
@@ -67,13 +67,13 @@ index 8d9bd21..79dc0f2 100644
 +    }
 +#endif
  
-     mBaseOutputFormat = outputFormat;
- 
+     int32_t prependSPSPPS = 0;
+     if (encoder
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index 8c1c962..fa2999a 100644
+index 47c74da..488d395 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
-@@ -672,6 +672,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
+@@ -657,6 +657,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
      if (meta->findInt32(kKeyMaxInputSize, &maxInputSize)) {
          setMinBufferSize(kPortIndexInput, (OMX_U32)maxInputSize);
      }
@@ -93,10 +93,10 @@ index 8c1c962..fa2999a 100644
      initOutputFormat(meta);
  
 -- 
-2.7.3
+2.9.0
 
 
-From 1c690a0b86647c9194c90497b29547e1f1da73ef Mon Sep 17 00:00:00 2001
+From b7dad44e40fdc222e58307a2312ab3bb642aab00 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
 Subject: [PATCH 03/10] ACodec: skip port index checking on vc4 encoder
@@ -107,10 +107,10 @@ Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
  1 file changed, 5 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 79dc0f2..a7f4a03 100644
+index 5178c2a..bbddd0c 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -4014,6 +4014,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
+@@ -4015,6 +4015,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
          return err;
      }
  
@@ -123,10 +123,10 @@ index 79dc0f2..a7f4a03 100644
          ALOGE("unexpected dir: %s(%d) on %s port", asString(def.eDir), def.eDir, niceIndex);
          return BAD_VALUE;
 -- 
-2.7.3
+2.9.0
 
 
-From 64c14128c8a74a461009d29ddc555e08c25be543 Mon Sep 17 00:00:00 2001
+From f445518f3917bb0859bfecd536b4559509b38b58 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 17:27:20 +0700
 Subject: [PATCH 04/10] ACodec: Don't trust provided width/height when setting
@@ -140,10 +140,10 @@ Change-Id: I202b291a84d2f9a8c29aa2177ba52a0465f39deb
  1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index a7f4a03..043fc16 100644
+index bbddd0c..2e424b9 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -2169,13 +2169,9 @@ status_t ACodec::configureCodec(
+@@ -1674,13 +1674,9 @@ status_t ACodec::configureCodec(
  // Capri's OMX fail to set a reasonable default size from width and height
  #ifdef CAPRI_HWC
      else if (!strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.decoder.", 21)) {
@@ -161,10 +161,10 @@ index a7f4a03..043fc16 100644
  #endif
  
 -- 
-2.7.3
+2.9.0
 
 
-From d82b0c4a96fdef47a6d52a0c7bb965d583df8013 Mon Sep 17 00:00:00 2001
+From bcab64eba43db275dc29673bbdfc1dab5783b56e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 28 Nov 2014 21:07:59 +0700
 Subject: [PATCH 05/10] AudioFlinger: i9082: HACK: disable stereo record
@@ -196,10 +196,10 @@ index fab1ef5..959afa7 100644
                                          &inStream, flags, address.string(), source);
      ALOGV("openInput_l() openInputStream returned input %p, SamplingRate %d"
 -- 
-2.7.3
+2.9.0
 
 
-From 6fa63febb1724780bea2de3e585643ad21af923e Mon Sep 17 00:00:00 2001
+From 7fff25056f5f59773822b009fe8671918900093b Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 10 Dec 2014 17:38:10 +0700
 Subject: [PATCH 06/10] AudioFlinger: i9082: HACK: force audio to 48 KHz
@@ -229,10 +229,10 @@ index 959afa7..65d79ff 100644
  
      status_t status = inHwHal->open_input_stream(inHwHal, *input, devices, &halconfig,
 -- 
-2.7.3
+2.9.0
 
 
-From d2f7998a26eda40337b809aa12e08ffc640b79c2 Mon Sep 17 00:00:00 2001
+From 00915cd88bddba65083a772ff97a5839550c0e5d Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 16 Dec 2014 21:12:22 +0700
 Subject: [PATCH 07/10] stagefright: i9082: don't allocate too many extra
@@ -248,7 +248,7 @@ Change-Id: Idfe85f3cd77d6aa5422073857ceecec902e3ca68
  2 files changed, 8 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 043fc16..649cad0 100644
+index 2e424b9..9ec91fd 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -974,7 +974,11 @@ status_t ACodec::configureOutputBuffersFromNativeWindow(
@@ -264,10 +264,10 @@ index 043fc16..649cad0 100644
              def.nBufferCountMin + *minUndequeuedBuffers + extraBuffers;
          def.nBufferCountActual = newBufferCount;
 diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index fa2999a..9ee48b2 100644
+index 488d395..72c67c8 100644
 --- a/media/libstagefright/OMXCodec.cpp
 +++ b/media/libstagefright/OMXCodec.cpp
-@@ -1872,7 +1872,11 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
+@@ -1828,7 +1828,11 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
      CODEC_LOGI("OMX-buffers: min=%u actual=%u undeq=%d+1",
              def.nBufferCountMin, def.nBufferCountActual, minUndequeuedBufs);
  
@@ -280,10 +280,10 @@ index fa2999a..9ee48b2 100644
              def.nBufferCountMin + minUndequeuedBufs + extraBuffers;
          def.nBufferCountActual = newBufferCount;
 -- 
-2.7.3
+2.9.0
 
 
-From c8aaba40d609cdfd225cab6588d023c442433468 Mon Sep 17 00:00:00 2001
+From 9f5b4b94cbf6000e7646181edc635d31409c1dd8 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:59 +0700
 Subject: [PATCH 08/10] stagefright: CAPRI_HWC: fix for screen recording
@@ -315,10 +315,10 @@ index 1a7dc9d..1c468d4 100644
      }
  
 diff --git a/media/libstagefright/omx/OMXNodeInstance.cpp b/media/libstagefright/omx/OMXNodeInstance.cpp
-index 94a213a..b42f067 100644
+index 8735eff..25fc3a4 100644
 --- a/media/libstagefright/omx/OMXNodeInstance.cpp
 +++ b/media/libstagefright/omx/OMXNodeInstance.cpp
-@@ -881,10 +881,17 @@ status_t OMXNodeInstance::createGraphicBufferSource(
+@@ -882,10 +882,17 @@ status_t OMXNodeInstance::createGraphicBufferSource(
      }
  
      if (def.format.video.eColorFormat != OMX_COLOR_FormatAndroidOpaque) {
@@ -337,10 +337,10 @@ index 94a213a..b42f067 100644
  
      uint32_t usageBits;
 -- 
-2.7.3
+2.9.0
 
 
-From 2f3f6ed7f520c7bef7afcdb6eb7195409663349e Mon Sep 17 00:00:00 2001
+From 4f29cda94242da82d84052710c823ac028829089 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 21 Dec 2014 15:25:33 +0700
 Subject: [PATCH 09/10] stagefright: CAPRI_HWC: fix for miracast
@@ -353,10 +353,10 @@ Change-Id: I5f98f00406a6b28c1a2a1862fbcefa2fdd9055d6
  1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 649cad0..5e1323b 100644
+index 9ec91fd..614166a 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -3166,7 +3166,13 @@ static OMX_U32 setPFramesSpacing(int32_t iFramesInterval, int32_t frameRate) {
+@@ -3167,7 +3167,13 @@ static OMX_U32 setPFramesSpacing(int32_t iFramesInterval, int32_t frameRate) {
      return ret;
  }
  
@@ -371,7 +371,7 @@ index 649cad0..5e1323b 100644
      int32_t tmp;
      if (!msg->findInt32("bitrate-mode", &tmp)) {
          return OMX_Video_ControlRateVariable;
-@@ -3182,7 +3188,7 @@ status_t ACodec::setupMPEG4EncoderParameters(const sp<AMessage> &msg) {
+@@ -3183,7 +3189,7 @@ status_t ACodec::setupMPEG4EncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -380,7 +380,7 @@ index 649cad0..5e1323b 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3263,7 +3269,7 @@ status_t ACodec::setupH263EncoderParameters(const sp<AMessage> &msg) {
+@@ -3264,7 +3270,7 @@ status_t ACodec::setupH263EncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -389,7 +389,7 @@ index 649cad0..5e1323b 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3391,7 +3397,7 @@ status_t ACodec::setupAVCEncoderParameters(const sp<AMessage> &msg) {
+@@ -3392,7 +3398,7 @@ status_t ACodec::setupAVCEncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -398,7 +398,7 @@ index 649cad0..5e1323b 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3499,7 +3505,7 @@ status_t ACodec::setupHEVCEncoderParameters(const sp<AMessage> &msg) {
+@@ -3500,7 +3506,7 @@ status_t ACodec::setupHEVCEncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -407,7 +407,7 @@ index 649cad0..5e1323b 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3566,7 +3572,7 @@ status_t ACodec::setupVPXEncoderParameters(const sp<AMessage> &msg) {
+@@ -3567,7 +3573,7 @@ status_t ACodec::setupVPXEncoderParameters(const sp<AMessage> &msg) {
      }
      msg->findInt32("i-frame-interval", &iFrameInterval);
  
@@ -417,10 +417,10 @@ index 649cad0..5e1323b 100644
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
 -- 
-2.7.3
+2.9.0
 
 
-From 6c1f1e3cddd923c86d41c6bdaad563d5c1baf0e6 Mon Sep 17 00:00:00 2001
+From 9c4b0c567874df112deb1a9c1150a0f4b2c3fece Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 24 Jan 2016 12:38:26 +0700
 Subject: [PATCH 10/10] AudioFlinger: i9082: fix getMicMute
@@ -450,5 +450,5 @@ index 65d79ff..44aaaff 100644
              mute = mute && state;
          }
 -- 
-2.7.3
+2.9.0
 
