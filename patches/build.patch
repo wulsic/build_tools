@@ -1,8 +1,7 @@
-From d991a8b751cd98501d7d75148c2a2ae6100fc2d8 Mon Sep 17 00:00:00 2001
+From 887de0e118702ce88dfbd4aa6e4e81014a5ec2d8 Mon Sep 17 00:00:00 2001
 From: Cristoforo Cataldo <cristoforo.cataldo@gmail.com>
 Date: Sun, 30 Nov 2014 06:12:35 +0100
-Subject: [PATCH 1/2] core: Enable -mcpu=cortex-a9 flag for Cortex-A9 cpu
- variant
+Subject: [PATCH] core: Enable -mcpu=cortex-a9 flag for Cortex-A9 cpu variant
 
 Change-Id: I9294a518bcdc21ccbae72eadd9f3c1a12982d028
 
@@ -35,34 +34,5 @@ index baa3af5..47d4645 100644
  arch_variant_cflags += \
      -mfloat-abi=softfp \
 -- 
-2.8.3
-
-
-From 26f6a743c4686e6f609d0792c939b1a41c552a16 Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Tue, 16 Dec 2014 19:19:52 +0700
-Subject: [PATCH 2/2] build: minigzip dependency for kernel
-
-i9082 uses minigzip
-
-Change-Id: I8c07a76eec568bce641b158d01ef8cd88b9997d4
----
- core/tasks/kernel.mk | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/core/tasks/kernel.mk b/core/tasks/kernel.mk
-index aa64f91..121ed3f 100644
---- a/core/tasks/kernel.mk
-+++ b/core/tasks/kernel.mk
-@@ -218,7 +218,7 @@ $(KERNEL_CONFIG): $(KERNEL_OUT)
- 			cat $(KERNEL_SRC)/arch/$(KERNEL_ARCH)/configs/$(KERNEL_ADDITIONAL_CONFIG) >> $(KERNEL_OUT)/.config; \
- 			$(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) oldconfig; fi
- 
--TARGET_KERNEL_BINARIES: $(KERNEL_OUT) $(KERNEL_CONFIG) $(KERNEL_HEADERS_INSTALL)
-+TARGET_KERNEL_BINARIES: $(KERNEL_OUT) $(KERNEL_CONFIG) $(KERNEL_HEADERS_INSTALL) $(MINIGZIP)
- 	$(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(TARGET_PREBUILT_INT_KERNEL_TYPE)
- 	-$(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) dtbs
- 	-$(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) modules
--- 
-2.8.3
+2.9.0
 
