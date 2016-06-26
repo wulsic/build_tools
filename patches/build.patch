@@ -1122,7 +1122,7 @@ index edc89ea..4a0c487 100644
  
 -.PHONY: otapackage
 +BUILDTYPE := UNOFFICIAL
-+ROM_VERSION := $(PLATFORM_VERSION)-$(shell date +%Y%m%d)-$(BUILDTYPE)-$(PRODUCT_DEVICE)
++ROM_VERSION := $(PLATFORM_VERSION)-$(shell date +%Y%m%d)-$(BUILDTYPE)-$(TARGET_DEVICE)
 +CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/aosp-$(ROM_VERSION).zip
 +
 +.PHONY: otapackage bacon
