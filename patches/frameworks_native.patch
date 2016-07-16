@@ -1,7 +1,7 @@
-From 1d48ed4657c21a588ae54a03ac4d66a973f2eb98 Mon Sep 17 00:00:00 2001
+From 2f33790d11de7f64463a4f4b04063badacd56298 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
-Subject: [PATCH 1/9] libgui: Bring back support for mHeap-based screenshots
+Subject: [PATCH 1/8] libgui: Bring back support for mHeap-based screenshots
 
 Older graphics libraries throw a hissy fit when trying to lock
 buffers for Surface-based screenshots, on at least Tegra2/3 and
@@ -489,13 +489,13 @@ index ba5b634..7e399f2 100644
       * EGL
       */
 -- 
-2.8.3
+2.9.0
 
 
-From d40c32574913a0d769897b214f0c1d677b7fcf62 Mon Sep 17 00:00:00 2001
+From 11c5abd57b610cab6d95b4bfa83d08cd2af6d530 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 26 Nov 2014 20:04:52 +0700
-Subject: [PATCH 2/9] libgui: fix test after compatibility patches
+Subject: [PATCH 2/8] libgui: fix test after compatibility patches
 
 Change-Id: Iae7333f025bb0271f008e4cc0356cf704800f1b7
 ---
@@ -525,13 +525,13 @@ index 3f495f8..0311d1f 100644
  
  TEST_F(SurfaceTest, ConcreteTypeIsSurface) {
 -- 
-2.8.3
+2.9.0
 
 
-From 698120e666d489c757efdaa778b3f769144ed77b Mon Sep 17 00:00:00 2001
+From 1250912bf0a1aba122936f45fa29dbc24e9b3ff2 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
-Subject: [PATCH 3/9] binder: add compat symbol
+Subject: [PATCH 3/8] binder: add compat symbol
 
 Required for older Samsung libtvout
 
@@ -556,13 +556,13 @@ index af18e11..9eee115 100644
  {
      return mCallingPid;
 -- 
-2.8.3
+2.9.0
 
 
-From 45bf4e47caac367417af2e7e9095ddeaed8ba8b0 Mon Sep 17 00:00:00 2001
+From d308f1fcc35b04c7a8a750b142a93f0b5f529ab1 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
-Subject: [PATCH 4/9] binder: add compat symbols
+Subject: [PATCH 4/8] binder: add compat symbols
 
 Required for libtvservice_binder.so on I9082
 
@@ -572,10 +572,10 @@ Change-Id: I059e92f19e4c5a911d38faa9c4df549c75c90761
  1 file changed, 12 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 22d7ef3..7709a88 100644
+index ff39b41..21bdf50 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -990,6 +990,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
+@@ -1007,6 +1007,12 @@ status_t Parcel::writeDupImmutableBlobFileDescriptor(int fd)
      return writeDupFileDescriptor(fd);
  }
  
@@ -588,7 +588,7 @@ index 22d7ef3..7709a88 100644
  status_t Parcel::write(const FlattenableHelperInterface& val)
  {
      status_t err;
-@@ -1430,6 +1436,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
+@@ -1457,6 +1463,12 @@ status_t Parcel::readBlob(size_t len, ReadableBlob* outBlob) const
      return NO_ERROR;
  }
  
@@ -602,13 +602,13 @@ index 22d7ef3..7709a88 100644
  {
      // size
 -- 
-2.8.3
+2.9.0
 
 
-From 7df8eaa957ffb7588331558b00ea9a889d83f120 Mon Sep 17 00:00:00 2001
+From 635b60d5ac07e41b074beaea515f121c66d3741a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
-Subject: [PATCH 5/9] sf: CAPRI_HWC: fix rotation artifact
+Subject: [PATCH 5/8] sf: CAPRI_HWC: fix rotation artifact
 
 ---
  services/surfaceflinger/SurfaceFlinger.cpp | 5 +++++
@@ -631,13 +631,13 @@ index c353563..92b71b7 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 -- 
-2.8.3
+2.9.0
 
 
-From bf887d0307c5ad64357127a2f288139d1801897d Mon Sep 17 00:00:00 2001
+From d8a7703d4fcd6b0d0495c0aaebd7518256f5fb08 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
-Subject: [PATCH 6/9] SurfaceComposerClient: don't block RGBA_8888 for
+Subject: [PATCH 6/8] SurfaceComposerClient: don't block RGBA_8888 for
  screenshot on CAPRI_HWC
 
 Works here and required for ColorFade animation
@@ -648,7 +648,7 @@ Change-Id: Ie7d549bb63e11380d7efcab27b7e4d9f3eb2a1fe
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/libs/gui/SurfaceComposerClient.cpp b/libs/gui/SurfaceComposerClient.cpp
-index 46fa568..a1ee0d4 100644
+index 46fa568..41912d6 100644
 --- a/libs/gui/SurfaceComposerClient.cpp
 +++ b/libs/gui/SurfaceComposerClient.cpp
 @@ -690,7 +690,7 @@ status_t ScreenshotClient::capture(
@@ -661,13 +661,13 @@ index 46fa568..a1ee0d4 100644
      producer->query(NATIVE_WINDOW_FORMAT,&format);
      if (format == PIXEL_FORMAT_RGBA_8888) {
 -- 
-2.8.3
+2.9.0
 
 
-From 8f9c69c65d9655fbdaed6dc636afeb097338402d Mon Sep 17 00:00:00 2001
+From 56593258c3734ea972ac9c4953332b90e01bdce7 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:27 +0700
-Subject: [PATCH 7/9] sf: CAPRI_HWC: fix for screen recording
+Subject: [PATCH 7/8] sf: CAPRI_HWC: fix for screen recording
 
 Change-Id: I6c7e59400eab86bc5ec0ffebbcc475fa0fa404d2
 ---
@@ -692,23 +692,23 @@ index 87e5b4d..9634db7 100644
                  BQ_LOGE("%s: min undequeued buffer count (%d) exceeded "
                          "(dequeued=%d undequeued=%d)",
 -- 
-2.8.3
+2.9.0
 
 
-From 06c60a08bcee6fea6886ce52f5771586c3a4b2df Mon Sep 17 00:00:00 2001
+From 3ecbcac8a30014f774ffd75f5e2ea68b72a4bef5 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
-Subject: [PATCH 8/9] binder: add compat symbol for RIL
+Subject: [PATCH 8/8] binder: add compat symbol for RIL
 
 ---
  libs/binder/Parcel.cpp | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 7709a88..90c3e12 100644
+index 21bdf50..26670b4 100644
 --- a/libs/binder/Parcel.cpp
 +++ b/libs/binder/Parcel.cpp
-@@ -851,6 +851,12 @@ status_t Parcel::writeString16(const String16& str)
+@@ -868,6 +868,12 @@ status_t Parcel::writeString16(const String16& str)
      return writeString16(str.string(), str.size());
  }
  
@@ -722,144 +722,5 @@ index 7709a88..90c3e12 100644
  {
      if (str == NULL) return writeInt32(-1);
 -- 
-2.8.3
-
-
-From f6b5b250820bc0e42691312c90b29a6e5646245a Mon Sep 17 00:00:00 2001
-From: forkbomb <keepcalm444@gmail.com>
-Date: Thu, 3 Dec 2015 20:34:15 +1100
-Subject: [PATCH 9/9] libbinder: allow devices to disable ashmem size tracking
-
-The addition of ashmem size tracking can lead to parcel objects
-overwriting other values on the stack in old binary blobs.
-
-Change-Id: Ife8514be1ba639c4061de38b59794c46bcc2d7f8
----
- include/binder/Parcel.h |  2 ++
- libs/binder/Parcel.cpp  | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 36 insertions(+)
-
-diff --git a/include/binder/Parcel.h b/include/binder/Parcel.h
-index 16cd6cf..91ffae0 100644
---- a/include/binder/Parcel.h
-+++ b/include/binder/Parcel.h
-@@ -340,8 +340,10 @@ public:
-         inline void* data() { return mData; }
-     };
- 
-+#ifndef DISABLE_ASHMEM_TRACKING
- private:
-     size_t mOpenAshmemSize;
-+#endif
- 
- public:
-     // TODO: Remove once ABI can be changed.
-diff --git a/libs/binder/Parcel.cpp b/libs/binder/Parcel.cpp
-index 90c3e12..c77db35 100644
---- a/libs/binder/Parcel.cpp
-+++ b/libs/binder/Parcel.cpp
-@@ -182,6 +182,10 @@ static void release_object(const sp<ProcessState>& proc,
- 
-                     close(obj.handle);
-                 }
-+#ifdef DISABLE_ASHMEM_TRACKING
-+            } else if (obj.cookie != 0) {
-+                close(obj.handle);
-+#endif
-             }
-             return;
-         }
-@@ -532,7 +536,11 @@ status_t Parcel::appendFrom(const Parcel *parcel, size_t offset, size_t len)
- 
-             flat_binder_object* flat
-                 = reinterpret_cast<flat_binder_object*>(mData + off);
-+#ifndef DISABLE_ASHMEM_TRACKING
-             acquire_object(proc, *flat, this, &mOpenAshmemSize);
-+#else
-+            acquire_object(proc, *flat, this);
-+#endif
- 
-             if (flat->type == BINDER_TYPE_FD) {
-                 // If this is a file descriptor, we need to dup it so the
-@@ -1064,7 +1072,11 @@ restart_write:
-         // Need to write meta-data?
-         if (nullMetaData || val.binder != 0) {
-             mObjects[mObjectsSize] = mDataPos;
-+#ifndef DISABLE_ASHMEM_TRACKING
-             acquire_object(ProcessState::self(), val, this, &mOpenAshmemSize);
-+#else
-+            acquire_object(ProcessState::self(), val, this);
-+#endif
-             mObjectsSize++;
-         }
- 
-@@ -1653,7 +1665,11 @@ void Parcel::releaseObjects()
-         i--;
-         const flat_binder_object* flat
-             = reinterpret_cast<flat_binder_object*>(data+objects[i]);
-+#ifndef DISABLE_ASHMEM_TRACKING
-         release_object(proc, *flat, this, &mOpenAshmemSize);
-+#else
-+        release_object(proc, *flat, this);
-+#endif
-     }
- }
- 
-@@ -1667,7 +1683,11 @@ void Parcel::acquireObjects()
-         i--;
-         const flat_binder_object* flat
-             = reinterpret_cast<flat_binder_object*>(data+objects[i]);
-+#ifndef DISABLE_ASHMEM_TRACKING
-         acquire_object(proc, *flat, this, &mOpenAshmemSize);
-+#else
-+        acquire_object(proc, *flat, this);
-+#endif
-     }
- }
- 
-@@ -1849,7 +1869,11 @@ status_t Parcel::continueWrite(size_t desired)
-                     // will need to rescan because we may have lopped off the only FDs
-                     mFdsKnown = false;
-                 }
-+#ifndef DISABLE_ASHMEM_TRACKING
-                 release_object(proc, *flat, this, &mOpenAshmemSize);
-+#else
-+                release_object(proc, *flat, this);
-+#endif
-             }
-             binder_size_t* objects =
-                 (binder_size_t*)realloc(mObjects, objectsSize*sizeof(binder_size_t));
-@@ -1934,7 +1958,9 @@ void Parcel::initState()
-     mFdsKnown = true;
-     mAllowFds = true;
-     mOwner = NULL;
-+#ifndef DISABLE_ASHMEM_TRACKING
-     mOpenAshmemSize = 0;
-+#endif
- }
- 
- void Parcel::scanForFds() const
-@@ -1957,12 +1983,20 @@ size_t Parcel::getBlobAshmemSize() const
-     // This used to return the size of all blobs that were written to ashmem, now we're returning
-     // the ashmem currently referenced by this Parcel, which should be equivalent.
-     // TODO: Remove method once ABI can be changed.
-+#ifndef DISABLE_ASHMEM_TRACKING
-     return mOpenAshmemSize;
-+#else
-+    return 0;
-+#endif
- }
- 
- size_t Parcel::getOpenAshmemSize() const
- {
-+#ifndef DISABLE_ASHMEM_TRACKING
-     return mOpenAshmemSize;
-+#else
-+    return 0;
-+#endif
- }
- 
- // --- Parcel::Blob ---
--- 
-2.8.3
+2.9.0
 
