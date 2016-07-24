@@ -1,4 +1,4 @@
-From b842506c961492bfed50142a398702131dab5566 Mon Sep 17 00:00:00 2001
+From ba201609b31b25f96eb64d48a32e3c1bb7ee28dd Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
 Subject: [PATCH 1/6] Camera: HACK: i9082: API hacks
@@ -55,10 +55,10 @@ index 162edc9..863a383 100644
              throw new CameraRuntimeException(CAMERA_DEPRECATED_HAL);
          } else if (errorFlag == INVALID_OPERATION) {
 -- 
-2.8.2
+2.9.2
 
 
-From 3d13e9f76675e62c8e78c38e73ffb578a679af16 Mon Sep 17 00:00:00 2001
+From 37abd87e0e990435966e1cbbb1c6dd9d145ca255 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Mon, 4 Nov 2013 02:22:43 +0000
 Subject: [PATCH 2/6] Forward port Samsung STK support (frameworks/base)
@@ -110,10 +110,10 @@ index 7088be8..0b99052 100644
 +    int RIL_UNSOL_STK_SEND_SMS_RESULT = 11002; /* Samsung STK */
  }
 -- 
-2.8.2
+2.9.2
 
 
-From 435ac74b6fd8055cb2c9e3d21b7d8e04d4f82481 Mon Sep 17 00:00:00 2001
+From 8101d7b929be28a17c77802c2e3779135ee925aa Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
 Subject: [PATCH 3/6] frameworks: base: add KEYCODE_HOME to wake keys
@@ -136,10 +136,10 @@ index 19d5c73..1543af8 100644
          }
          return false;
 -- 
-2.8.2
+2.9.2
 
 
-From 57a65927f6bdf2d8264a285fb6095ff4ba68914a Mon Sep 17 00:00:00 2001
+From 3fe144438ca0d769be064f37e52e033c5ea38672 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Fri, 23 Nov 2012 14:23:16 +0000
 Subject: [PATCH 4/6] Reintroduce button-backlight (and respective inactivity
@@ -248,10 +248,10 @@ index ced0433..a84a118 100644
                      } else {
                          nextTimeout = mLastUserActivityTime + screenOffTimeout;
 -- 
-2.8.2
+2.9.2
 
 
-From 265c8ab9512af640bc15ae9d380a0a360a063c67 Mon Sep 17 00:00:00 2001
+From fa2b37bab807c29fba84604949ebe6aa8c0de2c6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 22:53:50 +0700
 Subject: [PATCH 5/6] PowerManagerService: only turn on button light when any
@@ -309,10 +309,10 @@ index a84a118..4e2bcee 100644
                          } else {
                              mButtonsLight.setBrightness(mDisplayPowerRequest.screenBrightness);
 -- 
-2.8.2
+2.9.2
 
 
-From 0cde02dc05e574e1ab16a49451255a7d2d50f6bb Mon Sep 17 00:00:00 2001
+From b8916857a7f667c324fd65691c43eb0fbebf2045 Mon Sep 17 00:00:00 2001
 From: Paul Bouman <boumanpaul@gmail.com>
 Date: Sun, 11 Jan 2015 13:54:27 +0100
 Subject: [PATCH 6/6] Show Optimizing app dialog on first boot
@@ -364,5 +364,5 @@ index 0e475b0..867ac98 100644
              ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
              Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 -- 
-2.8.2
+2.9.2
 

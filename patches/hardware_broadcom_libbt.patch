@@ -1,4 +1,4 @@
-From 0f25f1906f42f6c8c1d3404f6a55ea2eccd9d249 Mon Sep 17 00:00:00 2001
+From bc76f1dfb73696447f13e237c313cea0d4ec710f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 20:09:12 +0700
 Subject: [PATCH] libbt: switch to N_BRCM_HCI line disclipline for userial
@@ -39,5 +39,5 @@ index 3ff518b..a038445 100644
  #endif
  
 -- 
-2.8.2
+2.9.2
 

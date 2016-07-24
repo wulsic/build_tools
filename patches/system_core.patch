@@ -1,4 +1,4 @@
-From b144a5450c2a3ec31dba274b44a136dd250b8aee Mon Sep 17 00:00:00 2001
+From 4c34607d436bd9bd8264055f91b53c39b4b9cf3c Mon Sep 17 00:00:00 2001
 From: Dave Burke <daveburke@google.com>
 Date: Wed, 24 Oct 2012 17:30:31 -0700
 Subject: [PATCH 1/8] Revert "Revert "put back the unused virtuals in
@@ -7,30 +7,20 @@ Subject: [PATCH 1/8] Revert "Revert "put back the unused virtuals in
 This reverts commit 225c66a48cdc3acef21ee380dc134449749d3cb3
 
 Change-Id: If31a04b81052cbc7dd7bf237c07107c33066d03d
-
-Conditionally Revert "put back the unused virtuals in Vector<>"
-
-These symbols are needed for MR2 camera.tegra and other blobs,
-but they conflict with KK blobs so define it for devices that
-need it by setting COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
-
-Change-Id: I59e66074526f013918a29c3afc10e52b9812778c
 ---
- include/utils/VectorImpl.h | 26 +++++++++++++++++++++++++-
- libutils/VectorImpl.cpp    | 22 ++++++++++++++++++++++
- 2 files changed, 47 insertions(+), 1 deletion(-)
+ include/utils/VectorImpl.h | 20 ++++++++++++++++++++
+ libutils/VectorImpl.cpp    | 19 +++++++++++++++++++
+ 2 files changed, 39 insertions(+)
 
 diff --git a/include/utils/VectorImpl.h b/include/utils/VectorImpl.h
-index 21ad71c..cab95be 100644
+index 21ad71c..9bc50e6 100644
 --- a/include/utils/VectorImpl.h
 +++ b/include/utils/VectorImpl.h
-@@ -105,7 +105,19 @@ protected:
+@@ -105,6 +105,16 @@ protected:
      virtual void            do_splat(void* dest, const void* item, size_t num) const = 0;
      virtual void            do_move_forward(void* dest, const void* from, size_t num) const = 0;
      virtual void            do_move_backward(void* dest, const void* from, size_t num) const = 0;
--    
 +
-+#if NEEDS_VECTORIMPL_SYMBOLS
 +    // take care of FBC...
 +    virtual void            reservedVectorImpl1();
 +    virtual void            reservedVectorImpl2();
@@ -40,16 +30,13 @@ index 21ad71c..cab95be 100644
 +    virtual void            reservedVectorImpl6();
 +    virtual void            reservedVectorImpl7();
 +    virtual void            reservedVectorImpl8();
-+#endif
-+
+     
  private:
          void* _grow(size_t where, size_t amount);
-         void  _shrink(size_t where, size_t amount);
-@@ -156,6 +168,18 @@ public:
+@@ -156,6 +166,16 @@ public:
  protected:
      virtual int             do_compare(const void* lhs, const void* rhs) const = 0;
  
-+#if NEEDS_VECTORIMPL_SYMBOLS
 +    // take care of FBC...
 +    virtual void            reservedSortedVectorImpl1();
 +    virtual void            reservedSortedVectorImpl2();
@@ -59,20 +46,18 @@ index 21ad71c..cab95be 100644
 +    virtual void            reservedSortedVectorImpl6();
 +    virtual void            reservedSortedVectorImpl7();
 +    virtual void            reservedSortedVectorImpl8();
-+#endif
 +
  private:
              ssize_t         _indexOrderOf(const void* item, size_t* order = 0) const;
  
 diff --git a/libutils/VectorImpl.cpp b/libutils/VectorImpl.cpp
-index e8d40ed..aa65430 100644
+index e8d40ed..a71970a 100644
 --- a/libutils/VectorImpl.cpp
 +++ b/libutils/VectorImpl.cpp
-@@ -556,6 +556,17 @@ void VectorImpl::_do_move_backward(void* dest, const void* from, size_t num) con
+@@ -556,6 +556,15 @@ void VectorImpl::_do_move_backward(void* dest, const void* from, size_t num) con
      do_move_backward(dest, from, num);
  }
  
-+#if NEEDS_VECTORIMPL_SYMBOLS
 +void VectorImpl::reservedVectorImpl1() { }
 +void VectorImpl::reservedVectorImpl2() { }
 +void VectorImpl::reservedVectorImpl3() { }
@@ -81,16 +66,14 @@ index e8d40ed..aa65430 100644
 +void VectorImpl::reservedVectorImpl6() { }
 +void VectorImpl::reservedVectorImpl7() { }
 +void VectorImpl::reservedVectorImpl8() { }
-+#endif
 +
  /*****************************************************************************/
  
  SortedVectorImpl::SortedVectorImpl(size_t itemSize, uint32_t flags)
-@@ -675,6 +686,17 @@ ssize_t SortedVectorImpl::remove(const void* item)
+@@ -675,6 +684,16 @@ ssize_t SortedVectorImpl::remove(const void* item)
      return i;
  }
  
-+#if NEEDS_VECTORIMPL_SYMBOLS
 +void SortedVectorImpl::reservedSortedVectorImpl1() { };
 +void SortedVectorImpl::reservedSortedVectorImpl2() { };
 +void SortedVectorImpl::reservedSortedVectorImpl3() { };
@@ -99,136 +82,68 @@ index e8d40ed..aa65430 100644
 +void SortedVectorImpl::reservedSortedVectorImpl6() { };
 +void SortedVectorImpl::reservedSortedVectorImpl7() { };
 +void SortedVectorImpl::reservedSortedVectorImpl8() { };
-+#endif
++
 +
  /*****************************************************************************/
  
  }; // namespace android
 -- 
-2.8.2
+2.9.2
 
 
-From ce6762fe84984803f539c7a5cd8dae4f729a7b68 Mon Sep 17 00:00:00 2001
-From: Arne Coucheron <arco68@gmail.com>
-Date: Wed, 3 Dec 2014 06:14:55 +0100
-Subject: [PATCH 2/8] libutils: Properly #ifdef NEEDS_VECTORIMPL_SYMBOLS
-
- * Compile error might occur otherwise
-
-Change-Id: I982e5f72ea4e84594e415394cceed44f90045526
----
- include/utils/VectorImpl.h | 4 ++--
- libutils/VectorImpl.cpp    | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/include/utils/VectorImpl.h b/include/utils/VectorImpl.h
-index cab95be..88c3a05 100644
---- a/include/utils/VectorImpl.h
-+++ b/include/utils/VectorImpl.h
-@@ -106,7 +106,7 @@ protected:
-     virtual void            do_move_forward(void* dest, const void* from, size_t num) const = 0;
-     virtual void            do_move_backward(void* dest, const void* from, size_t num) const = 0;
- 
--#if NEEDS_VECTORIMPL_SYMBOLS
-+#ifdef NEEDS_VECTORIMPL_SYMBOLS
-     // take care of FBC...
-     virtual void            reservedVectorImpl1();
-     virtual void            reservedVectorImpl2();
-@@ -168,7 +168,7 @@ public:
- protected:
-     virtual int             do_compare(const void* lhs, const void* rhs) const = 0;
- 
--#if NEEDS_VECTORIMPL_SYMBOLS
-+#ifdef NEEDS_VECTORIMPL_SYMBOLS
-     // take care of FBC...
-     virtual void            reservedSortedVectorImpl1();
-     virtual void            reservedSortedVectorImpl2();
-diff --git a/libutils/VectorImpl.cpp b/libutils/VectorImpl.cpp
-index aa65430..c149212 100644
---- a/libutils/VectorImpl.cpp
-+++ b/libutils/VectorImpl.cpp
-@@ -556,7 +556,7 @@ void VectorImpl::_do_move_backward(void* dest, const void* from, size_t num) con
-     do_move_backward(dest, from, num);
- }
- 
--#if NEEDS_VECTORIMPL_SYMBOLS
-+#ifdef NEEDS_VECTORIMPL_SYMBOLS
- void VectorImpl::reservedVectorImpl1() { }
- void VectorImpl::reservedVectorImpl2() { }
- void VectorImpl::reservedVectorImpl3() { }
-@@ -686,7 +686,7 @@ ssize_t SortedVectorImpl::remove(const void* item)
-     return i;
- }
- 
--#if NEEDS_VECTORIMPL_SYMBOLS
-+#ifdef NEEDS_VECTORIMPL_SYMBOLS
- void SortedVectorImpl::reservedSortedVectorImpl1() { };
- void SortedVectorImpl::reservedSortedVectorImpl2() { };
- void SortedVectorImpl::reservedSortedVectorImpl3() { };
--- 
-2.8.2
-
-
-From 5de1d7fde3886745a42669adb9ca82271d1b08c3 Mon Sep 17 00:00:00 2001
+From cdcfb3515cd3ec581a88147d1ebeecaebc643fd7 Mon Sep 17 00:00:00 2001
 From: codeworkx <codeworkx@cyanogenmod.org>
 Date: Sat, 27 Jul 2013 08:18:42 +0200
-Subject: [PATCH 3/8] libutils: refbase: jellybean mr1 compat
-
-[mikeioannina]: Update for L
-Can be enabled with global cflag REFBASE_JB_MR1_COMPAT_SYMBOLS
+Subject: [PATCH 2/8] libutils: refbase: jellybean mr1 compat
 
 Change-Id: Ideee0c3814a17b47f70fd612d27067fe19ae698d
 ---
- include/utils/RefBase.h | 9 +++++++++
- libutils/RefBase.cpp    | 7 +++++++
- 2 files changed, 16 insertions(+)
+ include/utils/RefBase.h | 7 +++++++
+ libutils/RefBase.cpp    | 5 +++++
+ 2 files changed, 12 insertions(+)
 
 diff --git a/include/utils/RefBase.h b/include/utils/RefBase.h
-index eac6a78..b25bbce 100644
+index 14d9cb1..f9b5295 100644
 --- a/include/utils/RefBase.h
 +++ b/include/utils/RefBase.h
-@@ -53,6 +53,15 @@ inline bool operator _op_ (const U* o) const {                  \
+@@ -53,6 +53,13 @@ inline bool operator _op_ (const U* o) const {                  \
  
  // ---------------------------------------------------------------------------
  
-+#ifdef REFBASE_JB_MR1_COMPAT_SYMBOLS
 +class ReferenceConverterBase {
 +public:
 +    virtual size_t getReferenceTypeSize() const = 0;
 +    virtual void* getReferenceBase(void const*) const = 0;
 +    inline virtual ~ReferenceConverterBase() { }
 +};
-+#endif
 +
  class ReferenceRenamer {
  protected:
      // destructor is purposedly not virtual so we avoid code overhead from
 diff --git a/libutils/RefBase.cpp b/libutils/RefBase.cpp
-index ea1e4db..2649784 100644
+index 085b314..313a97f 100644
 --- a/libutils/RefBase.cpp
 +++ b/libutils/RefBase.cpp
-@@ -635,6 +635,13 @@ void RefBase::onLastWeakRef(const void* /*id*/)
+@@ -717,6 +717,11 @@ void RefBase::onLastWeakRef(const void* /*id*/)
  
  // ---------------------------------------------------------------------------
  
-+#ifdef REFBASE_JB_MR1_COMPAT_SYMBOLS
 +extern "C" void _ZN7android7RefBase14moveReferencesEPvPKvjRKNS_22ReferenceConverterBaseE(void* /*dst*/, void const* /*src*/, size_t /*n*/,
 +        const ReferenceConverterBase& /*caster*/)
 +{
 +}
-+#endif
 +
  #if DEBUG_REFS
  void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
      for (size_t i=0 ; i<n ; i++) {
 -- 
-2.8.2
+2.9.2
 
 
-From b03ee4c41c6516be7903892097d32ed872414875 Mon Sep 17 00:00:00 2001
+From 50f378b98bcbde62251f22efb97452ed82aa81b3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 17 Dec 2011 17:26:54 -0500
-Subject: [PATCH 4/8] init: add detection of charging mode
+Subject: [PATCH 3/8] init: add detection of charging mode
 
 Based on Prashant Somashekar's patch which is in turn based on techomancer's
 patch http://goo.gl/I19GG.
@@ -254,7 +169,7 @@ Conflicts:
  2 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/init/Android.mk b/init/Android.mk
-index 66ce8a8..a958ce0 100644
+index 7aa3c3f..aae3bc8 100644
 --- a/init/Android.mk
 +++ b/init/Android.mk
 @@ -72,6 +72,14 @@ LOCAL_SRC_FILES:= \
@@ -273,10 +188,10 @@ index 66ce8a8..a958ce0 100644
  LOCAL_C_INCLUDES += \
      system/extras/ext4_utils \
 diff --git a/init/init.cpp b/init/init.cpp
-index 9b7d108..dd29581 100644
+index 78c33d5..fd71260 100644
 --- a/init/init.cpp
 +++ b/init/init.cpp
-@@ -488,6 +488,24 @@ static void selinux_initialize(bool in_kernel_domain) {
+@@ -448,6 +448,24 @@ static void selinux_initialize(bool in_kernel_domain) {
      }
  }
  
@@ -301,7 +216,7 @@ index 9b7d108..dd29581 100644
  int main(int argc, char** argv) {
      if (!strcmp(basename(argv[0]), "ueventd")) {
          return ueventd_main(argc, argv);
-@@ -612,7 +630,7 @@ int main(int argc, char** argv) {
+@@ -572,7 +590,7 @@ int main(int argc, char** argv) {
  
      // Don't mount filesystems or start core system services in charger mode.
      std::string bootmode = property_get("ro.bootmode");
@@ -311,13 +226,13 @@ index 9b7d108..dd29581 100644
      } else {
          am.QueueEventTrigger("late-init");
 -- 
-2.8.2
+2.9.2
 
 
-From 4bcc266616a29f0d2de4584cb53aa1a2be890c2b Mon Sep 17 00:00:00 2001
+From eb36f4270b24bc70e03a6578c04b4f1cc7b9ce21 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 10:48:07 +0700
-Subject: [PATCH 5/8] disable recovery flash
+Subject: [PATCH 4/8] disable recovery flash
 
 We don't want to flash AOSP's recovery
 
@@ -327,10 +242,10 @@ Change-Id: Icb999b58879f71f39b64b6e85afc5869c2e7d92e
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/rootdir/init.rc b/rootdir/init.rc
-index aa32343..4a04840 100644
+index a359713..94ecbb8 100644
 --- a/rootdir/init.rc
 +++ b/rootdir/init.rc
-@@ -600,6 +600,6 @@ on property:ro.debuggable=1
+@@ -604,6 +604,6 @@ on property:ro.debuggable=1
      chmod 0773 /data/misc/trace
      start console
  
@@ -341,13 +256,13 @@ index aa32343..4a04840 100644
 +#     class main
 +#     oneshot
 -- 
-2.8.2
+2.9.2
 
 
-From 575d2a94218c0819404bfdb3d3de84a68be69898 Mon Sep 17 00:00:00 2001
+From 9c387b36386ad44837b040e49a534d43f261c750 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 12 Apr 2013 11:40:15 +0700
-Subject: [PATCH 6/8] libnetutils: add ifc_set_mtu
+Subject: [PATCH 5/8] libnetutils: add ifc_set_mtu
 
 Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
 ---
@@ -355,10 +270,10 @@ Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
  1 file changed, 16 insertions(+)
 
 diff --git a/libnetutils/ifc_utils.c b/libnetutils/ifc_utils.c
-index f9f62f8..671ee7d 100644
+index eae32ce..58d0774 100644
 --- a/libnetutils/ifc_utils.c
 +++ b/libnetutils/ifc_utils.c
-@@ -720,3 +720,19 @@ ifc_configure(const char *ifname,
+@@ -729,3 +729,19 @@ ifc_configure(const char *ifname,
  
      return 0;
  }
@@ -379,13 +294,13 @@ index f9f62f8..671ee7d 100644
 +    return ret;
 +}
 -- 
-2.8.2
+2.9.2
 
 
-From 836dc88df33d5abab13c4bec2b4c4d57ece25ad4 Mon Sep 17 00:00:00 2001
+From 3c481cfc7c53f808d745584923907f27761dfdf6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 22:36:32 +0700
-Subject: [PATCH 7/8] charger: allow home button to wake
+Subject: [PATCH 6/8] charger: allow home button to wake
 
 A squashed commit of the following:
 
@@ -441,23 +356,23 @@ index 5846626..1c3b2a8 100644
      if (charger->next_key_check != -1 && now > charger->next_key_check)
          charger->next_key_check = -1;
 -- 
-2.8.2
+2.9.2
 
 
-From 48adae045822a80fc7379b72fd7cb423f0b0d941 Mon Sep 17 00:00:00 2001
+From 626257d9d3416f792b4f6c585504d36a14d0d6fa Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 21:11:25 +0700
-Subject: [PATCH 8/8] init: temporarily change SELinux to permissive
+Subject: [PATCH 7/8] init: temporarily change SELinux to permissive
 
 ---
  init/init.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/init/init.cpp b/init/init.cpp
-index dd29581..7528906 100644
+index fd71260..fd9e30c 100644
 --- a/init/init.cpp
 +++ b/init/init.cpp
-@@ -412,7 +412,7 @@ static void selinux_init_all_handles(void)
+@@ -372,7 +372,7 @@ static void selinux_init_all_handles(void)
  enum selinux_enforcing_status { SELINUX_PERMISSIVE, SELINUX_ENFORCING };
  
  static selinux_enforcing_status selinux_status_from_cmdline() {
@@ -467,5 +382,66 @@ index dd29581..7528906 100644
      import_kernel_cmdline(false, [&](const std::string& key, const std::string& value, bool in_qemu) {
          if (key == "androidboot.selinux" && value == "permissive") {
 -- 
-2.8.2
+2.9.2
+
+
+From b471fc53f1c7c7b2fb7abc7b48abe6f2218197de Mon Sep 17 00:00:00 2001
+From: ghsr <ghsr92@yandex.ru>
+Date: Sun, 10 Jul 2016 15:54:27 +0600
+Subject: [PATCH 8/8] Revert "<cutils/atomic.h> has been inlined for two years
+ now."
+
+This reverts commit 103e8f5608a3aae3f87760cdaf2074d55467ddc5.
+---
+ libcutils/Android.mk |  1 +
+ libcutils/atomic.c   | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
+ create mode 100644 libcutils/atomic.c
+
+diff --git a/libcutils/Android.mk b/libcutils/Android.mk
+index 822a7d3..0c6e5a1 100644
+--- a/libcutils/Android.mk
++++ b/libcutils/Android.mk
+@@ -17,6 +17,7 @@ LOCAL_PATH := $(my-dir)
+ include $(CLEAR_VARS)
+ 
+ libcutils_common_sources := \
++        atomic.c.arm \
+         config_utils.c \
+         fs_config.c \
+         canned_fs_config.c \
+diff --git a/libcutils/atomic.c b/libcutils/atomic.c
+new file mode 100644
+index 0000000..d34aa00
+--- /dev/null
++++ b/libcutils/atomic.c
+@@ -0,0 +1,26 @@
++/*
++ * Copyright (C) 2007 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++/*
++ * Generate non-inlined versions of android_atomic functions.
++ * Nobody should be using these, but some binary blobs currently (late 2014)
++ * are.
++ * If you read this in 2015 or later, please try to delete this file.
++ */
++
++#define ANDROID_ATOMIC_INLINE
++
++#include <cutils/atomic.h>
+-- 
+2.9.2
 

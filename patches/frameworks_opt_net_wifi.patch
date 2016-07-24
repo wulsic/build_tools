@@ -1,4 +1,4 @@
-From 17284c06264f2f5a5f8f0e6107a9ab87b42340ad Mon Sep 17 00:00:00 2001
+From eb9f1267039f25dbf8590246dd78c714f787374f Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Mon, 4 Nov 2013 02:54:13 +0000
 Subject: [PATCH] wifi: Set the mode at native layer
@@ -47,7 +47,7 @@ index adfc049..fc85293 100644
          } else {
              sendMessage(CMD_STOP_AP);
 diff --git a/service/jni/com_android_server_wifi_WifiNative.cpp b/service/jni/com_android_server_wifi_WifiNative.cpp
-index 8f66b46..bd16872 100644
+index 3890435..4b7cba2 100644
 --- a/service/jni/com_android_server_wifi_WifiNative.cpp
 +++ b/service/jni/com_android_server_wifi_WifiNative.cpp
 @@ -155,6 +155,11 @@ static jstring doStringCommand(JNIEnv* env, jstring javaCommand) {
@@ -71,5 +71,5 @@ index 8f66b46..bd16872 100644
      { "stopHalNative", "()V", (void*) android_net_wifi_stopHal },
      { "waitForHalEventNative", "()V", (void*) android_net_wifi_waitForHalEvents },
 -- 
-2.8.2
+2.9.2
 
