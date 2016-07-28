@@ -1,4 +1,4 @@
-From 854dfe6a6bc14dfeb017d8d3461ac74b17bd1004 Mon Sep 17 00:00:00 2001
+From c4d8ce378678f8570ba0bfaa3e3d2d2b73df6eeb Mon Sep 17 00:00:00 2001
 From: ghsr <ghsr92@yandex.ru>
 Date: Tue, 29 Mar 2016 21:59:35 +0600
 Subject: [PATCH] libc: fix slow performance for some devices
@@ -44,5 +44,5 @@ index bd71628..67c5e03 100644
  
  /* This function will be called during normal program termination
 -- 
-2.8.1
+2.9.2
 

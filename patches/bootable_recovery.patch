@@ -1,4 +1,4 @@
-From f2d32f48230ce888c0572db560ad28738b056c98 Mon Sep 17 00:00:00 2001
+From 92ad2b9d7718dcd6ab2e352de3b86a9811ff5f69 Mon Sep 17 00:00:00 2001
 From: ghsr <ghsr92@yandex.ru>
 Date: Mon, 25 Jan 2016 16:11:07 +0600
 Subject: [PATCH] Show system ro page only for oem build
@@ -27,5 +27,5 @@ index 1ea7b84..efd9ff5 100644
  	LOGINFO("LANG: %s\n", EXPAND(TW_DEFAULT_LANGUAGE));
  
 -- 
-2.8.1
+2.9.2
 

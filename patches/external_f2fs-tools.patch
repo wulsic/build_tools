@@ -1,4 +1,4 @@
-From a1f86064a8e01e980b895b6d748ea026c46003de Mon Sep 17 00:00:00 2001
+From 5e1953f1be3a636ecc624218c993a28d948ffcf8 Mon Sep 17 00:00:00 2001
 From: Keith Mok <kmok@cyngn.com>
 Date: Mon, 19 Oct 2015 13:52:23 -0700
 Subject: [PATCH] mkfs.f2fs: trim using BLKSECDISCARD
@@ -63,5 +63,5 @@ index a0f85f5..436bbeb 100644
  		return -1;
  #endif
 -- 
-2.8.1
+2.9.2
 
