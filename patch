@@ -6,6 +6,8 @@ COUNT=0
 CURRENT_DIR="$PWD"
 PD="build_tools/patches"
 PATCHES=(
+'art				art.patch'
+'bionic				bionic.patch'
 'build				build.patch'
 'frameworks/av			frameworks_av.patch'
 'frameworks/base		frameworks_base.patch'
@@ -15,7 +17,6 @@ PATCHES=(
 'hardware/broadcom/libbt	hardware_broadcom_libbt.patch'
 'hardware/libhardware_legacy	hardware_libhardware_legacy.patch'
 'packages/apps/Camera2		packages_apps_Camera2.patch'
-'packages/apps/Launcher3	packages_apps_Launcher3.patch'
 'packages/apps/Settings		packages_apps_Settings.patch'
 'packages/inputmethods/LatinIME packages_inputmethods_LatinIME.patch'
 'packages/services/Telephony	packages_services_Telephony.patch'

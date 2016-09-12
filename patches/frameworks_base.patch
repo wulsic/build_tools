@@ -1,7 +1,7 @@
-From 7ce7e6120c261e0d29491a2eb09610fd5a1b9395 Mon Sep 17 00:00:00 2001
+From cf81fd967945d94cd1be472021f82fa0a0855a8a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 1/7] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 1/6] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -12,10 +12,10 @@ Change-Id: I475fdd164b3316720387fefb14a3e12fbc262b39
  1 file changed, 20 insertions(+), 43 deletions(-)
 
 diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
-index 2e25ec7..140f18d 100644
+index 2304346..f8fb618 100644
 --- a/telephony/java/android/telephony/TelephonyManager.java
 +++ b/telephony/java/android/telephony/TelephonyManager.java
-@@ -3204,49 +3204,19 @@ public class TelephonyManager {
+@@ -3466,49 +3466,19 @@ public class TelephonyManager {
       * @hide
       */
      public static void setTelephonyProperty(int phoneId, String property, String value) {
@@ -70,7 +70,7 @@ index 2e25ec7..140f18d 100644
      }
  
      /**
-@@ -3343,15 +3313,22 @@ public class TelephonyManager {
+@@ -3605,15 +3575,22 @@ public class TelephonyManager {
       * @hide
       */
      public static String getTelephonyProperty(int phoneId, String property, String defaultVal) {
@@ -102,13 +102,13 @@ index 2e25ec7..140f18d 100644
  
      /** @hide */
 -- 
-2.9.0
+2.9.3
 
 
-From 40e8527817de28a12e16d55aaa63a72f068d3aca Mon Sep 17 00:00:00 2001
+From 100f1fe7864d0d4acad51f99e10a954ca85471e4 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 2/7] Camera: HACK: i9082: API hacks
+Date: Sat, 15 Nov 2014 14:50:29 +0700
+Subject: [PATCH 2/6] Camera: HACK: i9082: API hacks
 
 CTS 5.0 requires the presence of an auto mode, so applications
 may try to use auto without checking.
@@ -117,16 +117,29 @@ Also change ENODEV to MAX_CAMERAS_IN_USE to please the CTS
 
 Change-Id: I929feffa4f79c69e9d7be7d1acacb3c228280bfe
 ---
+ core/java/android/hardware/camera2/legacy/LegacyExceptionUtils.java | 2 +-
  core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java | 2 +-
  core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java  | 2 +-
- core/java/android/hardware/camera2/utils/CameraBinderDecorator.java | 2 +-
  3 files changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/core/java/android/hardware/camera2/legacy/LegacyExceptionUtils.java b/core/java/android/hardware/camera2/legacy/LegacyExceptionUtils.java
+index 93d6001..5d7400a 100644
+--- a/core/java/android/hardware/camera2/legacy/LegacyExceptionUtils.java
++++ b/core/java/android/hardware/camera2/legacy/LegacyExceptionUtils.java
+@@ -116,7 +116,7 @@ public class LegacyExceptionUtils {
+             errorCode = ICameraService.ERROR_MAX_CAMERAS_IN_USE;
+             errorMsg = "Maximum number of cameras in use";
+         } else if (errorFlag == -ENODEV) {
+-            errorCode = ICameraService.ERROR_DISCONNECTED;
++            errorCode = ICameraService.ERROR_MAX_CAMERAS_IN_USE;
+             errorMsg = "Camera device not available";
+         } else if (errorFlag == -EOPNOTSUPP) {
+             errorCode = ICameraService.ERROR_DEPRECATED_HAL;
 diff --git a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
-index 8bdd42a..5898eac 100644
+index bb0a042..2fd464e 100644
 --- a/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
 +++ b/core/java/android/hardware/camera2/legacy/LegacyMetadataMapper.java
-@@ -1149,7 +1149,7 @@ public class LegacyMetadataMapper {
+@@ -1151,7 +1151,7 @@ public class LegacyMetadataMapper {
                  return CONTROL_AE_ANTIBANDING_MODE_OFF;
              }
              case Camera.Parameters.ANTIBANDING_50HZ: {
@@ -136,10 +149,10 @@ index 8bdd42a..5898eac 100644
              case Camera.Parameters.ANTIBANDING_60HZ: {
                  return CONTROL_AE_ANTIBANDING_MODE_60HZ;
 diff --git a/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java b/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java
-index 6a44ac5..a427b9d 100644
+index 2e06d5f..1a3db4e 100644
 --- a/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java
 +++ b/core/java/android/hardware/camera2/legacy/LegacyRequestMapper.java
-@@ -618,7 +618,7 @@ public class LegacyRequestMapper {
+@@ -620,7 +620,7 @@ public class LegacyRequestMapper {
                  return Parameters.ANTIBANDING_60HZ;
              }
              case CONTROL_AE_ANTIBANDING_MODE_AUTO: {
@@ -148,27 +161,14 @@ index 6a44ac5..a427b9d 100644
              }
              default: {
                  return null;
-diff --git a/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java b/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java
-index 1aee794..e7c5313 100644
---- a/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java
-+++ b/core/java/android/hardware/camera2/utils/CameraBinderDecorator.java
-@@ -124,7 +124,7 @@ public class CameraBinderDecorator {
-             case EUSERS:
-                 throw new CameraRuntimeException(MAX_CAMERAS_IN_USE);
-             case ENODEV:
--                throw new CameraRuntimeException(CAMERA_DISCONNECTED);
-+                throw new CameraRuntimeException(/*CAMERA_DISCONNECTED*/ MAX_CAMERAS_IN_USE);
-             case EOPNOTSUPP:
-                 throw new CameraRuntimeException(CAMERA_DEPRECATED_HAL);
-             case INVALID_OPERATION:
 -- 
-2.9.0
+2.9.3
 
 
-From d55e2495661b24c530c9b05f5fdb820eb2709c17 Mon Sep 17 00:00:00 2001
+From c26d4293ce678289e8e0cdea1b6a0e1138ff097f Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Mon, 4 Nov 2013 02:22:43 +0000
-Subject: [PATCH 3/7] Forward port Samsung STK support (frameworks/base)
+Subject: [PATCH 3/6] Forward port Samsung STK support (frameworks/base)
 
 [pawitp: port to Lollipop]
 
@@ -176,14 +176,14 @@ Change-Id: I08d169bc466df290fca838b09f6b0fbea2ac82a8
 ---
  core/res/res/values/config.xml                                  | 3 +++
  core/res/res/values/symbols.xml                                 | 2 ++
- telephony/java/com/android/internal/telephony/RILConstants.java | 1 +
- 3 files changed, 6 insertions(+)
+ telephony/java/com/android/internal/telephony/RILConstants.java | 2 ++
+ 3 files changed, 7 insertions(+)
 
 diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
-index 6c96f84..1b576c8 100644
+index d0fd36a..a9cdba0 100644
 --- a/core/res/res/values/config.xml
 +++ b/core/res/res/values/config.xml
-@@ -2310,6 +2310,9 @@
+@@ -2374,6 +2374,9 @@
      <string-array name="config_cell_retries_per_error_code">
      </string-array>
  
@@ -194,12 +194,12 @@ index 6c96f84..1b576c8 100644
      <integer name="config_mdc_initial_max_retry">1</integer>
  
 diff --git a/core/res/res/values/symbols.xml b/core/res/res/values/symbols.xml
-index 1bfb06c..63c8f86 100644
+index d154b03..6c9b3ed 100644
 --- a/core/res/res/values/symbols.xml
 +++ b/core/res/res/values/symbols.xml
-@@ -2200,6 +2200,8 @@
-   <java-symbol type="bool" name="config_defaultWindowFeatureOptionsPanel" />
+@@ -2249,6 +2249,8 @@
    <java-symbol type="bool" name="config_defaultWindowFeatureContextMenu" />
+   <java-symbol type="bool" name="config_overrideRemoteViewsActivityTransition" />
  
 +  <java-symbol type="bool" name="config_samsung_stk" />
 +
@@ -207,49 +207,52 @@ index 1bfb06c..63c8f86 100644
    <java-symbol type="array" name="config_sms_convert_destination_number_support" />
    <java-symbol type="string" name="prohibit_manual_network_selection_in_gobal_mode" />
 diff --git a/telephony/java/com/android/internal/telephony/RILConstants.java b/telephony/java/com/android/internal/telephony/RILConstants.java
-index 7088be8..0b99052 100644
+index cfc5305..5741fcc 100644
 --- a/telephony/java/com/android/internal/telephony/RILConstants.java
 +++ b/telephony/java/com/android/internal/telephony/RILConstants.java
-@@ -382,4 +382,5 @@ cat include/telephony/ril.h | \
+@@ -459,4 +459,6 @@ cat include/telephony/ril.h | \
      int RIL_UNSOL_ON_SS = 1043;
      int RIL_UNSOL_STK_CC_ALPHA_NOTIFY = 1044;
      int RIL_UNSOL_LCEDATA_RECV = 1045;
++
 +    int RIL_UNSOL_STK_SEND_SMS_RESULT = 11002; /* Samsung STK */
  }
 -- 
-2.9.0
+2.9.3
 
 
-From 9973f6b7fa9c9fdfb17ab58babaa66f6c8bb20e2 Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Sat, 15 Nov 2014 14:47:35 +0700
-Subject: [PATCH 4/7] frameworks: base: add KEYCODE_HOME to wake keys
+From 709c864a21c84c6dc7972eb2fddb81956d6abadb Mon Sep 17 00:00:00 2001
+From: Alex Sarraf <asarraf@codeaurora.org>
+Date: Wed, 15 Jul 2015 11:20:17 -0700
+Subject: [PATCH 4/6] KeyEvent: Add support for Home key wakeup
 
-Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
+Add Home key to list of wakeable buttons.
+
+Change-Id: Ic452e4bf262301527f83d6dbd9bbaad7aa20a13e
 ---
  core/java/android/view/KeyEvent.java | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/core/java/android/view/KeyEvent.java b/core/java/android/view/KeyEvent.java
-index a9bf92b..b7a42f6 100644
+index 636384c..6a70136 100644
 --- a/core/java/android/view/KeyEvent.java
 +++ b/core/java/android/view/KeyEvent.java
-@@ -1830,6 +1830,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
+@@ -1855,6 +1855,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
+         switch (keyCode) {
+             case KeyEvent.KEYCODE_BACK:
              case KeyEvent.KEYCODE_MENU:
++            case KeyEvent.KEYCODE_HOME:
              case KeyEvent.KEYCODE_WAKEUP:
              case KeyEvent.KEYCODE_PAIRING:
-+            case KeyEvent.KEYCODE_HOME:
-                 return true;
-         }
-         return false;
+             case KeyEvent.KEYCODE_STEM_1:
 -- 
-2.9.0
+2.9.3
 
 
-From 975390494c8d5fc8a838a2b7413772edcc35f306 Mon Sep 17 00:00:00 2001
+From ed1717865729d0da3f00457fe9856e4d8be623e9 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Fri, 23 Nov 2012 14:23:16 +0000
-Subject: [PATCH 5/7] Reintroduce button-backlight (and respective inactivity
+Subject: [PATCH 5/6] Reintroduce button-backlight (and respective inactivity
  timeout)
 
 The power manager rewrite from Change I1d7a52e98f0449f76d70bf421f6a7f245957d1d7
@@ -267,7 +270,7 @@ Change-Id: I6094c446e0b8c23f57d30652a3cbd35dee5e821a
  2 files changed, 17 insertions(+)
 
 diff --git a/services/core/java/com/android/server/display/DisplayPowerController.java b/services/core/java/com/android/server/display/DisplayPowerController.java
-index 7b49530..19ff682 100644
+index 8f8afd5..45282f3 100644
 --- a/services/core/java/com/android/server/display/DisplayPowerController.java
 +++ b/services/core/java/com/android/server/display/DisplayPowerController.java
 @@ -19,6 +19,7 @@ package com.android.server.display;
@@ -278,7 +281,7 @@ index 7b49530..19ff682 100644
  
  import android.animation.Animator;
  import android.animation.ObjectAnimator;
-@@ -124,6 +125,9 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
+@@ -123,6 +124,9 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
      // Battery stats.
      private final IBatteryStats mBatteryStats;
  
@@ -288,7 +291,7 @@ index 7b49530..19ff682 100644
      // The sensor manager.
      private final SensorManager mSensorManager;
  
-@@ -262,6 +266,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
+@@ -264,6 +268,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
          mCallbacks = callbacks;
  
          mBatteryStats = BatteryStatsService.getService();
@@ -296,7 +299,7 @@ index 7b49530..19ff682 100644
          mSensorManager = sensorManager;
          mWindowManagerPolicy = LocalServices.getService(WindowManagerPolicy.class);
          mBlanker = blanker;
-@@ -595,6 +600,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
+@@ -606,6 +611,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
          // Use zero brightness when screen is off.
          if (state == Display.STATE_OFF) {
              brightness = PowerManager.BRIGHTNESS_OFF;
@@ -304,7 +307,7 @@ index 7b49530..19ff682 100644
          }
  
          // Configure auto-brightness.
-@@ -646,6 +652,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
+@@ -657,6 +663,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
          if (brightness < 0 && (state == Display.STATE_DOZE
                  || state == Display.STATE_DOZE_SUSPEND)) {
              brightness = mScreenBrightnessDozeConfig;
@@ -313,19 +316,19 @@ index 7b49530..19ff682 100644
  
          // Apply manual brightness.
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index f7a8970..95a7243 100644
+index 12a2d2e..ee31f27 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
-@@ -159,6 +159,8 @@ public final class PowerManagerService extends SystemService
+@@ -169,6 +169,8 @@ public final class PowerManagerService extends SystemService
      // Default setting for double tap to wake.
      private static final int DEFAULT_DOUBLE_TAP_TO_WAKE = 0;
  
 +    private static final int BUTTON_ON_DURATION = 5 * 1000;
 +
-     private final Context mContext;
-     private final ServiceThread mHandlerThread;
-     private final PowerManagerHandler mHandler;
-@@ -174,6 +176,7 @@ public final class PowerManagerService extends SystemService
+     /** Constants for {@link #shutdownOrRebootInternal} */
+     @Retention(RetentionPolicy.SOURCE)
+     @IntDef({HALT_MODE_SHUTDOWN, HALT_MODE_REBOOT, HALT_MODE_REBOOT_SAFE_MODE})
+@@ -192,6 +194,7 @@ public final class PowerManagerService extends SystemService
      private SettingsObserver mSettingsObserver;
      private DreamManagerInternal mDreamManager;
      private Light mAttentionLight;
@@ -333,7 +336,7 @@ index f7a8970..95a7243 100644
  
      private final Object mLock = new Object();
  
-@@ -540,6 +543,7 @@ public final class PowerManagerService extends SystemService
+@@ -586,6 +589,7 @@ public final class PowerManagerService extends SystemService
  
              mLightsManager = getLocalService(LightsManager.class);
              mAttentionLight = mLightsManager.getLight(LightsManager.LIGHT_ID_ATTENTION);
@@ -341,7 +344,7 @@ index f7a8970..95a7243 100644
  
              // Initialize display power management.
              mDisplayManagerInternal.initPowerManagement(
-@@ -1531,6 +1535,12 @@ public final class PowerManagerService extends SystemService
+@@ -1626,6 +1630,12 @@ public final class PowerManagerService extends SystemService
                      nextTimeout = mLastUserActivityTime
                              + screenOffTimeout - screenDimDuration;
                      if (now < nextTimeout) {
@@ -355,13 +358,13 @@ index f7a8970..95a7243 100644
                      } else {
                          nextTimeout = mLastUserActivityTime + screenOffTimeout;
 -- 
-2.9.0
+2.9.3
 
 
-From ee8f0bb827ea2d79187f560223ef86b323666eff Mon Sep 17 00:00:00 2001
+From 0f50f13c3dc1bbb748278b72ace86e769b8c2a71 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 22:53:50 +0700
-Subject: [PATCH 6/7] PowerManagerService: only turn on button light when any
+Subject: [PATCH 6/6] PowerManagerService: only turn on button light when any
  button is pressed
 
 * Also reduce the timeout to 2 seconds
@@ -374,19 +377,19 @@ Change-Id: I6b15c45b713bcbc290a1026805c46109060f9990
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index 95a7243..54a4325 100644
+index ee31f27..be44517 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
-@@ -159,7 +159,7 @@ public final class PowerManagerService extends SystemService
+@@ -169,7 +169,7 @@ public final class PowerManagerService extends SystemService
      // Default setting for double tap to wake.
      private static final int DEFAULT_DOUBLE_TAP_TO_WAKE = 0;
  
 -    private static final int BUTTON_ON_DURATION = 5 * 1000;
 +    private static final int BUTTON_ON_DURATION = 2 * 1000;
  
-     private final Context mContext;
-     private final ServiceThread mHandlerThread;
-@@ -217,6 +217,7 @@ public final class PowerManagerService extends SystemService
+     /** Constants for {@link #shutdownOrRebootInternal} */
+     @Retention(RetentionPolicy.SOURCE)
+@@ -235,6 +235,7 @@ public final class PowerManagerService extends SystemService
      // Timestamp of the last call to user activity.
      private long mLastUserActivityTime;
      private long mLastUserActivityTimeNoChangeLights;
@@ -394,7 +397,7 @@ index 95a7243..54a4325 100644
  
      // Timestamp of last interactive power hint.
      private long mLastInteractivePowerHintTime;
-@@ -1046,6 +1047,11 @@ public final class PowerManagerService extends SystemService
+@@ -1124,6 +1125,11 @@ public final class PowerManagerService extends SystemService
                      return true;
                  }
              } else {
@@ -406,7 +409,7 @@ index 95a7243..54a4325 100644
                  if (eventTime > mLastUserActivityTime) {
                      mLastUserActivityTime = eventTime;
                      mDirty |= DIRTY_USER_ACTIVITY;
-@@ -1535,7 +1541,7 @@ public final class PowerManagerService extends SystemService
+@@ -1630,7 +1636,7 @@ public final class PowerManagerService extends SystemService
                      nextTimeout = mLastUserActivityTime
                              + screenOffTimeout - screenDimDuration;
                      if (now < nextTimeout) {
@@ -416,60 +419,5 @@ index 95a7243..54a4325 100644
                          } else {
                              mButtonsLight.setBrightness(mDisplayPowerRequest.screenBrightness);
 -- 
-2.9.0
-
-
-From 71a601a5e06b42bb28807c34649761dfeae5126f Mon Sep 17 00:00:00 2001
-From: Paul Bouman <boumanpaul@gmail.com>
-Date: Sun, 11 Jan 2015 13:54:27 +0100
-Subject: [PATCH 7/7] Show Optimizing app dialog on first boot
-
-The boot dialog is currently hidden on first boot but the bootanimation
-can take a very long time to go away. Show the boot dialog so we know
-whats happening.
-
-Change-Id: I71d50eb8929edde38fcfdcccc2cb05c25777c6dd
----
- .../java/com/android/server/pm/PackageManagerService.java    | 12 +++++-------
- services/java/com/android/server/SystemServer.java           |  2 +-
- 2 files changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/services/core/java/com/android/server/pm/PackageManagerService.java b/services/core/java/com/android/server/pm/PackageManagerService.java
-index c1d091b..4abb49d 100644
---- a/services/core/java/com/android/server/pm/PackageManagerService.java
-+++ b/services/core/java/com/android/server/pm/PackageManagerService.java
-@@ -6177,13 +6177,11 @@ public class PackageManagerService extends IPackageManager.Stub {
-         if (DEBUG_DEXOPT) {
-             Log.i(TAG, "Optimizing app " + curr + " of " + total + ": " + pkg.packageName);
-         }
--        if (!isFirstBoot()) {
--            try {
--                ActivityManagerNative.getDefault().showBootMessage(
--                        mContext.getResources().getString(R.string.android_upgrading_apk,
--                                curr, total), true);
--            } catch (RemoteException e) {
--            }
-+        try {
-+            ActivityManagerNative.getDefault().showBootMessage(
-+                    mContext.getResources().getString(R.string.android_upgrading_apk,
-+                            curr, total), true);
-+        } catch (RemoteException e) {
-         }
-         PackageParser.Package p = pkg;
-         synchronized (mInstallLock) {
-diff --git a/services/java/com/android/server/SystemServer.java b/services/java/com/android/server/SystemServer.java
-index 7dd16d1..08def2d 100644
---- a/services/java/com/android/server/SystemServer.java
-+++ b/services/java/com/android/server/SystemServer.java
-@@ -499,7 +499,7 @@ public final class SystemServer {
-             Slog.i(TAG, "Window Manager");
-             wm = WindowManagerService.main(context, inputManager,
-                     mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL,
--                    !mFirstBoot, mOnlyCore);
-+                    true, mOnlyCore);
-             ServiceManager.addService(Context.WINDOW_SERVICE, wm);
-             ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
- 
--- 
-2.9.0
+2.9.3
 
