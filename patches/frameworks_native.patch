@@ -1432,14 +1432,15 @@ index e88ae29..611c703 100644
 2.9.3
 
 
-From 51f1ddaf6db703cca649c222c4ab62c06f1c79ae Mon Sep 17 00:00:00 2001
+From 3f49ce338ff886ff43f5c61df0d18af204eb854a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 07/11] sf: CAPRI_HWC: fix rotation artifact
 
 ---
- services/surfaceflinger/SurfaceFlinger.cpp | 5 +++++
- 1 file changed, 5 insertions(+)
+ services/surfaceflinger/SurfaceFlinger.cpp      | 5 +++++
+ services/surfaceflinger/SurfaceFlinger_hwc1.cpp | 5 +++++
+ 2 files changed, 10 insertions(+)
 
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
 index 8a1b420..575fd4d 100644
@@ -1457,11 +1458,27 @@ index 8a1b420..575fd4d 100644
      // get screen geometry
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
+diff --git a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
+index 983e492..5daab49 100644
+--- a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
++++ b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
+@@ -3425,6 +3425,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
+ {
+     ATRACE_CALL();
+ 
++// Rotation artifact problems when useReadPixels is false
++#ifdef CAPRI_HWC
++    useReadPixels = true;
++#endif
++
+     // get screen geometry
+     uint32_t hw_w = hw->getWidth();
+     uint32_t hw_h = hw->getHeight();
 -- 
 2.9.3
 
 
-From 651a9d1828b91d717983cdf94d42cf81e33d0c77 Mon Sep 17 00:00:00 2001
+From f37ba6ec9cd6051be684e6b6859ed5051783c304 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 08/11] SurfaceComposerClient: don't block RGBA_8888 for
@@ -1491,7 +1508,7 @@ index c526bdf..ab17937 100644
 2.9.3
 
 
-From e7cd9ac23034656eb6d7d2bd35d2e0e6c0b2f735 Mon Sep 17 00:00:00 2001
+From c072fa11eb077421fa0a4e67da4e6fed8c2995a3 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 09/11] binder: add compat symbol for RIL
@@ -1521,7 +1538,7 @@ index 611c703..470cb15 100644
 2.9.3
 
 
-From 1f47d58e6b249fa9ad0b35a863b3414fe9ad367b Mon Sep 17 00:00:00 2001
+From 5a46a9b4136c448d47fb1b2f3bdccf99c43f0bef Mon Sep 17 00:00:00 2001
 From: Simon Shields <keepcalm444@gmail.com>
 Date: Thu, 3 Dec 2015 20:34:15 +1100
 Subject: [PATCH 10/11] libbinder: allow devices to disable ashmem size
@@ -1650,7 +1667,7 @@ index 470cb15..b22e982 100644
 2.9.3
 
 
-From 80ae50ff4a78e6f75dfbed9b90e44bda231f7f6b Mon Sep 17 00:00:00 2001
+From 9a0666e51b0049f55a58162960f7679041d0396d Mon Sep 17 00:00:00 2001
 From: Steve Kondik <steve@cyngn.com>
 Date: Thu, 1 Sep 2016 22:10:07 -0700
 Subject: [PATCH 11/11] libgui: Provide M-compatible sensors ABI
