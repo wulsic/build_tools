@@ -1,4 +1,4 @@
-From 2956dcaeda8523a82f4ba5a4564b9a2ad3befdcb Mon Sep 17 00:00:00 2001
+From 2269b49b20920573b099d98b29f350edea38fa9f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 08:38:33 +0700
 Subject: [PATCH 01/11] Bring back support for glReadPixels screenshot path
@@ -559,7 +559,7 @@ index 7f3b269..429bded 100644
 2.9.3
 
 
-From f5c166f1bf4efdf5cab3024e22dd0d7b763c5d30 Mon Sep 17 00:00:00 2001
+From c6cae40a5d39b585fd998752d7122c790b457816 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 02/11] libgui: Bring back support for mHeap-based screenshots
@@ -579,13 +579,13 @@ Change-Id: I7db955e2cdd120018e349c14290e975788e70ed3
  include/gui/ISurfaceComposer.h                  |  15 +++
  include/gui/SurfaceComposerClient.h             |   6 +
  libs/gui/Android.mk                             |   4 +
- libs/gui/ISurfaceComposer.cpp                   |  52 ++++++++
- libs/gui/SurfaceComposerClient.cpp              |  26 ++++
+ libs/gui/ISurfaceComposer.cpp                   |  53 ++++++++
+ libs/gui/SurfaceComposerClient.cpp              |  27 ++++
  services/surfaceflinger/Android.mk              |   4 +
  services/surfaceflinger/SurfaceFlinger.cpp      | 161 +++++++++++++++++++++++-
  services/surfaceflinger/SurfaceFlinger.h        |  16 +++
  services/surfaceflinger/SurfaceFlinger_hwc1.cpp | 161 +++++++++++++++++++++++-
- 9 files changed, 437 insertions(+), 8 deletions(-)
+ 9 files changed, 439 insertions(+), 8 deletions(-)
 
 diff --git a/include/gui/ISurfaceComposer.h b/include/gui/ISurfaceComposer.h
 index 700fe40..1624650 100644
@@ -660,7 +660,7 @@ index 635020e..025d924 100644
  
  ifeq ($(TARGET_BOARD_PLATFORM), tegra)
 diff --git a/libs/gui/ISurfaceComposer.cpp b/libs/gui/ISurfaceComposer.cpp
-index a777a29..2489f70 100644
+index a777a29..74b38ff 100644
 --- a/libs/gui/ISurfaceComposer.cpp
 +++ b/libs/gui/ISurfaceComposer.cpp
 @@ -99,6 +99,33 @@ public:
@@ -697,7 +697,7 @@ index a777a29..2489f70 100644
      virtual status_t captureScreen(const sp<IBinder>& display,
              const sp<IGraphicBufferProducer>& producer,
              Rect sourceCrop, uint32_t reqWidth, uint32_t reqHeight,
-@@ -373,6 +400,31 @@ status_t BnSurfaceComposer::onTransact(
+@@ -373,6 +400,32 @@ status_t BnSurfaceComposer::onTransact(
              bootFinished();
              return NO_ERROR;
          }
@@ -705,7 +705,7 @@ index a777a29..2489f70 100644
 +        case CAPTURE_SCREEN_DEPRECATED: {
 +            CHECK_INTERFACE(ISurfaceComposer, data, reply);
 +            sp<IBinder> display = data.readStrongBinder();
-+            Rect sourceCrop;
++            Rect sourceCrop(Rect::EMPTY_RECT);
 +            data.read(sourceCrop);
 +            uint32_t reqWidth = data.readUint32();
 +            uint32_t reqHeight = data.readUint32();
@@ -715,6 +715,7 @@ index a777a29..2489f70 100644
 +            uint32_t rotation = data.readUint32();
 +            sp<IMemoryHeap> heap;
 +            uint32_t w, h;
++
 +            status_t res = captureScreen(display, &heap, &w, &h,
 +                    sourceCrop, reqWidth, reqHeight, minLayerZ, maxLayerZ,
 +                    useIdentityTransform,
@@ -730,7 +731,7 @@ index a777a29..2489f70 100644
              CHECK_INTERFACE(ISurfaceComposer, data, reply);
              sp<IBinder> display = data.readStrongBinder();
 diff --git a/libs/gui/SurfaceComposerClient.cpp b/libs/gui/SurfaceComposerClient.cpp
-index 9c1fe73..c526bdf 100644
+index 9c1fe73..3aa95b6 100644
 --- a/libs/gui/SurfaceComposerClient.cpp
 +++ b/libs/gui/SurfaceComposerClient.cpp
 @@ -791,6 +791,14 @@ status_t ScreenshotClient::capture(
@@ -748,7 +749,7 @@ index 9c1fe73..c526bdf 100644
      return s->captureScreen(display, producer, sourceCrop,
              reqWidth, reqHeight, minLayerZ, maxLayerZ, useIdentityTransform,
              ISurfaceComposer::eRotateNone, false);
-@@ -821,6 +829,19 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
+@@ -821,6 +829,20 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
          bool useIdentityTransform, uint32_t rotation) {
      sp<ISurfaceComposer> s(ComposerService::getComposerService());
      if (s == NULL) return NO_INIT;
@@ -758,6 +759,7 @@ index 9c1fe73..c526bdf 100644
 +    ret = s->captureScreen(display, &mHeap, &mBuffer.width, &mBuffer.height, sourceCrop,
 +            reqWidth, reqHeight, minLayerZ, maxLayerZ, useIdentityTransform,
 +            static_cast<ISurfaceComposer::Rotation>(rotation));
++
 +    if (ret == NO_ERROR) {
 +        mBuffer.format = PIXEL_FORMAT_RGBA_8888;
 +        mBuffer.stride = mBuffer.width;
@@ -768,7 +770,7 @@ index 9c1fe73..c526bdf 100644
      sp<CpuConsumer> cpuConsumer = getCpuConsumer();
  
      if (mHaveBuffer) {
-@@ -840,6 +861,7 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
+@@ -840,6 +862,7 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
          }
      }
      return err;
@@ -776,7 +778,7 @@ index 9c1fe73..c526bdf 100644
  }
  
  status_t ScreenshotClient::update(const sp<IBinder>& display,
-@@ -864,12 +886,16 @@ status_t ScreenshotClient::update(const sp<IBinder>& display, Rect sourceCrop,
+@@ -864,12 +887,16 @@ status_t ScreenshotClient::update(const sp<IBinder>& display, Rect sourceCrop,
  }
  
  void ScreenshotClient::release() {
@@ -809,7 +811,7 @@ index fb6307e..fa9eb92 100644
  ifneq ($(VSYNC_EVENT_PHASE_OFFSET_NS),)
      LOCAL_CFLAGS += -DVSYNC_EVENT_PHASE_OFFSET_NS=$(VSYNC_EVENT_PHASE_OFFSET_NS)
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 3a5ddc5..8a1b420 100644
+index 3a5ddc5..4c3c889 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -26,6 +26,9 @@
@@ -880,8 +882,8 @@ index 3a5ddc5..8a1b420 100644
 +    ATRACE_CALL();
 +
 +    // get screen geometry
-+    const uint32_t hw_w = hw->getWidth();
-+    const uint32_t hw_h = hw->getHeight();
++    uint32_t hw_w = hw->getWidth();
++    uint32_t hw_h = hw->getHeight();
 +
 +    if ((reqWidth > hw_w) || (reqHeight > hw_h)) {
 +        ALOGE("size mismatch (%d, %d) > (%d, %d)",
@@ -996,7 +998,7 @@ index 3a5ddc5..8a1b420 100644
 +            useIdentityTransform, rotationFlags);
 +    status_t res = postMessageSync(msg);
 +    if (res == NO_ERROR) {
-+        res = static_cast<MessageCaptureScreen*>( msg.get() )->getResult();
++        res = static_cast<MessageCaptureScreen*>(msg.get())->getResult();
 +    }
 +    return res;
 +}
@@ -1053,7 +1055,7 @@ index 8796427..d56679c 100644
       * EGL
       */
 diff --git a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
-index 429bded..983e492 100644
+index 429bded..e7d1350 100644
 --- a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 @@ -25,6 +25,9 @@
@@ -1124,8 +1126,8 @@ index 429bded..983e492 100644
 +    ATRACE_CALL();
 +
 +    // get screen geometry
-+    const uint32_t hw_w = hw->getWidth();
-+    const uint32_t hw_h = hw->getHeight();
++    uint32_t hw_w = hw->getWidth();
++    uint32_t hw_h = hw->getHeight();
 +
 +    if ((reqWidth > hw_w) || (reqHeight > hw_h)) {
 +        ALOGE("size mismatch (%d, %d) > (%d, %d)",
@@ -1240,7 +1242,7 @@ index 429bded..983e492 100644
 +            useIdentityTransform, rotationFlags);
 +    status_t res = postMessageSync(msg);
 +    if (res == NO_ERROR) {
-+        res = static_cast<MessageCaptureScreen*>( msg.get() )->getResult();
++        res = static_cast<MessageCaptureScreen*>(msg.get())->getResult();
 +    }
 +    return res;
 +}
@@ -1266,7 +1268,7 @@ index 429bded..983e492 100644
 2.9.3
 
 
-From f8018831649664d12ea46985c7e6c446e4d786c5 Mon Sep 17 00:00:00 2001
+From e26095b4b7a8a86b853c95cf49e8bcd44cfe7c69 Mon Sep 17 00:00:00 2001
 From: Ethan Chen <intervigil@gmail.com>
 Date: Thu, 15 Oct 2015 13:50:10 -0700
 Subject: [PATCH 03/11] Revert "egl: Remove old tuna BGRA vs RGBA workaround."
@@ -1324,7 +1326,7 @@ index e793852..3c00fc9 100644
 2.9.3
 
 
-From 5884dff1db3c4cae891b34570dcfe1efdaa3bdb9 Mon Sep 17 00:00:00 2001
+From eaef5858802213112e3288ee4f4917096f94d544 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 2 Nov 2013 23:02:15 -0700
 Subject: [PATCH 04/11] libEGL: allow devices to workaround Google bug 10194508
@@ -1355,7 +1357,7 @@ index a1d8bf0..c71ea72 100644
 2.9.3
 
 
-From ccd77d073c61350900f1c2882bd6991d9d4a09f3 Mon Sep 17 00:00:00 2001
+From 3de3eb28f4bd2ef59098135e00f86de2acadfb64 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 05/11] binder: add compat symbol
@@ -1386,7 +1388,7 @@ index d90798f..d205b57 100644
 2.9.3
 
 
-From eebc8492e8462b6340cc1ada10323a1129a9fd97 Mon Sep 17 00:00:00 2001
+From 281cfc2e229a3c6dd2ed3cd5acb027e42151bee7 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 06/11] binder: add compat symbols
@@ -1432,7 +1434,7 @@ index e88ae29..611c703 100644
 2.9.3
 
 
-From 3f49ce338ff886ff43f5c61df0d18af204eb854a Mon Sep 17 00:00:00 2001
+From 7893eaa033f68861a246b7a5363712e14cb25936 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 07/11] sf: CAPRI_HWC: fix rotation artifact
@@ -1443,7 +1445,7 @@ Subject: [PATCH 07/11] sf: CAPRI_HWC: fix rotation artifact
  2 files changed, 10 insertions(+)
 
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 8a1b420..575fd4d 100644
+index 4c3c889..a60e0ba 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -3410,6 +3410,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
@@ -1459,7 +1461,7 @@ index 8a1b420..575fd4d 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 diff --git a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
-index 983e492..5daab49 100644
+index e7d1350..c17064e 100644
 --- a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 @@ -3425,6 +3425,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
@@ -1478,7 +1480,7 @@ index 983e492..5daab49 100644
 2.9.3
 
 
-From f37ba6ec9cd6051be684e6b6859ed5051783c304 Mon Sep 17 00:00:00 2001
+From 06b1a6b9cbfa494b80302f55cb8c9da381294775 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 08/11] SurfaceComposerClient: don't block RGBA_8888 for
@@ -1492,7 +1494,7 @@ Change-Id: Ie7d549bb63e11380d7efcab27b7e4d9f3eb2a1fe
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/libs/gui/SurfaceComposerClient.cpp b/libs/gui/SurfaceComposerClient.cpp
-index c526bdf..ab17937 100644
+index 3aa95b6..ff1dd30 100644
 --- a/libs/gui/SurfaceComposerClient.cpp
 +++ b/libs/gui/SurfaceComposerClient.cpp
 @@ -791,7 +791,7 @@ status_t ScreenshotClient::capture(
@@ -1508,7 +1510,7 @@ index c526bdf..ab17937 100644
 2.9.3
 
 
-From c072fa11eb077421fa0a4e67da4e6fed8c2995a3 Mon Sep 17 00:00:00 2001
+From 107bd7f30fdcb71c640df1cc49ae1a8c736f9093 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 09/11] binder: add compat symbol for RIL
@@ -1538,7 +1540,7 @@ index 611c703..470cb15 100644
 2.9.3
 
 
-From 5a46a9b4136c448d47fb1b2f3bdccf99c43f0bef Mon Sep 17 00:00:00 2001
+From d0be65bac5f16716d967aafdc8f33695068286ab Mon Sep 17 00:00:00 2001
 From: Simon Shields <keepcalm444@gmail.com>
 Date: Thu, 3 Dec 2015 20:34:15 +1100
 Subject: [PATCH 10/11] libbinder: allow devices to disable ashmem size
@@ -1667,7 +1669,7 @@ index 470cb15..b22e982 100644
 2.9.3
 
 
-From 9a0666e51b0049f55a58162960f7679041d0396d Mon Sep 17 00:00:00 2001
+From 6fa148ae50b951626a383729a08b006eece4c83d Mon Sep 17 00:00:00 2001
 From: Steve Kondik <steve@cyngn.com>
 Date: Thu, 1 Sep 2016 22:10:07 -0700
 Subject: [PATCH 11/11] libgui: Provide M-compatible sensors ABI
