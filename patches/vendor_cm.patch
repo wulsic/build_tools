@@ -1,10 +1,10 @@
-From ac4fb4d37616caf81563f89b4201e5ece8c4c05e Mon Sep 17 00:00:00 2001
+From 33556da9e2ac712b6ae4f890111c4886b4091f91 Mon Sep 17 00:00:00 2001
 From: ghsr <ghsr92@yandex.ru>
 Date: Fri, 16 Sep 2016 01:14:43 +0600
 Subject: [PATCH] charger: add a check WITH_CM_CHARGER flag
 
 This will fix the build error when WITH_CM_CHARGER flag is false and
-appt settings are not set.
+product AAPT config are not set.
 
 Change-Id: I68a84c39d355f16d8577cf0e4a12589cf8df643c
 ---
@@ -12,7 +12,7 @@ Change-Id: I68a84c39d355f16d8577cf0e4a12589cf8df643c
  1 file changed, 4 insertions(+)
 
 diff --git a/charger/Android.mk b/charger/Android.mk
-index 0492ad9..9b915d5 100644
+index 0e3b1df..fdf0136 100644
 --- a/charger/Android.mk
 +++ b/charger/Android.mk
 @@ -1,5 +1,7 @@

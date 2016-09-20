@@ -1,39 +1,7 @@
-From ed048e979d293598619276669e82e834cc816d28 Mon Sep 17 00:00:00 2001
-From: Pawit Pornkitprasan <p.pawit@gmail.com>
-Date: Wed, 24 Apr 2013 11:37:19 +0700
-Subject: [PATCH 01/10] OMXCodec: Re-implement requires-flush-before-shutdown
- quirk
-
-Support is already there, but is not in the codec quirk reading list.
-Re-implement it as required by Broadcom's OMX
-
-Change-Id: I1beac06af8118dcf0c248b631bc8e6dbbab2c1d5
----
- media/libstagefright/OMXCodec.cpp | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index ca310bc..ce76d3c 100644
---- a/media/libstagefright/OMXCodec.cpp
-+++ b/media/libstagefright/OMXCodec.cpp
-@@ -270,6 +270,9 @@ uint32_t OMXCodec::getComponentQuirks(
-     if (info->hasQuirk("output-buffers-are-unreadable")) {
-         quirks |= kOutputBuffersAreUnreadable;
-     }
-+    if (info->hasQuirk("requires-flush-before-shutdown")) {
-+        quirks |= kRequiresFlushBeforeShutdown;
-+    }
- 
-     return quirks;
- }
--- 
-2.9.0
-
-
-From d7b99e2e03c646ac6e1f7487721ff8948215693a Mon Sep 17 00:00:00 2001
+From 7a04fc69b1731212e321c435eb3158bab89fc252 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 17 Dec 2013 13:15:52 +0700
-Subject: [PATCH 02/10] OMXCodec: set default input buffer size
+Subject: [PATCH 1/9] OMXCodec: set default input buffer size
 
 Broadcom OMX only set the buffer size to 65536 by default which
 is not enough for higher bitrate video
@@ -42,15 +10,14 @@ is not enough for higher bitrate video
 
 Change-Id: I74372f3d821e41feb38b9bc0cca4ef56aa019493
 ---
- media/libstagefright/ACodec.cpp   | 12 ++++++++++++
- media/libstagefright/OMXCodec.cpp | 12 ++++++++++++
- 2 files changed, 24 insertions(+)
+ media/libstagefright/ACodec.cpp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index 427728f..ed54b42 100644
+index 7e569fe..2a3da89 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -1762,6 +1762,18 @@ status_t ACodec::configureCodec(
+@@ -1816,6 +1816,18 @@ status_t ACodec::configureCodec(
                      "using-sw-read-often", !!(usageBits & GRALLOC_USAGE_SW_READ_OFTEN));
          }
      }
@@ -69,37 +36,14 @@ index 427728f..ed54b42 100644
  
      int32_t prependSPSPPS = 0;
      if (encoder
-diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index ce76d3c..32b58a2 100644
---- a/media/libstagefright/OMXCodec.cpp
-+++ b/media/libstagefright/OMXCodec.cpp
-@@ -666,6 +666,18 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
-     if (meta->findInt32(kKeyMaxInputSize, &maxInputSize)) {
-         setMinBufferSize(kPortIndexInput, (OMX_U32)maxInputSize);
-     }
-+// Capri's OMX fail to set a reasonable default size from width and height
-+#ifdef CAPRI_HWC
-+    else if (!strncmp(mComponentName, "OMX.BRCM.vc4.decoder.", 21)) {
-+        int32_t width;
-+        int32_t height;
-+        if (meta->findInt32(kKeyWidth, &width) && meta->findInt32(kKeyHeight, &height)) {
-+            setMinBufferSize(kPortIndexInput, (width * height * 3) / 2);
-+        } else {
-+            ALOGE("Failed to set min buffer size");
-+        }
-+    }
-+#endif
- 
-     initOutputFormat(meta);
- 
 -- 
-2.9.0
+2.9.3
 
 
-From d65a49e610aa7e21a31d8e6508f31e504bdfc2e1 Mon Sep 17 00:00:00 2001
+From 8cf843f37884826b4605d86efd5f69c9f3b02750 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 19 Nov 2014 20:33:58 +0700
-Subject: [PATCH 03/10] ACodec: skip port index checking on vc4 encoder
+Subject: [PATCH 2/9] ACodec: skip port index checking on vc4 encoder
 
 Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
 ---
@@ -107,10 +51,10 @@ Change-Id: I3fe742a8ec4b7f9bc0c4e5f0825fd3b88965a95e
  1 file changed, 5 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index ed54b42..e88641b 100644
+index 2a3da89..6e94ac7 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -4156,6 +4156,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
+@@ -4772,6 +4772,11 @@ status_t ACodec::getPortFormat(OMX_U32 portIndex, sp<AMessage> &notify) {
          return err;
      }
  
@@ -123,13 +67,13 @@ index ed54b42..e88641b 100644
          ALOGE("unexpected dir: %s(%d) on %s port", asString(def.eDir), def.eDir, niceIndex);
          return BAD_VALUE;
 -- 
-2.9.0
+2.9.3
 
 
-From 531126957373f84c2195a833c9ef35b0520d780e Mon Sep 17 00:00:00 2001
+From 081b01da0ac22287fdb879afb4672b0782c77947 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 23 Nov 2014 17:27:20 +0700
-Subject: [PATCH 04/10] ACodec: Don't trust provided width/height when setting
+Subject: [PATCH 3/9] ACodec: Don't trust provided width/height when setting
  input buffer size
 
 They are bogus
@@ -140,10 +84,10 @@ Change-Id: I202b291a84d2f9a8c29aa2177ba52a0465f39deb
  1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index e88641b..a4cc367 100644
+index 6e94ac7..d2028b7 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -1765,13 +1765,9 @@ status_t ACodec::configureCodec(
+@@ -1819,13 +1819,9 @@ status_t ACodec::configureCodec(
  // Capri's OMX fail to set a reasonable default size from width and height
  #ifdef CAPRI_HWC
      else if (!strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.decoder.", 21)) {
@@ -161,13 +105,13 @@ index e88641b..a4cc367 100644
  #endif
  
 -- 
-2.9.0
+2.9.3
 
 
-From 4c2df48c8af3ab64594c258fe068a78237bc496b Mon Sep 17 00:00:00 2001
+From 22be8dfa875750ee8eb74263c67ba35d9536948c Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 28 Nov 2014 21:07:59 +0700
-Subject: [PATCH 05/10] AudioFlinger: i9082: HACK: disable stereo record
+Subject: [PATCH 4/9] AudioFlinger: i9082: HACK: disable stereo record
 
 Stereo record causes audio to speed up x2 for some reason.
 Record in mono and let AudioFlinger resample to stereo
@@ -179,10 +123,10 @@ Change-Id: I59236addc022186fa35bd3b3914f42709c2318de
  1 file changed, 6 insertions(+)
 
 diff --git a/services/audioflinger/AudioFlinger.cpp b/services/audioflinger/AudioFlinger.cpp
-index 23215dd..300d475 100644
+index 5c859eb..310eb72 100644
 --- a/services/audioflinger/AudioFlinger.cpp
 +++ b/services/audioflinger/AudioFlinger.cpp
-@@ -2118,6 +2118,12 @@ sp<AudioFlinger::RecordThread> AudioFlinger::openInput_l(audio_module_handle_t m
+@@ -2136,6 +2136,12 @@ sp<AudioFlinger::RecordThread> AudioFlinger::openInput_l(audio_module_handle_t m
      audio_config_t halconfig = *config;
      audio_hw_device_t *inHwHal = inHwDev->hwDevice();
      audio_stream_in_t *inStream = NULL;
@@ -196,13 +140,13 @@ index 23215dd..300d475 100644
                                          &inStream, flags, address.string(), source);
      ALOGV("openInput_l() openInputStream returned input %p, SamplingRate %d"
 -- 
-2.9.0
+2.9.3
 
 
-From d269f27a3f1ec8ce87b7c9d4549029fcdd00b95a Mon Sep 17 00:00:00 2001
+From 2ae5af83a38eac1628e4a15ede9927f1e813297f Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Wed, 10 Dec 2014 17:38:10 +0700
-Subject: [PATCH 06/10] AudioFlinger: i9082: HACK: force audio to 48 KHz
+Subject: [PATCH 5/9] AudioFlinger: i9082: HACK: force audio to 48 KHz
 
 Let surfaceflinger do all the resampling instead of the audio HAL
 
@@ -214,10 +158,10 @@ Change-Id: I0113831464f2f64c26a9c93bba8fe6b8229b09b4
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/services/audioflinger/AudioFlinger.cpp b/services/audioflinger/AudioFlinger.cpp
-index 300d475..ebd6412 100644
+index 310eb72..eff4f02 100644
 --- a/services/audioflinger/AudioFlinger.cpp
 +++ b/services/audioflinger/AudioFlinger.cpp
-@@ -2120,8 +2120,9 @@ sp<AudioFlinger::RecordThread> AudioFlinger::openInput_l(audio_module_handle_t m
+@@ -2138,8 +2138,9 @@ sp<AudioFlinger::RecordThread> AudioFlinger::openInput_l(audio_module_handle_t m
      audio_stream_in_t *inStream = NULL;
  
  #ifdef CAPRI_HWC
@@ -229,29 +173,27 @@ index 300d475..ebd6412 100644
  
      status_t status = inHwHal->open_input_stream(inHwHal, *input, devices, &halconfig,
 -- 
-2.9.0
+2.9.3
 
 
-From f8980cedb87ceca2ba5e0c1fe51af81c38fbb8ff Mon Sep 17 00:00:00 2001
+From e98e89649595fd64efb260d0eb4f12795b2d0a59 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 16 Dec 2014 21:12:22 +0700
-Subject: [PATCH 07/10] stagefright: i9082: don't allocate too many extra
- buffers
+Subject: [PATCH 6/9] stagefright: i9082: don't allocate too many extra buffers
 
 Too many extra buffers (for a total of 8) causes random
 video freezes and freezes on rotation
 
 Change-Id: Idfe85f3cd77d6aa5422073857ceecec902e3ca68
 ---
- media/libstagefright/ACodec.cpp   | 4 ++++
- media/libstagefright/OMXCodec.cpp | 4 ++++
- 2 files changed, 8 insertions(+)
+ media/libstagefright/ACodec.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index a4cc367..b714441 100644
+index d2028b7..fb6ed94 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -1035,7 +1035,11 @@ status_t ACodec::configureOutputBuffersFromNativeWindow(
+@@ -1091,7 +1091,11 @@ status_t ACodec::configureOutputBuffersFromNativeWindow(
      // This check was present in KitKat.
      if (def.nBufferCountActual < def.nBufferCountMin + *minUndequeuedBuffers) {
  #endif
@@ -263,30 +205,14 @@ index a4cc367..b714441 100644
          OMX_U32 newBufferCount =
              def.nBufferCountMin + *minUndequeuedBuffers + extraBuffers;
          def.nBufferCountActual = newBufferCount;
-diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
-index 32b58a2..5f806a3 100644
---- a/media/libstagefright/OMXCodec.cpp
-+++ b/media/libstagefright/OMXCodec.cpp
-@@ -1851,7 +1851,11 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
-     // This check was present in KitKat.
-     if (def.nBufferCountActual < def.nBufferCountMin + minUndequeuedBufs) {
- #endif
-+#ifdef CAPRI_HWC
-+    for (OMX_U32 extraBuffers = 1; /* condition inside loop */; extraBuffers--) {
-+#else
-     for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
-+#endif
-         OMX_U32 newBufferCount =
-             def.nBufferCountMin + minUndequeuedBufs + extraBuffers;
-         def.nBufferCountActual = newBufferCount;
 -- 
-2.9.0
+2.9.3
 
 
-From b056d84b0f395b0e9298e7bf43022ee866603b7d Mon Sep 17 00:00:00 2001
+From 6ca89929c914125f165735c71799d51aab588e2b Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:59 +0700
-Subject: [PATCH 08/10] stagefright: CAPRI_HWC: fix for screen recording
+Subject: [PATCH 7/9] stagefright: CAPRI_HWC: fix for screen recording
 
 Change-Id: Ib8a677eb1ecabc30efe163faa9b209f4db966437
 ---
@@ -295,10 +221,10 @@ Change-Id: Ib8a677eb1ecabc30efe163faa9b209f4db966437
  2 files changed, 9 insertions(+)
 
 diff --git a/media/libstagefright/omx/GraphicBufferSource.cpp b/media/libstagefright/omx/GraphicBufferSource.cpp
-index 1a7dc9d..1c468d4 100644
+index 995e50e..7852667 100644
 --- a/media/libstagefright/omx/GraphicBufferSource.cpp
 +++ b/media/libstagefright/omx/GraphicBufferSource.cpp
-@@ -369,6 +369,7 @@ void GraphicBufferSource::codecBufferEmptied(OMX_BUFFERHEADERTYPE* header, int f
+@@ -380,6 +380,7 @@ void GraphicBufferSource::codecBufferEmptied(OMX_BUFFERHEADERTYPE* header, int f
              }
          } else if (type == kMetadataBufferTypeANWBuffer
                  && header->nAllocLen >= sizeof(VideoNativeMetadata)) {
@@ -306,7 +232,7 @@ index 1a7dc9d..1c468d4 100644
              VideoNativeMetadata &nativeMeta = *(VideoNativeMetadata *)data;
              if (nativeMeta.pBuffer != codecBuffer.mGraphicBuffer->getNativeBuffer()) {
                  // should never happen
-@@ -376,6 +377,7 @@ void GraphicBufferSource::codecBufferEmptied(OMX_BUFFERHEADERTYPE* header, int f
+@@ -387,6 +388,7 @@ void GraphicBufferSource::codecBufferEmptied(OMX_BUFFERHEADERTYPE* header, int f
                          nativeMeta.pBuffer, codecBuffer.mGraphicBuffer->getNativeBuffer());
                  CHECK(!"codecBufferEmptied: mismatched buffer");
              }
@@ -315,10 +241,10 @@ index 1a7dc9d..1c468d4 100644
      }
  
 diff --git a/media/libstagefright/omx/OMXNodeInstance.cpp b/media/libstagefright/omx/OMXNodeInstance.cpp
-index 2d5f09d..18b50ca 100644
+index 3039fbb..1c7185a 100644
 --- a/media/libstagefright/omx/OMXNodeInstance.cpp
 +++ b/media/libstagefright/omx/OMXNodeInstance.cpp
-@@ -886,10 +886,17 @@ status_t OMXNodeInstance::createGraphicBufferSource(
+@@ -981,10 +981,17 @@ status_t OMXNodeInstance::createGraphicBufferSource(
      }
  
      if (def.format.video.eColorFormat != OMX_COLOR_FormatAndroidOpaque) {
@@ -337,13 +263,13 @@ index 2d5f09d..18b50ca 100644
  
      uint32_t usageBits;
 -- 
-2.9.0
+2.9.3
 
 
-From 480e523952243c2d8cdc18ae6d6b8d14c45789d2 Mon Sep 17 00:00:00 2001
+From 04bdce589831a7b51fdd5f2b430ab16bfea6124c Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 21 Dec 2014 15:25:33 +0700
-Subject: [PATCH 09/10] stagefright: CAPRI_HWC: fix for miracast
+Subject: [PATCH 8/9] stagefright: CAPRI_HWC: fix for miracast
 
 Our encoder does not support OMX_Video_ControlRateConstant
 
@@ -353,10 +279,10 @@ Change-Id: I5f98f00406a6b28c1a2a1862fbcefa2fdd9055d6
  1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
-index b714441..1bcc4ef 100644
+index fb6ed94..e9d9a32 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -3297,7 +3297,13 @@ static OMX_U32 setPFramesSpacing(int32_t iFramesInterval, int32_t frameRate) {
+@@ -3879,7 +3879,13 @@ static OMX_U32 setPFramesSpacing(int32_t iFramesInterval, int32_t frameRate) {
      return ret;
  }
  
@@ -371,7 +297,7 @@ index b714441..1bcc4ef 100644
      int32_t tmp;
      if (!msg->findInt32("bitrate-mode", &tmp)) {
          return OMX_Video_ControlRateVariable;
-@@ -3313,7 +3319,7 @@ status_t ACodec::setupMPEG4EncoderParameters(const sp<AMessage> &msg) {
+@@ -3895,7 +3901,7 @@ status_t ACodec::setupMPEG4EncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -380,7 +306,7 @@ index b714441..1bcc4ef 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3395,7 +3401,7 @@ status_t ACodec::setupH263EncoderParameters(const sp<AMessage> &msg) {
+@@ -3977,7 +3983,7 @@ status_t ACodec::setupH263EncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -389,7 +315,7 @@ index b714441..1bcc4ef 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3523,7 +3529,7 @@ status_t ACodec::setupAVCEncoderParameters(const sp<AMessage> &msg) {
+@@ -4105,7 +4111,7 @@ status_t ACodec::setupAVCEncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -398,7 +324,7 @@ index b714441..1bcc4ef 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3637,7 +3643,7 @@ status_t ACodec::setupHEVCEncoderParameters(const sp<AMessage> &msg) {
+@@ -4235,7 +4241,7 @@ status_t ACodec::setupHEVCEncoderParameters(const sp<AMessage> &msg) {
          return INVALID_OPERATION;
      }
  
@@ -407,7 +333,7 @@ index b714441..1bcc4ef 100644
  
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
-@@ -3706,7 +3712,7 @@ status_t ACodec::setupVPXEncoderParameters(const sp<AMessage> &msg) {
+@@ -4304,7 +4310,7 @@ status_t ACodec::setupVPXEncoderParameters(const sp<AMessage> &msg) {
      }
      msg->findInt32("i-frame-interval", &iFrameInterval);
  
@@ -417,13 +343,13 @@ index b714441..1bcc4ef 100644
      float frameRate;
      if (!msg->findFloat("frame-rate", &frameRate)) {
 -- 
-2.9.0
+2.9.3
 
 
-From f7c036bda38e52af5378340dca5562e662037a1e Mon Sep 17 00:00:00 2001
+From 70b2757fe04f490140f4ec7d6a70caef061b03df Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 24 Jan 2016 12:38:26 +0700
-Subject: [PATCH 10/10] AudioFlinger: i9082: fix getMicMute
+Subject: [PATCH 9/9] AudioFlinger: i9082: fix getMicMute
 
 Our audio driver sometimes return NO_INIT instead of NO_ERROR
 for the get_mic_mute call. Prior to Marshmallow, this didn't cause
@@ -433,10 +359,10 @@ any issue because the return code was not checked.
  1 file changed, 6 insertions(+)
 
 diff --git a/services/audioflinger/AudioFlinger.cpp b/services/audioflinger/AudioFlinger.cpp
-index ebd6412..7c4ff1b 100644
+index eff4f02..f793ea0 100644
 --- a/services/audioflinger/AudioFlinger.cpp
 +++ b/services/audioflinger/AudioFlinger.cpp
-@@ -869,6 +869,12 @@ bool AudioFlinger::getMicMute() const
+@@ -898,6 +898,12 @@ bool AudioFlinger::getMicMute() const
      for (size_t i = 0; i < mAudioHwDevs.size(); i++) {
          audio_hw_device_t *dev = mAudioHwDevs.valueAt(i)->hwDevice();
          status_t result = dev->get_mic_mute(dev, &state);
@@ -450,5 +376,5 @@ index ebd6412..7c4ff1b 100644
              mute = mute && state;
          }
 -- 
-2.9.0
+2.9.3
 

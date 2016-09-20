@@ -1,4 +1,4 @@
-From 21679da3f1bd91ea6d595c67287d02e2174f52f0 Mon Sep 17 00:00:00 2001
+From 31b10c6bf5d24837216931d9b9e47fb0e770de17 Mon Sep 17 00:00:00 2001
 From: ghsr <ghsr92@yandex.ru>
 Date: Thu, 5 May 2016 13:09:25 +0600
 Subject: [PATCH] LatinIME: Update JNI fallback lib name
@@ -20,5 +20,5 @@ index 83ed5eb..0fcf7ee 100644
 +    public static final String JNI_LIB_NAME2 = "jni_unbundled_latinimegoogle";
  }
 -- 
-2.8.2
+2.9.3
 
