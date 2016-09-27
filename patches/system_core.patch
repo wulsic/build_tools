@@ -1,7 +1,7 @@
-From 9203eed58001bda1390473497263f5f2db91f2ff Mon Sep 17 00:00:00 2001
+From e7d2dbaa52949446f189ea02695290903118e28b Mon Sep 17 00:00:00 2001
 From: Dave Burke <daveburke@google.com>
 Date: Wed, 24 Oct 2012 17:30:31 -0700
-Subject: [PATCH 1/4] Revert "Revert "put back the unused virtuals in
+Subject: [PATCH 1/5] Revert "Revert "put back the unused virtuals in
  Vector<>""
 
 This reverts commit 225c66a48cdc3acef21ee380dc134449749d3cb3
@@ -114,10 +114,10 @@ index e8d40ed..c149212 100644
 2.9.3
 
 
-From e6dbb0ec81fb01244137a50ae88e6273d63d7e83 Mon Sep 17 00:00:00 2001
+From 5679612c83ed8f38eed6416c800dabbe4a56b0d4 Mon Sep 17 00:00:00 2001
 From: codeworkx <codeworkx@cyanogenmod.org>
 Date: Sat, 27 Jul 2013 08:18:42 +0200
-Subject: [PATCH 2/4] libutils: refbase: jellybean mr1 compat
+Subject: [PATCH 2/5] libutils: refbase: jellybean mr1 compat
 
 [mikeioannina]: Update for L
 Can be enabled with global cflag REFBASE_JB_MR1_COMPAT_SYMBOLS
@@ -170,10 +170,10 @@ index f90e28b..6068cf8 100644
 2.9.3
 
 
-From 852f9dc99c750a5aa8c0c34252c85370942e5b4e Mon Sep 17 00:00:00 2001
+From 8c8091439d13f5b23b349ae6323bd7e8a2374cd0 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 12 Apr 2013 11:40:15 +0700
-Subject: [PATCH 3/4] libnetutils: add ifc_set_mtu
+Subject: [PATCH 3/5] libnetutils: add ifc_set_mtu
 
 Change-Id: I3031e9ee38583648350f2c46baa7a9a714b9ea1e
 ---
@@ -208,10 +208,10 @@ index 6c75045..085a4d3 100644
 2.9.3
 
 
-From 2f7903c703452b0af33469f56735538a873dc68c Mon Sep 17 00:00:00 2001
+From ed8170c6cf606c340e00cceceddf83015e6f3b4c Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 21:11:25 +0700
-Subject: [PATCH 4/4] init: temporarily change SELinux to permissive
+Subject: [PATCH 4/5] init: temporarily change SELinux to permissive
 
 ---
  init/init.cpp | 2 +-
@@ -230,6 +230,61 @@ index fad8797..78b2f59 100755
  
      import_kernel_cmdline(false, [&](const std::string& key, const std::string& value, bool in_qemu) {
          if (key == "androidboot.selinux" && value == "permissive") {
+-- 
+2.9.3
+
+
+From 8ece3aacd2b510c57a4b8a9ec46160454762d8b9 Mon Sep 17 00:00:00 2001
+From: ghsr <ghsr92@yandex.ru>
+Date: Tue, 27 Sep 2016 03:09:17 +0600
+Subject: [PATCH 5/5] Revert "init/builtins.cpp: Switch to finit_module"
+
+This reverts commit f2049163a4ce602dffaa41a747ee5675a0d82752.
+---
+ init/builtins.cpp | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/init/builtins.cpp b/init/builtins.cpp
+index 339b198..5569498 100755
+--- a/init/builtins.cpp
++++ b/init/builtins.cpp
+@@ -29,7 +29,6 @@
+ #include <sys/socket.h>
+ #include <sys/mount.h>
+ #include <sys/resource.h>
+-#include <sys/syscall.h>
+ #include <sys/time.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+@@ -69,20 +68,19 @@ using android::base::StringPrintf;
+ #define UNMOUNT_CHECK_MS 5000
+ #define UNMOUNT_CHECK_TIMES 10
+ 
++// System call provided by bionic but not in any header file.
++extern "C" int init_module(void *, unsigned long, const char *);
++
+ static const int kTerminateServiceDelayMicroSeconds = 50000;
+ 
+ static int insmod(const char *filename, const char *options) {
+-    int fd = open(filename, O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
+-    if (fd == -1) {
+-        ERROR("insmod: open(\"%s\") failed: %s", filename, strerror(errno));
++    std::string module;
++    if (!read_file(filename, &module)) {
+         return -1;
+     }
+-    int rc = syscall(__NR_finit_module, fd, options, 0);
+-    if (rc == -1) {
+-        ERROR("finit_module for \"%s\" failed: %s", filename, strerror(errno));
+-    }
+-    close(fd);
+-    return rc;
++
++    // TODO: use finit_module for >= 3.8 kernels.
++    return init_module(&module[0], module.size(), options);
+ }
+ 
+ static int __ifupdown(const char *interface, int up) {
 -- 
 2.9.3
 
