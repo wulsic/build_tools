@@ -24,12 +24,12 @@ function build_recovery {
 
 # Check 1st option
 case "$1" in
-	s2ve )
-		DEVICE=$1
+	i9105 )
+		DEVICE='s2ve'
 		FAST=1
 		;;
-	s2vep )
-		DEVICE=$1
+	i9105p )
+		DEVICE='s2vep'
 		FAST=1
 		;;
 	s2plus )
@@ -37,8 +37,8 @@ case "$1" in
 		DEVICE='s2ve s2vep'
 		FAST=1
 		;;
-	crater )
-		DEVICE=$1
+	i9152 )
+		DEVICE='crater'
 		FAST=1
 		;;
 	i9082 )

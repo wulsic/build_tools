@@ -6,7 +6,6 @@ COUNT=0
 CURRENT_DIR="$PWD"
 PD="build_tools/patches"
 PATCHES=(
-'bionic				bionic.patch'
 'bootable/recovery		bootable_recovery.patch'
 'external/f2fs-tools		external_f2fs-tools.patch'
 )
