@@ -1,4 +1,4 @@
-From a8711d43e44d48700b5273e33a306368ea1fb92c Mon Sep 17 00:00:00 2001
+From fe5bbd09f0e381a87ef6aa7e3e2793fea0d2813d Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 1/6] libgui: Bring back support for mHeap-based screenshots
@@ -235,10 +235,10 @@ index 96eea5e..ab3a079 100644
  
  void const* ScreenshotClient::getPixels() const {
 diff --git a/services/surfaceflinger/Android.mk b/services/surfaceflinger/Android.mk
-index 2594e79..1f1c467 100644
+index e86c102..06fa6e0 100644
 --- a/services/surfaceflinger/Android.mk
 +++ b/services/surfaceflinger/Android.mk
-@@ -88,6 +88,10 @@ ifeq ($(TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK),true)
+@@ -87,6 +87,10 @@ ifeq ($(TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK),true)
      LOCAL_CFLAGS += -DRUNNING_WITHOUT_SYNC_FRAMEWORK
  endif
  
@@ -250,7 +250,7 @@ index 2594e79..1f1c467 100644
  ifneq ($(VSYNC_EVENT_PHASE_OFFSET_NS),)
      LOCAL_CFLAGS += -DVSYNC_EVENT_PHASE_OFFSET_NS=$(VSYNC_EVENT_PHASE_OFFSET_NS)
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 79b382c..8343e50 100644
+index cbf69e8..8e78554 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -26,6 +26,9 @@
@@ -263,7 +263,7 @@ index 79b382c..8343e50 100644
  
  #include <cutils/iosched_policy.h>
  #include <cutils/log.h>
-@@ -3017,12 +3020,18 @@ status_t SurfaceFlinger::onTransact(
+@@ -3030,12 +3033,18 @@ status_t SurfaceFlinger::onTransact(
              break;
          }
          case CAPTURE_SCREEN:
@@ -282,7 +282,7 @@ index 79b382c..8343e50 100644
                      !PermissionCache::checkPermission(sReadFramebuffer, pid, uid)) {
                  ALOGE("Permission Denial: "
                          "can't read framebuffer pid=%d, uid=%d", pid, uid);
-@@ -3379,10 +3388,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
+@@ -3392,10 +3401,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
              Mutex::Autolock _l(flinger->mStateLock);
              sp<const DisplayDevice> hw(flinger->getDisplayDevice(display));
              bool useReadPixels = this->useReadPixels && !flinger->mGpuToCpuSupported;
@@ -306,7 +306,7 @@ index 79b382c..8343e50 100644
              static_cast<GraphicProducerWrapper*>(IInterface::asBinder(producer).get())->exit(result);
              return true;
          }
-@@ -3672,6 +3690,139 @@ void SurfaceFlinger::checkScreenshot(size_t w, size_t s, size_t h, void const* v
+@@ -3685,6 +3703,139 @@ void SurfaceFlinger::checkScreenshot(size_t w, size_t s, size_t h, void const* v
      }
  }
  
@@ -446,7 +446,7 @@ index 79b382c..8343e50 100644
  // ---------------------------------------------------------------------------
  
  SurfaceFlinger::LayerVector::LayerVector() {
-@@ -3729,6 +3880,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3742,6 +3893,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  }; // namespace android
  
  
@@ -454,13 +454,13 @@ index 79b382c..8343e50 100644
  #if defined(__gl_h_)
  #error "don't include gl/gl.h in this file"
  #endif
-@@ -3736,3 +3888,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3749,3 +3901,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  #if defined(__gl2_h_)
  #error "don't include gl2/gl2.h in this file"
  #endif
 +#endif
 diff --git a/services/surfaceflinger/SurfaceFlinger.h b/services/surfaceflinger/SurfaceFlinger.h
-index 7afbf32..4269815 100644
+index 9ccb552..5d70d70 100644
 --- a/services/surfaceflinger/SurfaceFlinger.h
 +++ b/services/surfaceflinger/SurfaceFlinger.h
 @@ -223,6 +223,13 @@ private:
@@ -477,7 +477,7 @@ index 7afbf32..4269815 100644
      virtual status_t getDisplayStats(const sp<IBinder>& display,
              DisplayStatInfo* stats);
      virtual status_t getDisplayConfigs(const sp<IBinder>& display,
-@@ -389,6 +396,15 @@ private:
+@@ -394,6 +401,15 @@ private:
              bool useIdentityTransform, Transform::orientation_flags rotation,
              bool isLocalScreenshot, bool useReadPixels);
  
@@ -494,7 +494,7 @@ index 7afbf32..4269815 100644
       * EGL
       */
 diff --git a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
-index 3d8c9c6..f8b2d1c 100644
+index f33b502..786fa27 100644
 --- a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 @@ -29,6 +29,9 @@
@@ -505,9 +505,9 @@ index 3d8c9c6..f8b2d1c 100644
 +#include <GLES/gl.h>
 +#endif
  
+ #include <cutils/iosched_policy.h>
  #include <cutils/log.h>
- #include <cutils/properties.h>
-@@ -3078,12 +3081,18 @@ status_t SurfaceFlinger::onTransact(
+@@ -3084,12 +3087,18 @@ status_t SurfaceFlinger::onTransact(
              break;
          }
          case CAPTURE_SCREEN:
@@ -526,7 +526,7 @@ index 3d8c9c6..f8b2d1c 100644
                      !PermissionCache::checkPermission(sReadFramebuffer, pid, uid)) {
                  ALOGE("Permission Denial: "
                          "can't read framebuffer pid=%d, uid=%d", pid, uid);
-@@ -3420,10 +3429,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
+@@ -3426,10 +3435,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
              Mutex::Autolock _l(flinger->mStateLock);
              sp<const DisplayDevice> hw(flinger->getDisplayDevice(display));
              bool useReadPixels = this->useReadPixels && !flinger->mGpuToCpuSupported;
@@ -550,7 +550,7 @@ index 3d8c9c6..f8b2d1c 100644
              static_cast<GraphicProducerWrapper*>(IInterface::asBinder(producer).get())->exit(result);
              return true;
          }
-@@ -3758,6 +3776,139 @@ void SurfaceFlinger::drawWormHoleIfRequired(HWComposer::LayerListIterator& /*cur
+@@ -3764,6 +3782,139 @@ void SurfaceFlinger::drawWormHoleIfRequired(HWComposer::LayerListIterator& /*cur
      drawWormhole(hw, region);
  }
  
@@ -690,7 +690,7 @@ index 3d8c9c6..f8b2d1c 100644
  // ---------------------------------------------------------------------------
  
  SurfaceFlinger::LayerVector::LayerVector() {
-@@ -3815,6 +3966,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3821,6 +3972,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  }; // namespace android
  
  
@@ -698,16 +698,16 @@ index 3d8c9c6..f8b2d1c 100644
  #if defined(__gl_h_)
  #error "don't include gl/gl.h in this file"
  #endif
-@@ -3822,3 +3974,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3828,3 +3980,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  #if defined(__gl2_h_)
  #error "don't include gl2/gl2.h in this file"
  #endif
 +#endif
 -- 
-2.9.3
+2.10.1
 
 
-From d03d2b7ea9b9d0ea55a492a201dc6ffecf7d4697 Mon Sep 17 00:00:00 2001
+From 587fb8309a724807e37b41b0a53fa46c45ecde86 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 2/6] binder: add compat symbol
@@ -735,10 +735,10 @@ index d90798f..d205b57 100644
  {
      return mCallingPid;
 -- 
-2.9.3
+2.10.1
 
 
-From 5d2ebbd5371827bc32317d155e55eff18e264dc9 Mon Sep 17 00:00:00 2001
+From 4c67a460c20230a2fe7db1166f95098238b15221 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 3/6] binder: add compat symbols
@@ -781,10 +781,10 @@ index f0761ef..c788f40 100644
  {
      // size
 -- 
-2.9.3
+2.10.1
 
 
-From 5823bacce08f4581d7eaae5a8b187eb09c0210e0 Mon Sep 17 00:00:00 2001
+From 152a46e6fcd7a68e0d4013dffc1ab43e06b0dd61 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 4/6] sf: CAPRI_HWC: fix rotation artifact
@@ -795,10 +795,10 @@ Subject: [PATCH 4/6] sf: CAPRI_HWC: fix rotation artifact
  2 files changed, 10 insertions(+)
 
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 8343e50..a151ac4 100644
+index 8e78554..cf1be04 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
-@@ -3504,6 +3504,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
+@@ -3517,6 +3517,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
  {
      ATRACE_CALL();
  
@@ -811,10 +811,10 @@ index 8343e50..a151ac4 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 diff --git a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
-index f8b2d1c..35bf62c 100644
+index 786fa27..cc065da 100644
 --- a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
-@@ -3557,6 +3557,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
+@@ -3563,6 +3563,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(
  {
      ATRACE_CALL();
  
@@ -827,10 +827,10 @@ index f8b2d1c..35bf62c 100644
      uint32_t hw_w = hw->getWidth();
      uint32_t hw_h = hw->getHeight();
 -- 
-2.9.3
+2.10.1
 
 
-From 21661ab54784ba61c391374a043301964e6ea1f8 Mon Sep 17 00:00:00 2001
+From f346e189ac39a0a41afcf3c40960d0bf16dd16d6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 15 Dec 2014 23:12:44 +0700
 Subject: [PATCH 5/6] SurfaceComposerClient: don't block RGBA_8888 for
@@ -857,10 +857,10 @@ index ab3a079..6d707f5 100644
      producer->query(NATIVE_WINDOW_FORMAT,&format);
      if (format == PIXEL_FORMAT_RGBA_8888) {
 -- 
-2.9.3
+2.10.1
 
 
-From bfdb4c8774745f44dc9e564937b322a11c024e2b Mon Sep 17 00:00:00 2001
+From 4d0c937ebe007107e079336706eddbb997b60057 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 15:28:51 +0700
 Subject: [PATCH 6/6] binder: add compat symbol for RIL
@@ -887,5 +887,5 @@ index c788f40..b22e982 100644
  {
      if (str == NULL) return writeInt32(-1);
 -- 
-2.9.3
+2.10.1
 

@@ -1,4 +1,4 @@
-From 9203eed58001bda1390473497263f5f2db91f2ff Mon Sep 17 00:00:00 2001
+From f79f7b5c0d1466d8422ef79b87d3aaa96415d224 Mon Sep 17 00:00:00 2001
 From: Dave Burke <daveburke@google.com>
 Date: Wed, 24 Oct 2012 17:30:31 -0700
 Subject: [PATCH 1/4] Revert "Revert "put back the unused virtuals in
@@ -111,10 +111,10 @@ index e8d40ed..c149212 100644
  
  }; // namespace android
 -- 
-2.9.3
+2.10.1
 
 
-From e6dbb0ec81fb01244137a50ae88e6273d63d7e83 Mon Sep 17 00:00:00 2001
+From 9faacad8e7cd6ba2d4a065bcd06fbcf68fe82acd Mon Sep 17 00:00:00 2001
 From: codeworkx <codeworkx@cyanogenmod.org>
 Date: Sat, 27 Jul 2013 08:18:42 +0200
 Subject: [PATCH 2/4] libutils: refbase: jellybean mr1 compat
@@ -167,10 +167,10 @@ index f90e28b..6068cf8 100644
  void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
      for (size_t i=0 ; i<n ; i++) {
 -- 
-2.9.3
+2.10.1
 
 
-From 852f9dc99c750a5aa8c0c34252c85370942e5b4e Mon Sep 17 00:00:00 2001
+From 5b2843a03d284e92a917b3614d7c91ccdeef02da Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Fri, 12 Apr 2013 11:40:15 +0700
 Subject: [PATCH 3/4] libnetutils: add ifc_set_mtu
@@ -205,10 +205,10 @@ index 6c75045..085a4d3 100644
 +    return ret;
 +}
 -- 
-2.9.3
+2.10.1
 
 
-From 2f7903c703452b0af33469f56735538a873dc68c Mon Sep 17 00:00:00 2001
+From a1d296c13bc56df9694f45e044990a1b478bfe1e Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 11 Oct 2015 21:11:25 +0700
 Subject: [PATCH 4/4] init: temporarily change SELinux to permissive
@@ -218,10 +218,10 @@ Subject: [PATCH 4/4] init: temporarily change SELinux to permissive
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/init/init.cpp b/init/init.cpp
-index fad8797..78b2f59 100755
+index 61f4b7c..2784801 100755
 --- a/init/init.cpp
 +++ b/init/init.cpp
-@@ -417,7 +417,7 @@ static void selinux_init_all_handles(void)
+@@ -437,7 +437,7 @@ static void selinux_init_all_handles(void)
  enum selinux_enforcing_status { SELINUX_PERMISSIVE, SELINUX_ENFORCING };
  
  static selinux_enforcing_status selinux_status_from_cmdline() {
@@ -231,5 +231,5 @@ index fad8797..78b2f59 100755
      import_kernel_cmdline(false, [&](const std::string& key, const std::string& value, bool in_qemu) {
          if (key == "androidboot.selinux" && value == "permissive") {
 -- 
-2.9.3
+2.10.1
 
