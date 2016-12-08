@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd ..
-
 # Use -o for resetting changes only.
 case "$1" in
 	"-o" )

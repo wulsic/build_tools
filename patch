@@ -1,7 +1,4 @@
 #!/bin/bash
-
-cd ..
-
 COUNT=0
 CURRENT_DIR="$PWD"
 PD="build_tools/patches"
