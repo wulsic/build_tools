@@ -1,7 +1,7 @@
 From 3d8fb64514377b22ca09d0e6bc774feab2d7d954 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 1/5] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 1/2] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082 and i9152
@@ -164,62 +164,6 @@ index 2e06d5f..1a3db4e 100644
 -- 
 2.10.1
 
-
-From 3acca28641d538ad753fb76fa08d6c3a4ed9cf69 Mon Sep 17 00:00:00 2001
-From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
-Date: Mon, 4 Nov 2013 02:22:43 +0000
-Subject: [PATCH 3/5] Forward port Samsung STK support (frameworks/base)
-
-[pawitp: port to Lollipop]
-
-Change-Id: I08d169bc466df290fca838b09f6b0fbea2ac82a8
----
- core/res/res/values/config.xml                                  | 3 +++
- core/res/res/values/symbols.xml                                 | 1 +
- telephony/java/com/android/internal/telephony/RILConstants.java | 2 ++
- 3 files changed, 6 insertions(+)
-
-diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
-index 69e79d0..9de10dd 100755
---- a/core/res/res/values/config.xml
-+++ b/core/res/res/values/config.xml
-@@ -2705,6 +2705,9 @@
-     <string-array name="config_disabledComponents" translatable="false">
-     </string-array>
- 
-+    <!-- Boolean to enable stk functionality on Samsung phones -->
-+    <bool name="config_samsung_stk">false</bool>
-+
-     <!-- The list of components which should be forced to be enabled. -->
-     <string-array name="config_forceEnabledComponents" translatable="false">
-     </string-array>
-diff --git a/core/res/res/values/symbols.xml b/core/res/res/values/symbols.xml
-index 0b20352..acdfe6c 100644
---- a/core/res/res/values/symbols.xml
-+++ b/core/res/res/values/symbols.xml
-@@ -2686,6 +2686,7 @@
- 
-   <!-- Config.xml entries -->
-   <java-symbol type="bool" name="config_show_cmIMESwitcher"/>
-+  <java-symbol type="bool" name="config_samsung_stk" />
- 
-   <!-- Developer settings - Kill app back press -->
-   <java-symbol type="string" name="app_killed_message" />
-diff --git a/telephony/java/com/android/internal/telephony/RILConstants.java b/telephony/java/com/android/internal/telephony/RILConstants.java
-index d06df49..26bcde0 100644
---- a/telephony/java/com/android/internal/telephony/RILConstants.java
-+++ b/telephony/java/com/android/internal/telephony/RILConstants.java
-@@ -469,4 +469,6 @@ cat include/telephony/ril.h | \
-     int RIL_UNSOL_LCEDATA_RECV = 1045;
-     int RIL_UNSOL_RESPONSE_ADN_INIT_DONE = 1046;
-     int RIL_UNSOL_RESPONSE_ADN_RECORDS = 1047;
-+
-+    int RIL_UNSOL_STK_SEND_SMS_RESULT = 11002; /* Samsung STK */
- }
--- 
-2.10.1
-
-
 From f20e66e4e8490efc5f00dece7b9cd431800f269a Mon Sep 17 00:00:00 2001
 From: Alex Sarraf <asarraf@codeaurora.org>
 Date: Wed, 15 Jul 2015 11:20:17 -0700
@@ -251,7 +195,7 @@ index 05c7fbf..23e25db 100644
 From 0381127451483aafce3078daa4a669c01da8ab28 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 14 Mar 2015 22:53:50 +0700
-Subject: [PATCH 5/5] PowerManagerService: only turn on button light when any
+Subject: [PATCH 1/2] PowerManagerService: only turn on button light when any
  button is pressed
 
 This more closely emulates stock Samsung behavior

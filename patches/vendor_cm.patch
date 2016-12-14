@@ -12,7 +12,7 @@ Change-Id: I68a84c39d355f16d8577cf0e4a12589cf8df643c
  1 file changed, 4 insertions(+)
 
 diff --git a/charger/Android.mk b/charger/Android.mk
-index 0e3b1df..fdf0136 100644
+index f2bdde2..8df755a 100644
 --- a/charger/Android.mk
 +++ b/charger/Android.mk
 @@ -1,5 +1,7 @@
@@ -20,10 +20,10 @@ index 0e3b1df..fdf0136 100644
  
 +ifneq ($(WITH_CM_CHARGER),false)
 +
- include $(CLEAR_VARS)
- LOCAL_SRC_FILES := healthd_board_cm.cpp
- LOCAL_MODULE := libhealthd.cm
-@@ -54,3 +56,5 @@ include $(BUILD_PHONY_PACKAGE)
+ # Set healthd_density to the density bucket of the device.
+ healthd_density := unknown
+ ifneq (,$(TARGET_RECOVERY_DENSITY))
+@@ -68,3 +70,5 @@ include $(BUILD_PHONY_PACKAGE)
  
  _add-charger-image :=
  _img_modules :=

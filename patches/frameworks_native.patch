@@ -20,17 +20,17 @@ Change-Id: I7db955e2cdd120018e349c14290e975788e70ed3
  libs/gui/Android.mk                             |   4 +
  libs/gui/ISurfaceComposer.cpp                   |  53 ++++++++
  libs/gui/SurfaceComposerClient.cpp              |  27 ++++
- services/surfaceflinger/Android.mk              |   4 +
+ services/surfaceflinger/Android.mk              |   5 +
  services/surfaceflinger/SurfaceFlinger.cpp      | 161 +++++++++++++++++++++++-
  services/surfaceflinger/SurfaceFlinger.h        |  16 +++
  services/surfaceflinger/SurfaceFlinger_hwc1.cpp | 161 +++++++++++++++++++++++-
- 9 files changed, 439 insertions(+), 8 deletions(-)
+ 9 files changed, 440 insertions(+), 8 deletions(-)
 
 diff --git a/include/gui/ISurfaceComposer.h b/include/gui/ISurfaceComposer.h
-index 962a033..843a2db 100644
+index 90c4dc3..725575a 100644
 --- a/include/gui/ISurfaceComposer.h
 +++ b/include/gui/ISurfaceComposer.h
-@@ -151,6 +151,18 @@ public:
+@@ -157,6 +157,18 @@ public:
              Rotation rotation = eRotateNone,
              bool isCpuConsumer = false) = 0;
  
@@ -49,7 +49,7 @@ index 962a033..843a2db 100644
      /* Clears the frame statistics for animations.
       *
       * Requires the ACCESS_SURFACE_FLINGER permission.
-@@ -187,6 +199,9 @@ public:
+@@ -193,6 +205,9 @@ public:
          GET_BUILT_IN_DISPLAY,
          SET_TRANSACTION_STATE,
          AUTHENTICATE_SURFACE,
@@ -60,7 +60,7 @@ index 962a033..843a2db 100644
          GET_ACTIVE_CONFIG,
          SET_ACTIVE_CONFIG,
 diff --git a/include/gui/SurfaceComposerClient.h b/include/gui/SurfaceComposerClient.h
-index 54f1a07..fcfe600 100644
+index bcf4880..2f4922c 100644
 --- a/include/gui/SurfaceComposerClient.h
 +++ b/include/gui/SurfaceComposerClient.h
 @@ -41,6 +41,9 @@ namespace android {
@@ -73,7 +73,7 @@ index 54f1a07..fcfe600 100644
  class ISurfaceComposerClient;
  class IGraphicBufferProducer;
  class Region;
-@@ -205,6 +208,9 @@ public:
+@@ -218,6 +221,9 @@ public:
              bool useIdentityTransform);
  
  private:
@@ -84,10 +84,10 @@ index 54f1a07..fcfe600 100644
      mutable sp<IGraphicBufferProducer> mProducer;
      CpuConsumer::LockedBuffer mBuffer;
 diff --git a/libs/gui/Android.mk b/libs/gui/Android.mk
-index 493523a..1867c20 100644
+index dff6a37..4a3c2c4 100644
 --- a/libs/gui/Android.mk
 +++ b/libs/gui/Android.mk
-@@ -84,6 +84,10 @@ LOCAL_SHARED_LIBRARIES := \
+@@ -85,6 +85,10 @@ LOCAL_SHARED_LIBRARIES := \
  	liblog
  
  
@@ -99,10 +99,10 @@ index 493523a..1867c20 100644
  
  ifeq ($(TARGET_BOARD_PLATFORM), tegra)
 diff --git a/libs/gui/ISurfaceComposer.cpp b/libs/gui/ISurfaceComposer.cpp
-index a777a29..74b38ff 100644
+index 2e101b3..5c5caa5 100644
 --- a/libs/gui/ISurfaceComposer.cpp
 +++ b/libs/gui/ISurfaceComposer.cpp
-@@ -99,6 +99,33 @@ public:
+@@ -101,6 +101,33 @@ public:
          remote()->transact(BnSurfaceComposer::BOOT_FINISHED, data, &reply);
      }
  
@@ -136,7 +136,7 @@ index a777a29..74b38ff 100644
      virtual status_t captureScreen(const sp<IBinder>& display,
              const sp<IGraphicBufferProducer>& producer,
              Rect sourceCrop, uint32_t reqWidth, uint32_t reqHeight,
-@@ -373,6 +400,32 @@ status_t BnSurfaceComposer::onTransact(
+@@ -451,6 +478,32 @@ status_t BnSurfaceComposer::onTransact(
              bootFinished();
              return NO_ERROR;
          }
@@ -170,10 +170,10 @@ index a777a29..74b38ff 100644
              CHECK_INTERFACE(ISurfaceComposer, data, reply);
              sp<IBinder> display = data.readStrongBinder();
 diff --git a/libs/gui/SurfaceComposerClient.cpp b/libs/gui/SurfaceComposerClient.cpp
-index 96eea5e..ab3a079 100644
+index a4bf2de..f5218f5 100644
 --- a/libs/gui/SurfaceComposerClient.cpp
 +++ b/libs/gui/SurfaceComposerClient.cpp
-@@ -886,6 +886,14 @@ status_t ScreenshotClient::capture(
+@@ -922,6 +922,14 @@ status_t ScreenshotClient::capture(
          uint32_t minLayerZ, uint32_t maxLayerZ, bool useIdentityTransform) {
      sp<ISurfaceComposer> s(ComposerService::getComposerService());
      if (s == NULL) return NO_INIT;
@@ -188,7 +188,7 @@ index 96eea5e..ab3a079 100644
      return s->captureScreen(display, producer, sourceCrop,
              reqWidth, reqHeight, minLayerZ, maxLayerZ, useIdentityTransform,
              ISurfaceComposer::eRotateNone, SS_CPU_CONSUMER);
-@@ -916,6 +924,20 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
+@@ -952,6 +960,20 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
          bool useIdentityTransform, uint32_t rotation) {
      sp<ISurfaceComposer> s(ComposerService::getComposerService());
      if (s == NULL) return NO_INIT;
@@ -209,7 +209,7 @@ index 96eea5e..ab3a079 100644
      sp<CpuConsumer> cpuConsumer = getCpuConsumer();
  
      if (mHaveBuffer) {
-@@ -935,6 +957,7 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
+@@ -971,6 +993,7 @@ status_t ScreenshotClient::update(const sp<IBinder>& display,
          }
      }
      return err;
@@ -217,7 +217,7 @@ index 96eea5e..ab3a079 100644
  }
  
  status_t ScreenshotClient::update(const sp<IBinder>& display,
-@@ -959,12 +982,16 @@ status_t ScreenshotClient::update(const sp<IBinder>& display, Rect sourceCrop,
+@@ -995,12 +1018,16 @@ status_t ScreenshotClient::update(const sp<IBinder>& display, Rect sourceCrop,
  }
  
  void ScreenshotClient::release() {
@@ -235,10 +235,10 @@ index 96eea5e..ab3a079 100644
  
  void const* ScreenshotClient::getPixels() const {
 diff --git a/services/surfaceflinger/Android.mk b/services/surfaceflinger/Android.mk
-index e86c102..06fa6e0 100644
+index 3591bca..9093d8f 100644
 --- a/services/surfaceflinger/Android.mk
 +++ b/services/surfaceflinger/Android.mk
-@@ -87,6 +87,10 @@ ifeq ($(TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK),true)
+@@ -86,6 +86,10 @@ ifeq ($(TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK),true)
      LOCAL_CFLAGS += -DRUNNING_WITHOUT_SYNC_FRAMEWORK
  endif
  
@@ -246,11 +246,19 @@ index e86c102..06fa6e0 100644
 +    LOCAL_CFLAGS += -DUSE_MHEAP_SCREENSHOT
 +endif
 +
- # See build/target/board/generic/BoardConfig.mk for a description of this setting.
+ ifeq ($(TARGET_HAS_HH_VSYNC_ISSUE),true)
+     LOCAL_CFLAGS += -DHH_VSYNC_ISSUE
+ endif
+@@ -109,6 +113,7 @@ endif
+ #
+ # [1] https://developer.android.com/studio/profile/systrace.html
+ # [2] https://developer.android.com/training/testing/performance.html
++# See build/target/board/generic/BoardConfig.mk for a description of this setting.
+ 
  ifneq ($(VSYNC_EVENT_PHASE_OFFSET_NS),)
      LOCAL_CFLAGS += -DVSYNC_EVENT_PHASE_OFFSET_NS=$(VSYNC_EVENT_PHASE_OFFSET_NS)
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index cbf69e8..8e78554 100644
+index af917ce..e77ada9 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -26,6 +26,9 @@
@@ -263,7 +271,7 @@ index cbf69e8..8e78554 100644
  
  #include <cutils/iosched_policy.h>
  #include <cutils/log.h>
-@@ -3030,12 +3033,18 @@ status_t SurfaceFlinger::onTransact(
+@@ -3260,12 +3263,18 @@ status_t SurfaceFlinger::onTransact(
              break;
          }
          case CAPTURE_SCREEN:
@@ -282,7 +290,7 @@ index cbf69e8..8e78554 100644
                      !PermissionCache::checkPermission(sReadFramebuffer, pid, uid)) {
                  ALOGE("Permission Denial: "
                          "can't read framebuffer pid=%d, uid=%d", pid, uid);
-@@ -3392,10 +3401,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
+@@ -3612,10 +3621,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
              Mutex::Autolock _l(flinger->mStateLock);
              sp<const DisplayDevice> hw(flinger->getDisplayDevice(display));
              bool useReadPixels = this->useReadPixels && !flinger->mGpuToCpuSupported;
@@ -306,8 +314,8 @@ index cbf69e8..8e78554 100644
              static_cast<GraphicProducerWrapper*>(IInterface::asBinder(producer).get())->exit(result);
              return true;
          }
-@@ -3685,6 +3703,139 @@ void SurfaceFlinger::checkScreenshot(size_t w, size_t s, size_t h, void const* v
-     }
+@@ -3918,6 +3936,139 @@ bool SurfaceFlinger::getFrameTimestamps(const Layer& layer,
+     return mFenceTracker.getFrameTimestamps(layer, frameNumber, outTimestamps);
  }
  
 +#ifdef USE_MHEAP_SCREENSHOT
@@ -446,7 +454,7 @@ index cbf69e8..8e78554 100644
  // ---------------------------------------------------------------------------
  
  SurfaceFlinger::LayerVector::LayerVector() {
-@@ -3742,6 +3893,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3975,6 +4126,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  }; // namespace android
  
  
@@ -454,7 +462,7 @@ index cbf69e8..8e78554 100644
  #if defined(__gl_h_)
  #error "don't include gl/gl.h in this file"
  #endif
-@@ -3749,3 +3901,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3982,3 +4134,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  #if defined(__gl2_h_)
  #error "don't include gl2/gl2.h in this file"
  #endif
@@ -494,7 +502,7 @@ index 9ccb552..5d70d70 100644
       * EGL
       */
 diff --git a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
-index f33b502..786fa27 100644
+index cb6fc2f..39c3b9f 100644
 --- a/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger_hwc1.cpp
 @@ -29,6 +29,9 @@
@@ -507,7 +515,7 @@ index f33b502..786fa27 100644
  
  #include <cutils/iosched_policy.h>
  #include <cutils/log.h>
-@@ -3084,12 +3087,18 @@ status_t SurfaceFlinger::onTransact(
+@@ -3182,12 +3185,18 @@ status_t SurfaceFlinger::onTransact(
              break;
          }
          case CAPTURE_SCREEN:
@@ -526,7 +534,7 @@ index f33b502..786fa27 100644
                      !PermissionCache::checkPermission(sReadFramebuffer, pid, uid)) {
                  ALOGE("Permission Denial: "
                          "can't read framebuffer pid=%d, uid=%d", pid, uid);
-@@ -3426,10 +3435,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
+@@ -3535,10 +3544,19 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
              Mutex::Autolock _l(flinger->mStateLock);
              sp<const DisplayDevice> hw(flinger->getDisplayDevice(display));
              bool useReadPixels = this->useReadPixels && !flinger->mGpuToCpuSupported;
@@ -550,7 +558,7 @@ index f33b502..786fa27 100644
              static_cast<GraphicProducerWrapper*>(IInterface::asBinder(producer).get())->exit(result);
              return true;
          }
-@@ -3764,6 +3782,139 @@ void SurfaceFlinger::drawWormHoleIfRequired(HWComposer::LayerListIterator& /*cur
+@@ -3880,6 +3898,139 @@ void SurfaceFlinger::drawWormHoleIfRequired(HWComposer::LayerListIterator& /*cur
      drawWormhole(hw, region);
  }
  
@@ -690,7 +698,7 @@ index f33b502..786fa27 100644
  // ---------------------------------------------------------------------------
  
  SurfaceFlinger::LayerVector::LayerVector() {
-@@ -3821,6 +3972,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3937,6 +4088,7 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  }; // namespace android
  
  
@@ -698,7 +706,7 @@ index f33b502..786fa27 100644
  #if defined(__gl_h_)
  #error "don't include gl/gl.h in this file"
  #endif
-@@ -3828,3 +3980,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
+@@ -3944,3 +4096,4 @@ SurfaceFlinger::DisplayDeviceState::DisplayDeviceState(
  #if defined(__gl2_h_)
  #error "don't include gl2/gl2.h in this file"
  #endif
