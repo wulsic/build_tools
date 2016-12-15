@@ -1,5 +1,4 @@
 #!/bin/bash
-cd ..
 
 COUNT=0
 CURRENT_DIR="$PWD"
@@ -32,8 +31,8 @@ do
 	PATCH=`echo "$CURRENT" | awk '{print $2}'`
 
 	cd "$FOLDER"
-#	echo Discarding previous Patches
-#	repo sync .
+	echo Discarding previous Patches
+	repo sync .
 	echo Patching "$FOLDER" ...
 	git am -3 "$CURRENT_DIR/$PD/$PATCH"
 	cd "$CURRENT_DIR"

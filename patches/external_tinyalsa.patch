@@ -1,9 +1,21 @@
+From 98df2d129799d4d0e8dba53572566ddb494d5a68 Mon Sep 17 00:00:00 2001
+From: Winston Jasaragic <wulsic@gmail.com>
+Date: Thu, 15 Dec 2016 20:09:27 +0100
+Subject: [PATCH] rhea: Add pcm_drain symbol
+
+Fix cannot locate symbol "pcm_drain" referenced by "audio.primary.rhea.so"...
+
+Change-Id: I9c282bc73c8691d2b9aa444d1e607cd7319f26b2
+---
+ include/tinyalsa/asoundlib.h | 1 +
+ pcm.c                        | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
 diff --git a/include/tinyalsa/asoundlib.h b/include/tinyalsa/asoundlib.h
-index 809e02d..a053140 100644
+index b789573..6604256 100644
 --- a/include/tinyalsa/asoundlib.h
 +++ b/include/tinyalsa/asoundlib.h
-@@ -152,6 +152,7 @@ struct pcm *pcm_open(unsigned int card, unsigned int device,
+@@ -157,6 +157,7 @@ struct pcm *pcm_open(unsigned int card, unsigned int device,
                       unsigned int flags, struct pcm_config *config);
  int pcm_close(struct pcm *pcm);
  int pcm_is_ready(struct pcm *pcm);
@@ -12,10 +24,10 @@ index 809e02d..a053140 100644
  /* Obtain the parameters for a PCM */
  struct pcm_params *pcm_params_get(unsigned int card, unsigned int device,
 diff --git a/pcm.c b/pcm.c
-index d8af58a..c8ac11c 100644
+index 612d068..b440835 100644
 --- a/pcm.c
 +++ b/pcm.c
-@@ -1037,6 +1037,14 @@ int pcm_stop(struct pcm *pcm)
+@@ -1046,6 +1046,14 @@ int pcm_stop(struct pcm *pcm)
      return 0;
  }
  
@@ -30,3 +42,6 @@ index d8af58a..c8ac11c 100644
  static inline int pcm_mmap_playback_avail(struct pcm *pcm)
  {
      int avail;
+-- 
+2.7.4
+

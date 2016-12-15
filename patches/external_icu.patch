@@ -1,3 +1,14 @@
+From b877a23ffe2c1702ed9ff532f7d762e1a21b1fa8 Mon Sep 17 00:00:00 2001
+From: Wulsic <wulsic@hotmail.com>
+Date: Wed, 17 Jun 2015 21:20:39 +0200
+Subject: [PATCH 1/1] Add in Compat for icu in Android 5.0 support for some old
+ drivers
+
+Change-Id: Ie65b165bb59ceb0694ab46e3f5faf9d426d30361
+---
+ icu4c/source/common/ucnv.c | 69 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+
 diff --git a/icu4c/source/common/ucnv.c b/icu4c/source/common/ucnv.c
 index 5cf4d15..3078368 100644
 --- a/icu4c/source/common/ucnv.c
@@ -147,3 +158,5 @@ index 5cf4d15..3078368 100644
  #endif
  
  /*
+-- 
+1.9.1
