@@ -16,6 +16,7 @@ PATCHES=(
 'packages/inputmethods/LatinIME packages_inputmethods_LatinIME.patch'
 'packages/services/Telephony	packages_services_Telephony.patch'
 'system/core			system_core.patch'
+'vendor/cm                      kernel.patch'
 'vendor/cm			vendor_cm.patch'
 )
 
@@ -26,8 +27,8 @@ do
 	PATCH=`echo "$CURRENT" | awk '{print $2}'`
 
 	cd "$FOLDER"
-	echo Discarding previous Patches
-	repo sync .
+#	echo Discarding previous Patches
+#	repo sync .
 	echo Patching "$FOLDER" ...
 	git am -3 "$CURRENT_DIR/$PD/$PATCH"
 	cd "$CURRENT_DIR"
