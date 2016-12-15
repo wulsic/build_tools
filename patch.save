@@ -1,16 +1,13 @@
-#!/bin/bash
-cd ..
-
+#!/bin/ba
 COUNT=0
 CURRENT_DIR="$PWD"
 PD="build_tools/patches"
+
 PATCHES=(
 'art				art.patch'
 'frameworks/av			frameworks_av.patch'
 'frameworks/base		frameworks_base.patch'
 'frameworks/native		frameworks_native.patch'
-'frameworks/native              fnw.patch'
-'frameworks/native              fnw2.patch'
 'frameworks/opt/telephony	frameworks_opt_telephony.patch'
 'hardware/broadcom/libbt	hardware_broadcom_libbt.patch'
 'packages/inputmethods/LatinIME packages_inputmethods_LatinIME.patch'

@@ -1,0 +1,137 @@
+From e298079fa5387bc57947d23db754ac5944d53e4a Mon Sep 17 00:00:00 2001
+From: corphish <d97.avinaba@gmail.com>
+Date: Wed, 16 Nov 2016 20:40:46 +0530
+Subject: [PATCH 1/1] BufferQueueProducer: Connect/Disconnect methods are not
+ implemented in FNW
+
+- We use FNW, by default ANativeWindow is used which is instansiated as Surface.
+- Surface API has connect/diconnect methods implemented, but not FNW.
+- With those methods implemented in Surface, information about connected buffer producers can be passed, which is not possible in FNW.
+- In BufferQueueProducer, various operations actually check information about connected producers.
+- Since we use FNW, the checks fail and the operations do not proceed, as we do not pass information about conencted producers, which defaults to NO_CONNECTED_API.
+- As a result, it causes EGL crash as the operations do not happen.
+- And since this check were not present in Marshmallow, and we will use FNW forever, we might just survive without the checks as we did in Marshmallow.
+
+Signed-off-by: corphish <d97.avinaba@gmail.com>
+---
+ libs/gui/Android.mk              |  4 ++++
+ libs/gui/BufferQueueProducer.cpp | 18 +++++++++++++++---
+ 2 files changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/libs/gui/Android.mk b/libs/gui/Android.mk
+index 4a3c2c4..22ba6ea 100644
+--- a/libs/gui/Android.mk
++++ b/libs/gui/Android.mk
+@@ -106,6 +106,10 @@ ifeq ($(TARGET_FORCE_SCREENSHOT_CPU_PATH),true)
+ LOCAL_CPPFLAGS += -DFORCE_SCREENSHOT_CPU_PATH
+ endif
+ 
++ifeq ($(BOARD_EGL_NEEDS_FNW),true)
++LOCAL_CPPFLAGS += -DEGL_NEEDS_FNW
++endif
++
+ include $(BUILD_SHARED_LIBRARY)
+ 
+ ifeq (,$(ONE_SHOT_MAKEFILE))
+diff --git a/libs/gui/BufferQueueProducer.cpp b/libs/gui/BufferQueueProducer.cpp
+index 48b1db8..ed6723a 100644
+--- a/libs/gui/BufferQueueProducer.cpp
++++ b/libs/gui/BufferQueueProducer.cpp
+@@ -66,10 +66,12 @@ status_t BufferQueueProducer::requestBuffer(int slot, sp<GraphicBuffer>* buf) {
+         return NO_INIT;
+     }
+ 
++#ifndef EGL_NEEDS_FNW
+     if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+         BQ_LOGE("requestBuffer: BufferQueue has no connected producer");
+         return NO_INIT;
+     }
++#endif
+ 
+     if (slot < 0 || slot >= BufferQueueDefs::NUM_BUFFER_SLOTS) {
+         BQ_LOGE("requestBuffer: slot index %d out of range [0, %d)",
+@@ -354,10 +356,12 @@ status_t BufferQueueProducer::dequeueBuffer(int *outSlot,
+             return NO_INIT;
+         }
+ 
++#ifndef EGL_NEEDS_FNW
+         if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+             BQ_LOGE("dequeueBuffer: BufferQueue has no connected producer");
+             return NO_INIT;
+         }
++#endif
+     } // Autolock scope
+ 
+     BQ_LOGV("dequeueBuffer: w=%u h=%u format=%#x, usage=%#x", width, height,
+@@ -569,10 +573,12 @@ status_t BufferQueueProducer::detachBuffer(int slot) {
+             return NO_INIT;
+         }
+ 
++#ifndef EGL_NEEDS_FNW
+         if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+             BQ_LOGE("detachBuffer: BufferQueue has no connected producer");
+             return NO_INIT;
+         }
++#endif
+ 
+         if (mCore->mSharedBufferMode || mCore->mSharedBufferSlot == slot) {
+             BQ_LOGE("detachBuffer: cannot detach a buffer in shared buffer mode");
+@@ -628,10 +634,12 @@ status_t BufferQueueProducer::detachNextBuffer(sp<GraphicBuffer>* outBuffer,
+         return NO_INIT;
+     }
+ 
++#ifndef EGL_NEEDS_FNW
+     if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+         BQ_LOGE("detachNextBuffer: BufferQueue has no connected producer");
+         return NO_INIT;
+     }
++#endif
+ 
+     if (mCore->mSharedBufferMode) {
+         BQ_LOGE("detachNextBuffer: cannot detach a buffer in shared buffer "
+@@ -678,10 +686,12 @@ status_t BufferQueueProducer::attachBuffer(int* outSlot,
+         return NO_INIT;
+     }
+ 
++#ifndef EGL_NEEDS_FNW
+     if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+         BQ_LOGE("attachBuffer: BufferQueue has no connected producer");
+         return NO_INIT;
+     }
++#endif
+ 
+     if (mCore->mSharedBufferMode) {
+         BQ_LOGE("attachBuffer: cannot attach a buffer in shared buffer mode");
+@@ -771,12 +781,12 @@ status_t BufferQueueProducer::queueBuffer(int slot,
+             BQ_LOGE("queueBuffer: BufferQueue has been abandoned");
+             return NO_INIT;
+         }
+-
++#ifndef EGL_NEEDS_FNW
+         if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+             BQ_LOGE("queueBuffer: BufferQueue has no connected producer");
+             return NO_INIT;
+         }
+-
++#endif
+         if (slot < 0 || slot >= BufferQueueDefs::NUM_BUFFER_SLOTS) {
+             BQ_LOGE("queueBuffer: slot index %d out of range [0, %d)",
+                     slot, BufferQueueDefs::NUM_BUFFER_SLOTS);
+@@ -960,11 +970,13 @@ status_t BufferQueueProducer::cancelBuffer(int slot, const sp<Fence>& fence) {
+         BQ_LOGE("cancelBuffer: BufferQueue has been abandoned");
+         return NO_INIT;
+     }
+-
++    
++#ifndef EGL_NEEDS_FNW
+     if (mCore->mConnectedApi == BufferQueueCore::NO_CONNECTED_API) {
+         BQ_LOGE("cancelBuffer: BufferQueue has no connected producer");
+         return NO_INIT;
+     }
++#endif
+ 
+     if (mCore->mSharedBufferMode) {
+         BQ_LOGE("cancelBuffer: cannot cancel a buffer in shared buffer mode");
+-- 
+2.1.4
+
