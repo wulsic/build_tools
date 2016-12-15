@@ -21,8 +21,8 @@ index 0506356..c67e270 100644
                      "using-sw-read-often", !!(usageBits & GRALLOC_USAGE_SW_READ_OFTEN));
          }
      }
-+// Capri's OMX fail to set a reasonable default size from width and height
-+#ifdef CAPRI_HWC
++// Rhea's OMX fail to set a reasonable default size from width and height
++#ifdef RHEA_HWC
 +    else if (!strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.decoder.", 21)) {
 +        int32_t width;
 +        int32_t height;
@@ -58,7 +58,7 @@ index c67e270..3db0476 100644
          return err;
      }
  
-+#ifdef CAPRI_HWC
++#ifdef RHEA_HWC
 +    if (strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.encoder.", 21) != 0)
 +        // Skip checking on vc4 encoder. It will return the incorrect
 +        // port index, but correct parameters.
@@ -88,8 +88,8 @@ index 3db0476..993c41a 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
 @@ -1853,13 +1853,9 @@ status_t ACodec::configureCodec(
- // Capri's OMX fail to set a reasonable default size from width and height
- #ifdef CAPRI_HWC
+ // Rhea's OMX fail to set a reasonable default size from width and height
+ #ifdef RHEA_HWC
      else if (!strncmp(mComponentName.c_str(), "OMX.BRCM.vc4.decoder.", 21)) {
 -        int32_t width;
 -        int32_t height;
@@ -131,8 +131,8 @@ index 5c859eb..310eb72 100644
      audio_hw_device_t *inHwHal = inHwDev->hwDevice();
      audio_stream_in_t *inStream = NULL;
 +
-+#ifdef CAPRI_HWC
-+    ALOGD("Forcing channel mask to mono on capri");
++#ifdef RHEA_HWC
++    ALOGD("Forcing channel mask to mono on rhea");
 +    halconfig.channel_mask = AUDIO_CHANNEL_IN_MONO;
 +#endif
 +
@@ -164,9 +164,9 @@ index 310eb72..eff4f02 100644
 @@ -2138,8 +2138,9 @@ sp<AudioFlinger::RecordThread> AudioFlinger::openInput_l(audio_module_handle_t m
      audio_stream_in_t *inStream = NULL;
  
- #ifdef CAPRI_HWC
--    ALOGD("Forcing channel mask to mono on capri");
-+    ALOGD("Forcing input to mono 48K on capri");
+ #ifdef RHEA_HWC
+-    ALOGD("Forcing channel mask to mono on rhea");
++    ALOGD("Forcing input to mono 48K on rhea");
      halconfig.channel_mask = AUDIO_CHANNEL_IN_MONO;
 +    halconfig.sample_rate = 48000;
  #endif
@@ -198,7 +198,7 @@ index 993c41a..6f590ec 100644
      // This check was present in KitKat.
      if (def.nBufferCountActual < def.nBufferCountMin + *minUndequeuedBuffers) {
  #endif
-+#ifdef CAPRI_HWC
++#ifdef RHEA_HWC
 +    for (OMX_U32 extraBuffers = 1; /* condition inside loop */; extraBuffers--) {
 +#else
      for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
@@ -213,7 +213,7 @@ index 993c41a..6f590ec 100644
 From 6f7ae4560da20b82099641984d654d00286f2361 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 20 Dec 2014 19:09:59 +0700
-Subject: [PATCH 07/14] stagefright: CAPRI_HWC: fix for screen recording
+Subject: [PATCH 07/14] stagefright: RHEA_HWC: fix for screen recording
 
 Change-Id: Ib8a677eb1ecabc30efe163faa9b209f4db966437
 ---
@@ -229,7 +229,7 @@ index 8b1be33..800b57f 100644
              }
          } else if (type == kMetadataBufferTypeANWBuffer
                  && header->nAllocLen >= sizeof(VideoNativeMetadata)) {
-+#ifndef CAPRI_HWC
++#ifndef RHEA_HWC
              VideoNativeMetadata &nativeMeta = *(VideoNativeMetadata *)data;
              if (nativeMeta.pBuffer != codecBuffer.mGraphicBuffer->getNativeBuffer()) {
                  // should never happen
@@ -249,7 +249,7 @@ index d29c387..7e79797 100644
      }
  
      if (def.format.video.eColorFormat != OMX_COLOR_FormatAndroidOpaque) {
-+#ifdef CAPRI_HWC
++#ifdef RHEA_HWC
 +        // VC Encoder change OMX_COLOR_FormatAndroidOpaque to 0x7F000005
 +        if (def.format.video.eColorFormat != 0x7F000005) {
 +#endif
@@ -257,7 +257,7 @@ index d29c387..7e79797 100644
                  "(AndroidOpaque) color format instead of %s(%#x)",
                  asString(def.format.video.eColorFormat), def.format.video.eColorFormat);
          return INVALID_OPERATION;
-+#ifdef CAPRI_HWC
++#ifdef RHEA_HWC
 +        }
 +#endif
      }
@@ -270,7 +270,7 @@ index d29c387..7e79797 100644
 From 5ad3809f628e6b77fcbef48bce5afcf1c1b3b0f6 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 21 Dec 2014 15:25:33 +0700
-Subject: [PATCH 08/14] stagefright: CAPRI_HWC: fix for miracast
+Subject: [PATCH 08/14] stagefright: RHEA_HWC: fix for miracast
 
 Our encoder does not support OMX_Video_ControlRateConstant
 
@@ -288,7 +288,7 @@ index e191cee..3b892af 100644
  
  static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg) {
 +	+static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg, const AString &name) {
-+#ifdef CAPRI_HWC
++#ifdef RHEA_HWC
 +		// vc4 encoder only supports VBR
 +		if (strncmp(name.c_str(), "OMX.BRCM.vc4.encoder.", 21) == 0) {
 +       return OMX_Video_ControlRateVariable;
@@ -366,8 +366,8 @@ index eff4f02..f793ea0 100644
      for (size_t i = 0; i < mAudioHwDevs.size(); i++) {
          audio_hw_device_t *dev = mAudioHwDevs.valueAt(i)->hwDevice();
          status_t result = dev->get_mic_mute(dev, &state);
-+#ifdef CAPRI_HWC
-+        // When not muted, Capri's audio driver incorrectly returns NO_INIT instead of NO_ERROR
++#ifdef RHEA_HWC
++        // When not muted, rhea's audio driver incorrectly returns NO_INIT instead of NO_ERROR
 +        if (mAudioHwDevs.valueAt(i) == mPrimaryHardwareDev && result == NO_INIT) {
 +            result = NO_ERROR;
 +        }
@@ -382,7 +382,7 @@ index eff4f02..f793ea0 100644
 From b1aa1a3d70467d0b9134d010903d07f35d8b7e42 Mon Sep 17 00:00:00 2001
 From: ghsr <ghsr92@yandex.ru>
 Date: Thu, 20 Oct 2016 02:10:59 +0600
-Subject: [PATCH 10/14] AudioFlinger: CAPRI_HWC: fix AudioRecord
+Subject: [PATCH 10/14] AudioFlinger: RHEA_HWC: fix AudioRecord
 
 Our old audio library does not support hardware timestamps
 and return an incorrect value. This causes libaudioflinger crashes when
@@ -401,7 +401,7 @@ index 0caada8..89e2084 100644
          mTimestamp.mPosition[ExtendedTimestamp::LOCATION_SERVER] += framesRead;
          mTimestamp.mTimeNs[ExtendedTimestamp::LOCATION_SERVER] = systemTime();
  
-+#ifndef CAPRI_HWC
++#ifndef RHEA_HWC
          // Update server timestamp with kernel stats
          if (mInput->stream->get_capture_position != nullptr) {
              int64_t position, time;
