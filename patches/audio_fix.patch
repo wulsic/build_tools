@@ -1,0 +1,77 @@
+From 55b03ce6cb8fabf1fb6020809466dfa678cc73a2 Mon Sep 17 00:00:00 2001
+From: Alonso1398 <lual1398@gmail.com>
+Date: Sat, 6 Jun 2015 19:24:02 -0600
+Subject: [PATCH 2/2] Fix audio on rhea devices. You must also apply the
+ MR0_AUDIO_BLOB patch. Also applied dhinesh77's microphone patch, however it
+ didn't fixed on cm 12 yet
+
+Change-Id: I39ac81c1312a9eaad804afe3144a254a9132dbf9
+---
+ include/hardware/audio.h        | 13 +++++++++++++
+ include/hardware/audio_policy.h |  7 ++++++-
+ 2 files changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/include/hardware/audio.h b/include/hardware/audio.h
+index c3cb740..20b8864 100644
+--- a/include/hardware/audio.h
++++ b/include/hardware/audio.h
+@@ -669,6 +669,19 @@ struct audio_hw_device {
+     void (*close_output_stream)(struct audio_hw_device *dev,
+                                 struct audio_stream_out* stream_out);
+ 
++#ifdef RHEA_HWC
++    /** This method creates and opens the audio hardware output
++     *  for broadcast stream */
++    int (*open_broadcast_stream)(struct audio_hw_device *dev, uint32_t devices,
++                                 int format, uint32_t channels,
++                                 uint32_t sample_rate,
++                                 uint32_t audio_source,
++                                 struct audio_broadcast_stream **out);
++
++    void (*close_broadcast_stream)(struct audio_hw_device *dev,
++                                   struct audio_broadcast_stream *out);
++#endif
++
+     /** This method creates and opens the audio hardware input stream */
+     int (*open_input_stream)(struct audio_hw_device *dev,
+                              audio_io_handle_t handle,
+diff --git a/include/hardware/audio_policy.h b/include/hardware/audio_policy.h
+index 99cb044..1a718e6 100644
+--- a/include/hardware/audio_policy.h
++++ b/include/hardware/audio_policy.h
+@@ -192,6 +192,7 @@ struct audio_policy {
+                                    audio_stream_type_t stream,
+                                    int *index);
+ 
++#ifndef ICS_AUDIO_BLOB
+     /* sets the new stream volume at a level corresponding to the supplied
+      * index for the specified device.
+      * The index is within the range specified by init_stream_volume() */
+@@ -205,6 +206,7 @@ struct audio_policy {
+                                    audio_stream_type_t stream,
+                                    int *index,
+                                    audio_devices_t device);
++#endif
+ 
+     /* return the strategy corresponding to a given stream type */
+     uint32_t (*get_strategy_for_stream)(const struct audio_policy *pol,
+@@ -232,13 +234,16 @@ struct audio_policy {
+     bool (*is_stream_active)(const struct audio_policy *pol,
+             audio_stream_type_t stream,
+             uint32_t in_past_ms);
+-
++#ifndef ICS_AUDIO_BLOB
++#ifndef MR1_AUDIO_BLOB
+     bool (*is_stream_active_remotely)(const struct audio_policy *pol,
+             audio_stream_type_t stream,
+             uint32_t in_past_ms);
++#endif
+ 
+     bool (*is_source_active)(const struct audio_policy *pol,
+             audio_source_t source);
++#endif
+ 
+     /* dump state */
+     int (*dump)(const struct audio_policy *pol, int fd);
+-- 
+2.1.4

@@ -6,16 +6,21 @@ CURRENT_DIR="$PWD"
 PD="build_tools/patches"
 PATCHES=(
 'art				art.patch'
+'external/icu                   external_icu.patch'
+'external/tinyalsa              external_tinyalsa.patch'
 'frameworks/av			frameworks_av.patch'
+'frameworks/av                  audio_fix2.patch'
 'frameworks/base		frameworks_base.patch'
 'frameworks/native		frameworks_native.patch'
 'frameworks/native              fnw.patch'
 'frameworks/native              fnw2.patch'
 'frameworks/opt/telephony	frameworks_opt_telephony.patch'
 'hardware/broadcom/libbt	hardware_broadcom_libbt.patch'
+'hardware/libhardware           audio_fix.patch'
 'packages/inputmethods/LatinIME packages_inputmethods_LatinIME.patch'
 'packages/services/Telephony	packages_services_Telephony.patch'
 'system/core			system_core.patch'
+'system/media                   system_media.patch'
 'vendor/cm                      kernel.patch'
 'vendor/cm			vendor_cm.patch'
 )
