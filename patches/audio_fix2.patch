@@ -49,3 +49,5 @@ index 25a77d0..81e8855 100644
  
          mHardwareStatus = AUDIO_HW_IDLE;
      }
+-- 
+2.1.4
