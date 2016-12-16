@@ -393,19 +393,69 @@ Change-Id: Ife5c92de0c4378268d71fdf53508829233673892
  services/audioflinger/Threads.cpp | 2 ++
  1 file changed, 2 insertions(+)
 
+iff --git a/services/audioflinger/AudioFlinger.cpp b/services/audioflinger/AudioFlinger.cpp
+index 5ae403c..87f9ebe 100644
+--- a/services/audioflinger/AudioFlinger.cpp
++++ b/services/audioflinger/AudioFlinger.cpp
+@@ -158,11 +158,13 @@ static int load_audio_interface(const char *if_name, audio_hw_device_t **dev)
+     if (rc) {
+         goto out;
+     }
++#if !defined(ICS_AUDIO_BLOB) && !defined(MR0_AUDIO_BLOB)
+     if ((*dev)->common.version < AUDIO_DEVICE_API_VERSION_MIN) {
+         ALOGE("%s wrong audio hw device version %04x", __func__, (*dev)->common.version);
+         rc = BAD_VALUE;
+         goto out;
+     }
++#endif
+     return 0;
+ 
+ out:
+@@ -1675,6 +1677,7 @@ audio_module_handle_t AudioFlinger::loadHwModule_l(const char *name)
+     {  // scope for auto-lock pattern
+         AutoMutex lock(mHardwareLock);
+ 
++		#if !defined(ICS_AUDIO_BLOB) && !defined(MR0_AUDIO_BLOB)
+         if (0 == mAudioHwDevs.size()) {
+             mHardwareStatus = AUDIO_HW_GET_MASTER_VOLUME;
+             if (NULL != dev->get_master_volume) {
+@@ -1692,6 +1695,7 @@ audio_module_handle_t AudioFlinger::loadHwModule_l(const char *name)
+                 }
+             }
+         }
++#endif
+ 
+         mHardwareStatus = AUDIO_HW_SET_MASTER_VOLUME;
+         if ((NULL != dev->set_master_volume) &&
+@@ -1699,13 +1703,14 @@ audio_module_handle_t AudioFlinger::loadHwModule_l(const char *name)
+             flags = static_cast<AudioHwDevice::Flags>(flags |
+                     AudioHwDevice::AHWD_CAN_SET_MASTER_VOLUME);
+         }
+-
++#if !defined(ICS_AUDIO_BLOB) && !defined(MR0_AUDIO_BLOB)
+         mHardwareStatus = AUDIO_HW_SET_MASTER_MUTE;
+         if ((NULL != dev->set_master_mute) &&
+             (OK == dev->set_master_mute(dev, mMasterMute))) {
+             flags = static_cast<AudioHwDevice::Flags>(flags |
+                     AudioHwDevice::AHWD_CAN_SET_MASTER_MUTE);
+         }
++#endif
+ 
+         mHardwareStatus = AUDIO_HW_IDLE;
+     }
 diff --git a/services/audioflinger/Threads.cpp b/services/audioflinger/Threads.cpp
-index 0caada8..89e2084 100644
+index 9049df6..3dcea7b 100644
 --- a/services/audioflinger/Threads.cpp
 +++ b/services/audioflinger/Threads.cpp
-@@ -6086,6 +6086,7 @@ reacquire_wakelock:
+@@ -6315,6 +6315,7 @@ reacquire_wakelock:
          mTimestamp.mPosition[ExtendedTimestamp::LOCATION_SERVER] += framesRead;
          mTimestamp.mTimeNs[ExtendedTimestamp::LOCATION_SERVER] = systemTime();
  
 +#ifndef RHEA_HWC
          // Update server timestamp with kernel stats
-         if (mInput->stream->get_capture_position != nullptr) {
-             int64_t position, time;
-@@ -6100,6 +6101,7 @@ reacquire_wakelock:
+         if (mInput->stream->get_capture_position != nullptr
+                 && mPipeSource.get() == nullptr /* don't obtain for FastCapture, could block */) {
+@@ -6330,6 +6331,7 @@ reacquire_wakelock:
                  // as the read obtains a lock, preventing the timestamp call from executing.
              }
          }
@@ -414,4 +464,5 @@ index 0caada8..89e2084 100644
          // ALOGD("%s", mTimestamp.toString().c_str());
  
 -- 
-2.10.1
+2.7.4
+
