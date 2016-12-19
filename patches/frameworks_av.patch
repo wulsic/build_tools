@@ -283,11 +283,12 @@ diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
 index e191cee..3b892af 100644
 --- a/media/libstagefright/ACodec.cpp
 +++ b/media/libstagefright/ACodec.cpp
-@@ -4114,6 +4114,13 @@ static OMX_U32 setPFramesSpacing(
+@@ -4113,7 +4113,13 @@ static OMX_U32 setPFramesSpacing(
+     return ret > 0 ? ret - 1 : 0;
  }
  
- static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg) {
-+	+static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg, const AString &name) {
+-static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg) {
++static OMX_VIDEO_CONTROLRATETYPE getBitrateMode(const sp<AMessage> &msg, const AString &name) {
 +#ifdef RHEA_HWC
 +		// vc4 encoder only supports VBR
 +		if (strncmp(name.c_str(), "OMX.BRCM.vc4.encoder.", 21) == 0) {
